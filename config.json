@@ -1,0 +1,8 @@
+{
+    "log-path": "./logs/",
+    "default-model": "hermes3",
+    "owner-userid": 729671931359395940,
+    "trusted-userids": [782022246284656680],
+    "ai-system-prompt": "./ai/system-prompt.txt",
+    "is-system-prompt-file": true
+}
