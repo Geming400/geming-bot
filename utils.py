@@ -1,6 +1,8 @@
 import copy
 from enum import Enum
-import logging
+import logging.handlers
+import os
+from pathlib import Path
 from typing import Final, Optional, overload
 import discord
 import ollama
@@ -14,7 +16,7 @@ __all__ = [
     "Ai"
 ]
 
-CONFIG: Final[Config] = Config("./config.json")
+CONFIG: Final[Config] = Config("./config.jsonc")
 
 def preloadModel(model: str):
     ollama.generate(model)
@@ -31,7 +33,53 @@ def formatAiMessages(messages: list[dict[str, str]]) -> str:
     for message in messages:
         ret.append(f"- ({message["role"]}) {message["content"]}")
         
-    return "Ai memory:\n" + "\n".join(ret)
+    return "AI memory:\n" + "\n\n".join(ret)
+
+def removeThinkTag(s: str) -> str:
+    print(f"Removing think tags from response {s}")
+    try:
+        ret = s.split("</think>", 1)[1]
+        return ret
+    except:
+        return s
+
+def createHandler(handler: logging.Handler, level: int, name: str = __name__):
+    handler.setFormatter(logging.Formatter("[%(asctime)s - %(levelname)s - %(name)s] %(message)s"))
+    handler.setLevel(level)
+    
+    return handler
+
+def createTimedRotatingFileHandler(logPath: str, level: int, name: str = __name__):
+    handler = logging.handlers.TimedRotatingFileHandler(Path(logPath) / f"{name}.log", "D", backupCount=30*3, encoding="utf-8") # we want to keep the logs for ~3 month
+    return createHandler(handler, level, name)
+    
+def createStreamHandler(level: int, name: str = __name__):
+    handler = logging.StreamHandler()
+    return createHandler(handler, level, name)
+
+def getLogger(logPath: str, level: int, name: str = __name__) -> logging.Logger:
+    Path(os.path.dirname(logPath)).mkdir(parents=True, exist_ok=True)
+    
+    logger: Final = logging.getLogger(name)
+    logger.addHandler(createTimedRotatingFileHandler(logPath, level, name))
+    logger.addHandler(createStreamHandler(level, name))
+    logger.setLevel(level)
+    
+    return logger
+
+def createErrorEmbed(description: Optional[str] = None):
+    """Creates an error embed
+    """
+    
+    username = os.getenv("USERNAME")
+    if username and description:
+        description = description.replace(username, "")
+    
+    return discord.Embed(
+        title="Error !",
+        description=description,
+        colour=discord.Colour.red()
+        )
 
 class Ai:
     class Role(str, Enum):
@@ -65,9 +113,19 @@ class Ai:
                 "content": content
             })
     
-    def clearMemory(self):
-        self._globalMessages = []
-        self._messages = {}
+    @overload
+    def clearMemory(self): ...
+    @overload
+    def clearMemory(self, channelID: int): ...
+    
+    def clearMemory(self, channelID: Optional[int] = None):
+        if channelID:
+            self._messages[channelID] = []
+        else:
+            self._messages = {}
+    
+    def clearGlobalMemory(self):
+        self._globalMessages
 
     @overload
     def getMessagesWithPrompt(self) -> list[dict[str, str]]:
@@ -94,13 +152,25 @@ class Ai:
             msg = copy.deepcopy(self._messages).get(channelID, [])
             
             if self.systemPrompt:
-                msg.insert(0, {'role': 'system', 'content': CONFIG.getRawSystemPrompt()})
+                msg.insert(0, {'role': 'system', 'content': CONFIG.getSystemPrompt()})
             return msg
         else:
             msg = self.globalMessages.copy()
             if self.systemPrompt:
-                msg.append({'role': 'system', 'content': CONFIG.getRawSystemPrompt()})
+                msg.append({'role': 'system', 'content': CONFIG.getSystemPrompt()})
             return msg
+    
+    def getUserInfos(self, user: discord.User | discord.Member):
+        """Get the user infos
+
+        Args:
+            user: The one who sent a prompt to the ai
+
+        Returns:
+            The infos that the ai needs to differentiate users
+        """
+        
+        return f"\n(This was sent by `{user.name}` (Discord userID: `{user.id}`, mention: `{user.mention}`)"
     
     @property
     def messages(self):
@@ -113,4 +183,6 @@ class Ai:
         """Returns a list of "global messages" (not channelID dependant)
         """
         return self._globalMessages
+    
+    
     
