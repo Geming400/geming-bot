@@ -1,5 +1,6 @@
+import functools
 from typing import Any, Optional
-import json
+from jsonc_parser.parser import JsoncParser
 
 import discord
 
@@ -18,8 +19,11 @@ class Config:
         self.loadConfigFile()
     
     def loadConfigFile(self):
-        with open(self.file) as f:
-            self.content = json.load(f)
+        self.content = JsoncParser.parse_file(self.file)
+    
+    def reloadConfigs(self):
+        self.loadConfigFile()
+        self.getSystemPrompt.cache_clear()
     
     def getLogPath(self) -> str:
         return self.content["log-path"]
@@ -27,25 +31,24 @@ class Config:
     def getDefaultModel(self) -> Optional[str]:
         return self.content.get("default-model")
     
-    def getOwner(self) -> int:
-        return self.content["owner-userid"]
+    def getKeepAlive(self) -> int:
+        return self.content.get("keep-alive", 60*5) # default ollama value
     
-    def getTrustedUsers(self) -> list[int]:
-        users: list[int] = self.content.get("trusted-userids", [])
-        users.append(self.getOwner())
-        return users
-
-    def getRawSystemPrompt(self) -> str:
+    @functools.lru_cache
+    def getSystemPrompt(self) -> str:
         if self.content.get("is-system-prompt-file", False):
             with open(self.content["ai-system-prompt"]) as f:
                 return f.read()
         else:
             return self.content.get("ai-system-prompt", "")
-
-    def getSystemPrompt(self, ctx: Context) -> str:
-        return self.getRawSystemPrompt() \
-            .replace("{author-name}", ctx.author.name) \
-            .replace("{author-id}", str(ctx.author.id))
+        
+    def getOwner(self) -> int:
+        return self.content["owner-userID"]
+    
+    def getTrustedUsers(self) -> list[int]:
+        users: list[int] = self.content.get("trusted-userIDs", [])
+        users.append(self.getOwner())
+        return users
 
     def isOwner(self, userID: int) -> bool:
         return userID == self.getOwner()
