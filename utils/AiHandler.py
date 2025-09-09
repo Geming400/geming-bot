@@ -1,87 +1,18 @@
 import copy
 from enum import Enum
-import logging.handlers
-import os
-from pathlib import Path
-from typing import Final, Optional, overload
+from typing import Final, Optional, cast, overload
+
 import discord
 import ollama
 
-from config import Config
+from utils.utils import CONFIG
+from utils.Loggers import Loggers
 
 __all__ = [
-    "preloadModel",
-    "preloadModelAsync",
-    "logNoAuthorization",
-    "Ai"
+    "AiHandler"
 ]
 
-CONFIG: Final[Config] = Config("./config.jsonc")
-
-def preloadModel(model: str):
-    ollama.generate(model)
-    
-async def preloadModelAsync(model: str):
-    await ollama.AsyncClient().generate(model)
-    
-def logNoAuthorization(ctx: discord.ApplicationContext, logger: logging.Logger, name: Optional[str] = None, reason: Optional[str] = None):
-    logger.warning(f"User {ctx.author.name} ({ctx.author.id}) tried running command {name or '[no name provided]'} but doesn't have the permissions, reason: {reason or 'No reason provided'}")
-
-def formatAiMessages(messages: list[dict[str, str]]) -> str:
-    ret: list[str] = []
-    
-    for message in messages:
-        ret.append(f"- ({message["role"]}) {message["content"]}")
-        
-    return "AI memory:\n" + "\n\n".join(ret)
-
-def removeThinkTag(s: str) -> str:
-    print(f"Removing think tags from response {s}")
-    try:
-        ret = s.split("</think>", 1)[1]
-        return ret
-    except:
-        return s
-
-def createHandler(handler: logging.Handler, level: int, name: str = __name__):
-    handler.setFormatter(logging.Formatter("[%(asctime)s - %(levelname)s - %(name)s] %(message)s"))
-    handler.setLevel(level)
-    
-    return handler
-
-def createTimedRotatingFileHandler(logPath: str, level: int, name: str = __name__):
-    handler = logging.handlers.TimedRotatingFileHandler(Path(logPath) / f"{name}.log", "D", backupCount=30*3, encoding="utf-8") # we want to keep the logs for ~3 month
-    return createHandler(handler, level, name)
-    
-def createStreamHandler(level: int, name: str = __name__):
-    handler = logging.StreamHandler()
-    return createHandler(handler, level, name)
-
-def getLogger(logPath: str, level: int, name: str = __name__) -> logging.Logger:
-    Path(os.path.dirname(logPath)).mkdir(parents=True, exist_ok=True)
-    
-    logger: Final = logging.getLogger(name)
-    logger.addHandler(createTimedRotatingFileHandler(logPath, level, name))
-    logger.addHandler(createStreamHandler(level, name))
-    logger.setLevel(level)
-    
-    return logger
-
-def createErrorEmbed(description: Optional[str] = None):
-    """Creates an error embed
-    """
-    
-    username = os.getenv("USERNAME")
-    if username and description:
-        description = description.replace(username, "")
-    
-    return discord.Embed(
-        title="Error !",
-        description=description,
-        colour=discord.Colour.red()
-        )
-
-class Ai:
+class AiHandler:
     class Role(str, Enum):
         SYSTEM = "system"
         ASSISTANT = "assistant"
@@ -184,5 +115,11 @@ class Ai:
         """
         return self._globalMessages
     
-    
-    
+    def isModelPreloaded(self, modelName: str) -> bool:        
+        for processes in ollama.ps():
+            for model in processes[1]:
+                Loggers.aiLogger.debug(f"Checking if model {model.name} is preloaded")
+                if cast(ollama.ProcessResponse.Model, model).name == modelName:
+                    Loggers.aiLogger.debug(f"Model {modelName} is preloaded")
+                    return True
+        return False

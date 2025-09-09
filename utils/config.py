@@ -1,8 +1,14 @@
 import functools
+import os
 from typing import Any, Optional
 from jsonc_parser.parser import JsoncParser
-
+import dotenv
 import discord
+
+from utils import SharedStorage
+
+
+dotenv.load_dotenv(".env")
 
 __all__ = [
     "Config"
@@ -10,13 +16,28 @@ __all__ = [
 
 Context = discord.ApplicationContext
 
-class Config:
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+# TODO: make the singleton work across different modules
+class Config(metaclass=Singleton):
     file: str
     content: dict[str, Any]
     
-    def __init__(self, file: str) -> None:
-        self.file = file
+    def __init__(self) -> None:
+        self.file = os.getenv("CONFIG-PATH") or "config.json"
+        self.content = {}
+        
         self.loadConfigFile()
+        
+        self._storage = SharedStorage.SharedStorage(self)
+        
+    @property
+    def storage(self): return self._storage
     
     def loadConfigFile(self):
         self.content = JsoncParser.parse_file(self.file)
