@@ -2,13 +2,15 @@ import logging.handlers
 import os
 from pathlib import Path
 from typing import Final
-from utils.utils import CONFIG
+
+from utils.config import Config
 
 
 __all__ = [
     "Loggers"
 ]
 
+_config = Config()
 
 def createHandler(handler: logging.Handler, level: int, name: str = __name__):
     handler.setFormatter(logging.Formatter("[%(asctime)s - %(levelname)s - %(name)s] %(message)s"))
@@ -35,5 +37,5 @@ def getLogger(logPath: str, level: int, name: str = __name__) -> logging.Logger:
     return logger
 
 class Loggers:
-    logger: Final[logging.Logger] = getLogger(CONFIG.getLogPath(), logging.DEBUG, "mainbot")
-    aiLogger: Final[logging.Logger] = getLogger(CONFIG.getLogPath(), logging.DEBUG, "AI")
+    logger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "mainbot")
+    aiLogger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "AI")
