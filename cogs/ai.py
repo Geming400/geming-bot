@@ -34,11 +34,11 @@ class AiUtils(commands.Cog):
     )
     async def aiSetPingReply(self, ctx: Context, ping_reply: bool):
         if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, name="/reloadConfigs", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reloadConfigs", reason="Isn't owner")
             await ctx.respond("No :3", ephemeral=True)
             return
         
-        oldAiPingReply = CONFIG.storage.aiPingReply
+        oldAiPingReply = CONFIG.storage.aiPingReply == discord.AllowedMentions.all()
         Loggers.aiLogger.info(f"Set ping reply to from `{oldAiPingReply}` to `{ping_reply}` for user {ctx.author.name} ({ctx.author.id})")
         
         if ping_reply:
@@ -56,7 +56,7 @@ class AiUtils(commands.Cog):
     )
     async def setModel(self, ctx: Context, model: str):
         if not CONFIG.isTrusted(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, name="/set-model", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/set-model", reason="Isn't trusted")
             await ctx.respond("No :3", ephemeral=True)
             return
         
@@ -65,17 +65,21 @@ class AiUtils(commands.Cog):
             return
         
         old_model = CONFIG.storage.currentModel
-        current_model = model
+        CONFIG.storage.currentModel = model
         
-        await ctx.respond(f"Sucessfully changed model from `{old_model}` to `{current_model}`\n-# Preloading model...")
+        if aiHandler.isModelPreloaded(model):
+            await ctx.respond(f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`")
+            return
+            
+        await ctx.respond(f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`\n-# Preloading model...")
         await utils.preloadModelAsync(model)
         
-        await ctx.edit(content=f"Sucessfully changed model from `{old_model}` to `{current_model}`\n-# Preloaded model !")
+        await ctx.edit(content=f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`\n-# Preloaded model !")
     
     @discord.slash_command(name="ai-system-prompt", description="Get the system prompt of geming bot")
     async def fetchSystemPrompt(self, ctx: Context):
         if not CONFIG.isTrusted(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, name="/ai-system-prompt", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-system-prompt", reason="Isn't trusted")
             await ctx.respond("No :3", ephemeral=True)
             return
         
@@ -133,7 +137,7 @@ class AiUtils(commands.Cog):
                 await ctx.respond(f"AI memory for `{channelID}` (<#{channelID}>) is empty !", ephemeral=True)
         
         if not CONFIG.isTrusted(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, name="/get-memory", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/get-memory", reason="Isn't trusted")
             await ctx.respond("No :3", ephemeral=True)
             return
         
@@ -166,7 +170,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(name="global-flush", description="Flushes every human's smart toilet :3")
     async def flushAIGlobally(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, name="/flushAI", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/flushAI", reason="Isn't trusted")
             await ctx.respond("No :3", ephemeral=True)
             return
         
@@ -178,7 +182,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(name="ai-kill", description="Kill the AI processes")
     async def killAI(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, name="/ai-kill", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-kill", reason="Isn't trusted")
             await ctx.respond("No :3", ephemeral=True)
             return
 
@@ -238,7 +242,7 @@ class BotAI(commands.Cog):
                         Loggers.aiLogger.debug("Adding ai's response to memory")
                         aiHandler.addMessage(AiHandler.Role.ASSISTANT, content, message.channel.id)
                 except ConnectionError:
-                    await message.reply(content="`ollama` isn't running, the ai isn't currently avalaible")
+                    await message.reply(content="`ollama` isn't running, the ai isn't currently avalaible", allowed_mentions=discord.AllowedMentions.none())
                 except Exception as e:
                     await message.reply(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
                     await message.add_reaction("⚠️")
