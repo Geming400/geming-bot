@@ -4,6 +4,7 @@ from typing import Final, Optional
 import discord
 import ollama
 
+from utils.Loggers import Loggers
 from utils.config import Config
 
 __all__ = [
@@ -19,13 +20,16 @@ __all__ = [
 CONFIG: Final[Config] = Config()
 
 def preloadModel(model: str):
-    ollama.generate(model)
+    Loggers.aiLogger.info(f"Preloading model {model}")
+    ollama.generate(model, keep_alive=CONFIG.getKeepAlive())
     
 async def preloadModelAsync(model: str):
-    await ollama.AsyncClient().generate(model)
+    Loggers.aiLogger.info(f"Preloading model {model} (async)")
+    await ollama.AsyncClient().generate(model, keep_alive=CONFIG.getKeepAlive())
     
-def logNoAuthorization(ctx: discord.ApplicationContext, logger: logging.Logger, name: Optional[str] = None, reason: Optional[str] = None):
-    logger.warning(f"User {ctx.author.name} ({ctx.author.id}) tried running command {name or '[no name provided]'} but doesn't have the permissions, reason: {reason or 'No reason provided'}")
+def logNoAuthorization(ctx: discord.ApplicationContext, logger: logging.Logger, cmdname: Optional[str] = None, reason: Optional[str] = None, stacklevel = 2):
+    funcName = logger.findCaller(stacklevel=stacklevel)[2]
+    logger.warning(f"User {ctx.author.name} ({ctx.author.id}) tried running {"command" if cmdname else "command (from function)"} `{cmdname or funcName}` but doesn't have the permissions, reason: {reason or 'No reason provided'}")
 
 def formatAiMessages(messages: list[dict[str, str]]) -> str:
     ret: list[str] = []
