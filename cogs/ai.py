@@ -102,7 +102,7 @@ class AiUtils(commands.Cog):
             allowed_mentions=discord.AllowedMentions.none()
             )
     
-    @discord.slash_command(name="get-memory", description="Gets the ai's memory, if not channel is provided, we will get the memory if this channel")
+    @discord.slash_command(name="get-memory", description="Gets the ai's memory, if no channel is provided, we'll get the memory of this channel")
     @discord.option(
         name="channel",
         input_type=discord.abc.GuildChannel,
