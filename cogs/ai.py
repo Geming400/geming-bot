@@ -34,7 +34,7 @@ class AiUtils(commands.Cog):
     )
     async def aiSetPingReply(self, ctx: Context, ping_reply: bool):
         if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reloadConfigs", reason="Isn't owner")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-set-ping-reply", reason="Isn't owner")
             await ctx.respond("No :3", ephemeral=True)
             return
         
@@ -136,6 +136,7 @@ class AiUtils(commands.Cog):
                 Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) tried getting ai memory for channelID `{channelID}` in channelID `{ctx.channel_id}`")
                 await ctx.respond(f"AI memory for `{channelID}` (<#{channelID}>) is empty !", ephemeral=True)
         
+        
         if not CONFIG.isTrusted(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/get-memory", reason="Isn't trusted")
             await ctx.respond("No :3", ephemeral=True)
@@ -156,7 +157,7 @@ class AiUtils(commands.Cog):
             await fromChannel(ctx.channel_id)
         
 
-    @discord.slash_command(name="flush", description="Flushes tjc's smart toilet :3")
+    @discord.slash_command(name="flush", description="Flushes tjc's smart toilet :3   (Clears the ai's memory)")
     async def flushAI(self, ctx: Context):
         # if not CONFIG.isTrusted(ctx.author.id):
         #     utils.logNoAuthorization(ctx, Loggers.logger, name="/flushAI", reason="Isn't trusted")
@@ -167,10 +168,10 @@ class AiUtils(commands.Cog):
         Loggers.aiLogger.info(f"Flushed ai's memory for channel ID {ctx.channel_id} for user {ctx.author.name} ({ctx.author.id})")
         await ctx.respond("Flushed tjc's smart toilet !")
         
-    @discord.slash_command(name="global-flush", description="Flushes every human's smart toilet :3")
+    @discord.slash_command(name="global-flush", description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)")
     async def flushAIGlobally(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/flushAI", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/global-flush", reason="Isn't owner")
             await ctx.respond("No :3", ephemeral=True)
             return
         
@@ -182,7 +183,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(name="ai-kill", description="Kill the AI processes")
     async def killAI(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-kill", reason="Isn't trusted")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-kill", reason="Isn't owner")
             await ctx.respond("No :3", ephemeral=True)
             return
 

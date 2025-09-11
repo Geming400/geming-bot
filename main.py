@@ -32,7 +32,7 @@ cogs_list: list[str] = [
 @bot.slash_command(name="reload-cogs", description="Reload all cogs.")
 async def reloadCogs(ctx: discord.ApplicationContext):
     if not CONFIG.isOwner(ctx.author.id):
-        utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-cogs", reason="Isn't owber")
+        utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-cogs", reason="Isn't owner")
         await ctx.respond("No :3", ephemeral=True)
         return
     
