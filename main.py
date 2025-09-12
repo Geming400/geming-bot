@@ -10,7 +10,7 @@ from utils.utils import CONFIG
 import sys
 
 def exceptHook(excT: type[BaseException], exc: BaseException, traceback):
-    Loggers.logger.exception(exc)
+    Loggers.logger.exception(f"Exception catched in 'exceptHook' {exc}")
     
 sys.excepthook = exceptHook
 
@@ -36,7 +36,8 @@ async def reloadCogs(ctx: discord.ApplicationContext):
         await ctx.respond("No :3", ephemeral=True)
         return
     
-    await ctx.respond("Reloading cogs", ephemeral=True)
+    h: discord.Interaction | discord.WebhookMessage = await ctx.respond("Reloading cogs", ephemeral=True)
+    print("msg id", h.id)
     
     reloadedCogs: list[str] = []
     numCogsError = 0
@@ -75,6 +76,12 @@ async def reloadCogs(ctx: discord.ApplicationContext):
 @bot.listen(once=True)
 async def on_ready():
     Loggers.logger.info(f"Launched bot '{cast(discord.ClientUser, bot.user).name}'")
+
+@bot.event
+async def on_application_command_error(ctx: discord.ApplicationContext, error: discord.DiscordException):
+    await ctx.respond(utils.createErrorEmbed(str(error)), ephemeral=True)
+    Loggers.logger.exception(f"Handling exception from `on_application_command_error` {error}")
+    raise error
 
 for cog in cogs_list:
     bot.load_extension(f'cogs.{cog}')
