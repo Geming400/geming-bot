@@ -116,7 +116,7 @@ class AiUtils(commands.Cog):
     
     @discord.slash_command(
         name="get-memory",
-        description="Gets the ai's memory, if not channel is provided, we will get the memory if this channel",
+        description="Gets the ai's memory, if no channel is provided, we'll get the memory if this channel",
         integration_type=INTEGRATION_TYPES
         )
     @discord.option(
