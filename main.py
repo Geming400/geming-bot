@@ -6,11 +6,7 @@ import discord
 import os
 from utils import utils
 from utils.Loggers import Loggers
-<<<<<<< HEAD
 from utils.utils import CONFIG, INTEGRATION_TYPES
-=======
-from utils.utils import CONFIG, CONTEXTS, INTEGRATION_TYPES
->>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
 import sys
 
 def exceptHook(excT: type[BaseException], exc: BaseException, traceback):
@@ -36,12 +32,7 @@ cogs_list: list[str] = [
 @bot.slash_command(
     name="reload-cogs",
     description="Reload all cogs.",
-<<<<<<< HEAD
     integration_type=INTEGRATION_TYPES
-=======
-    integration_type=INTEGRATION_TYPES,
-    context=CONTEXTS
->>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
 )
 async def reloadCogs(ctx: discord.ApplicationContext):
     if not CONFIG.isOwner(ctx.author.id):

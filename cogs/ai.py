@@ -89,12 +89,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="ai-system-prompt",
         description="Get the system prompt of geming bot",
-<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
-=======
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
->>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def fetchSystemPrompt(self, ctx: Context):
         if not CONFIG.isTrusted(ctx.author.id):
@@ -200,12 +195,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="global-flush",
         description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)",
-<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
-=======
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
->>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def flushAIGlobally(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
@@ -221,12 +211,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="ai-kill",
         description="Kill the AI processes",
-<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
-=======
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
->>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def killAI(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
