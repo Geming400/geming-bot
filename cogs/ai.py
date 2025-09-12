@@ -10,7 +10,7 @@ import psutil
 import utils.utils as utils
 from utils.Loggers import Loggers
 from utils.AiHandler import AiHandler
-from utils.utils import CONFIG, INTEGRATION_TYPES
+from utils.utils import CONFIG, INTEGRATION_TYPES, CONTEXTS
 
 
 Context = discord.ApplicationContext
@@ -30,7 +30,8 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="ai-set-ping-reply",
         description="Enables or disables ping reply for the ai",
-        integration_type=INTEGRATION_TYPES
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
     )
     @discord.option(
         name="ping-reply",
@@ -55,7 +56,8 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="set-model",
         description="Sets the current model to use for the ai",
-        integration_type=INTEGRATION_TYPES
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
     )
     @discord.option(
         name="model",
@@ -87,7 +89,12 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="ai-system-prompt",
         description="Get the system prompt of geming bot",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def fetchSystemPrompt(self, ctx: Context):
         if not CONFIG.isTrusted(ctx.author.id):
@@ -117,7 +124,8 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="get-memory",
         description="Gets the ai's memory, if no channel is provided, we'll get the memory if this channel",
-        integration_type=INTEGRATION_TYPES
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
         )
     @discord.option(
         name="channel",
@@ -176,7 +184,8 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="flush",
         description="Flushes tjc's smart toilet :3   (Clears the ai's memory)",
-        integration_type=INTEGRATION_TYPES
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
     )
     async def flushAI(self, ctx: Context):
         # if not CONFIG.isTrusted(ctx.author.id):
@@ -191,7 +200,12 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="global-flush",
         description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def flushAIGlobally(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
@@ -207,7 +221,12 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="ai-kill",
         description="Kill the AI processes",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def killAI(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
@@ -282,7 +301,8 @@ class BotAI(commands.Cog):
     @discord.slash_command(
         name="ai",
         description="Ask stuff to an ai model and get an answer in probably 7 minutes",
-        integration_type=INTEGRATION_TYPES
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
     )
     @discord.option(
         name="prompt",

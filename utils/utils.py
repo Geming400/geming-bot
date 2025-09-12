@@ -23,6 +23,11 @@ INTEGRATION_TYPES: Final[set[discord.IntegrationType]] = {
     discord.IntegrationType.guild_install,
     discord.IntegrationType.user_install,
 }
+CONTEXTS: Final[set[discord.InteractionContextType]] = {
+    discord.InteractionContextType.bot_dm,
+    discord.InteractionContextType.guild,
+    discord.InteractionContextType.private_channel
+}
 
 def preloadModel(model: str):
     Loggers.aiLogger.info(f"Preloading model {model}")

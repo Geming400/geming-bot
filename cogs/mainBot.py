@@ -8,7 +8,7 @@ import httpx
 
 from utils import utils
 from utils.Loggers import Loggers
-from utils.utils import CONFIG, INTEGRATION_TYPES
+from utils.utils import CONFIG, CONTEXTS, INTEGRATION_TYPES
 
 
 Context = discord.ApplicationContext
@@ -31,7 +31,8 @@ class MainBot(commands.Cog):
     @discord.slash_command(
         name="dyrs",
         description="Get dyrs' personnal infos ! (for free)",
-        integration_type=INTEGRATION_TYPES
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
     )
     async def dyrsInfos(self, ctx: Context):
         responses: tuple[str, ...] = (
@@ -70,7 +71,12 @@ class MainBot(commands.Cog):
     @discord.slash_command(
         name="anton",
         description="idk what this means, ask dyrs",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def anton(self, ctx: Context):
         if random.randint(0, 100) == 10:
@@ -82,7 +88,12 @@ class MainBot(commands.Cog):
     @discord.slash_command(
         name="linux-icbm",
         description="Linus torvalds' own ICBM, that's it",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     @discord.option(
         "user",
@@ -105,7 +116,12 @@ class MainBot(commands.Cog):
     @discord.slash_command(
         name="reload-configs",
         description="Reload the config files",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def reloadConfigs(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
@@ -121,7 +137,12 @@ class MainBot(commands.Cog):
     @discord.slash_command(
         name="help",
         description="Get every commands you can access",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     async def helpCmd(self, ctx: Context):
         cmds = []
@@ -168,7 +189,12 @@ class MainBot(commands.Cog):
     @discord.slash_command(
         name="get-role",
         description="Get's the role of someone (gemingbot role)",
+<<<<<<< HEAD
         integration_type=INTEGRATION_TYPES
+=======
+        integration_type=INTEGRATION_TYPES,
+        context=CONTEXTS
+>>>>>>> b89f9a93aaeee5c2c0d4841979d0adcb6eb0fbd6
     )
     @discord.option(
         name="user",
