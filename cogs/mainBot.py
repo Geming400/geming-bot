@@ -71,7 +71,7 @@ class MainBot(commands.Cog):
         name="anton",
         description="idk what this means, ask dyrs",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     async def anton(self, ctx: Context):
         if random.randint(0, 100) == 10:
             ctx.respond("https://tenor.com/view/anton-alert-r74n-gif-7263058800090359550")
@@ -83,7 +83,7 @@ class MainBot(commands.Cog):
         name="linux-icbm",
         description="Linus torvalds' own ICBM, that's it",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     @discord.option(
         "user",
         discord.User,
@@ -106,7 +106,7 @@ class MainBot(commands.Cog):
         name="reload-configs",
         description="Reload the config files",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     async def reloadConfigs(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-configs", reason="Isn't owner")
@@ -122,7 +122,7 @@ class MainBot(commands.Cog):
         name="help",
         description="Get every commands you can access",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     async def helpCmd(self, ctx: Context):
         cmds = []
         ret = ""
@@ -169,7 +169,7 @@ class MainBot(commands.Cog):
         name="get-role",
         description="Get's the role of someone (gemingbot role)",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     @discord.option(
         name="user",
         input_type=discord.User,

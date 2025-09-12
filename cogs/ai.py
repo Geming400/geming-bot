@@ -88,7 +88,7 @@ class AiUtils(commands.Cog):
         name="ai-system-prompt",
         description="Get the system prompt of geming bot",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     async def fetchSystemPrompt(self, ctx: Context):
         if not CONFIG.isTrusted(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-system-prompt", reason="Isn't trusted")
@@ -192,7 +192,7 @@ class AiUtils(commands.Cog):
         name="global-flush",
         description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     async def flushAIGlobally(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/global-flush", reason="Isn't owner")
@@ -208,7 +208,7 @@ class AiUtils(commands.Cog):
         name="ai-kill",
         description="Kill the AI processes",
         integration_type=INTEGRATION_TYPES
-        )
+    )
     async def killAI(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-kill", reason="Isn't owner")

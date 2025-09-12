@@ -6,7 +6,7 @@ import discord
 import os
 from utils import utils
 from utils.Loggers import Loggers
-from utils.utils import CONFIG
+from utils.utils import CONFIG, INTEGRATION_TYPES
 import sys
 
 def exceptHook(excT: type[BaseException], exc: BaseException, traceback):
@@ -29,7 +29,11 @@ cogs_list: list[str] = [
     "ai"
 ]
 
-@bot.slash_command(name="reload-cogs", description="Reload all cogs.")
+@bot.slash_command(
+    name="reload-cogs",
+    description="Reload all cogs.",
+    integration_type=INTEGRATION_TYPES
+)
 async def reloadCogs(ctx: discord.ApplicationContext):
     if not CONFIG.isOwner(ctx.author.id):
         utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-cogs", reason="Isn't owner")
