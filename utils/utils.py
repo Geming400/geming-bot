@@ -19,6 +19,11 @@ __all__ = [
 
 CONFIG: Final[Config] = Config()
 
+INTEGRATION_TYPES: Final[set[discord.IntegrationType]] = {
+    discord.IntegrationType.guild_install,
+    discord.IntegrationType.user_install,
+}
+
 def preloadModel(model: str):
     Loggers.aiLogger.info(f"Preloading model {model}")
     ollama.generate(model, keep_alive=CONFIG.getKeepAlive())
