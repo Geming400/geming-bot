@@ -80,8 +80,7 @@ class MainBot(commands.Cog):
 
     @discord.slash_command(
         name="sex",
-        description="Why.",
-        integration_type=INTEGRATION_TYPES
+        description="Why."
         )
     @discord.option(
         "user",
