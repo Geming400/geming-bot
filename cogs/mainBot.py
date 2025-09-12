@@ -8,7 +8,7 @@ import httpx
 
 from utils import utils
 from utils.Loggers import Loggers
-from utils.utils import CONFIG
+from utils.utils import CONFIG, INTEGRATION_TYPES
 
 
 Context = discord.ApplicationContext
@@ -28,7 +28,11 @@ class MainBot(commands.Cog):
     def __init__(self, bot: discord.Bot):
         self.bot = bot
     
-    @discord.slash_command(name="dyrs", description="Get dyrs' personnal infos ! (for free)")
+    @discord.slash_command(
+        name="dyrs",
+        description="Get dyrs' personnal infos ! (for free)",
+        integration_type=INTEGRATION_TYPES
+    )
     async def dyrsInfos(self, ctx: Context):
         responses: tuple[str, ...] = (
             "Dyrs' real name is `Dylan`",
@@ -63,24 +67,37 @@ class MainBot(commands.Cog):
         else:
             await ctx.respond(random.choice(responses))
 
-    @discord.slash_command(name="anton", description="idk what this means, ask dyrs")
+    @discord.slash_command(
+        name="anton",
+        description="idk what this means, ask dyrs",
+        integration_type=INTEGRATION_TYPES
+        )
     async def anton(self, ctx: Context):
         if random.randint(0, 100) == 10:
             ctx.respond("https://tenor.com/view/anton-alert-r74n-gif-7263058800090359550")
         else:
             ctx.respond("anton.")
 
-    @discord.slash_command(name="sex", description="Why.")
+    @discord.slash_command(
+        name="sex",
+        description="Why.",
+        integration_type=INTEGRATION_TYPES
+        )
     @discord.option(
         "user",
         discord.User,
         description="Why..."
     )
+    
     async def sex(ctx: Context, user: discord.User):
         await ctx.respond("https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=68a98ee4&is=68a83d64&hm=85b8d19ac042233ff7ee14ced7e7abeed292cef893a58fa284a5624e7081f7aa&")
 
 
-    @discord.slash_command(name="linux-icbm", description="Linus torvalds' own ICBM, that's it")
+    @discord.slash_command(
+        name="linux-icbm",
+        description="Linus torvalds' own ICBM, that's it",
+        integration_type=INTEGRATION_TYPES
+        )
     @discord.option(
         "user",
         discord.User,
@@ -99,7 +116,11 @@ class MainBot(commands.Cog):
         await asyncio.sleep(3)
         await ctx.edit(content="https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=68a98ee4&is=68a83d64&hm=85b8d19ac042233ff7ee14ced7e7abeed292cef893a58fa284a5624e7081f7aa&")
 
-    @discord.slash_command(name="reload-configs", description="Reload the config files")
+    @discord.slash_command(
+        name="reload-configs",
+        description="Reload the config files",
+        integration_type=INTEGRATION_TYPES
+        )
     async def reloadConfigs(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-configs", reason="Isn't owner")
@@ -111,7 +132,11 @@ class MainBot(commands.Cog):
         aiHandler.systemPrompt = CONFIG.getSystemPrompt()
         await ctx.respond("Reloaded configs !", ephemeral=True)
         
-    @discord.slash_command(name="help", description="Get every commands you can access")
+    @discord.slash_command(
+        name="help",
+        description="Get every commands you can access",
+        integration_type=INTEGRATION_TYPES
+        )
     async def helpCmd(self, ctx: Context):
         cmds = []
         ret = ""
@@ -152,9 +177,13 @@ class MainBot(commands.Cog):
         await ctx.respond(embed=discord.Embed(
             title="Help",
             description=ret
-            ))
+            ), ephemeral=not ctx.can_send())
     
-    @discord.slash_command(name="get-role", description="Get's the role of someone (gemingbot role)")
+    @discord.slash_command(
+        name="get-role",
+        description="Get's the role of someone (gemingbot role)",
+        integration_type=INTEGRATION_TYPES
+        )
     @discord.option(
         name="user",
         input_type=discord.User,
@@ -175,7 +204,7 @@ class MainBot(commands.Cog):
             usrRole = f"It's literally a bot, what did you expect {ctx.author.display_name} ?"
         
         await ctx.respond(embed=discord.Embed(
-            title=f"{user.display_name}'s role",
+            title=f"{user.name}'s role",
             description=f"{user.mention}'s role is **`{usrRole}`**",
             footer=discord.EmbedFooter(user.display_name, user.display_avatar.url)
         ), allowed_mentions = discord.AllowedMentions.none())

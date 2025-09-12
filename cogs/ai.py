@@ -10,7 +10,7 @@ import psutil
 import utils.utils as utils
 from utils.Loggers import Loggers
 from utils.AiHandler import AiHandler
-from utils.utils import CONFIG
+from utils.utils import CONFIG, INTEGRATION_TYPES
 
 
 Context = discord.ApplicationContext
@@ -27,7 +27,11 @@ class AiUtils(commands.Cog):
         models: list[str] = [model["model"] for model in ollama.list().model_dump()["models"]]
         return models
 
-    @discord.slash_command(name="ai-set-ping-reply", description="Enables or disables ping reply for the ai")
+    @discord.slash_command(
+        name="ai-set-ping-reply",
+        description="Enables or disables ping reply for the ai",
+        integration_type=INTEGRATION_TYPES
+    )
     @discord.option(
         name="ping-reply",
         input_type=bool
@@ -48,7 +52,11 @@ class AiUtils(commands.Cog):
         
         await ctx.respond(f"Set `ping-reply` from `{oldAiPingReply}` to `{ping_reply}`", ephemeral=True)
     
-    @discord.slash_command(name="set-model", description="Sets the current model to use for the ai")
+    @discord.slash_command(
+        name="set-model",
+        description="Sets the current model to use for the ai",
+        integration_type=INTEGRATION_TYPES
+    )
     @discord.option(
         name="model",
         input_type=str,
@@ -76,7 +84,11 @@ class AiUtils(commands.Cog):
         
         await ctx.edit(content=f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`\n-# Preloaded model !")
     
-    @discord.slash_command(name="ai-system-prompt", description="Get the system prompt of geming bot")
+    @discord.slash_command(
+        name="ai-system-prompt",
+        description="Get the system prompt of geming bot",
+        integration_type=INTEGRATION_TYPES
+        )
     async def fetchSystemPrompt(self, ctx: Context):
         if not CONFIG.isTrusted(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-system-prompt", reason="Isn't trusted")
@@ -102,7 +114,11 @@ class AiUtils(commands.Cog):
             allowed_mentions=discord.AllowedMentions.none()
             )
     
-    @discord.slash_command(name="get-memory", description="Gets the ai's memory, if not channel is provided, we will get the memory if this channel")
+    @discord.slash_command(
+        name="get-memory",
+        description="Gets the ai's memory, if not channel is provided, we will get the memory if this channel",
+        integration_type=INTEGRATION_TYPES
+        )
     @discord.option(
         name="channel",
         input_type=discord.abc.GuildChannel,
@@ -157,7 +173,11 @@ class AiUtils(commands.Cog):
             await fromChannel(ctx.channel_id)
         
 
-    @discord.slash_command(name="flush", description="Flushes tjc's smart toilet :3   (Clears the ai's memory)")
+    @discord.slash_command(
+        name="flush",
+        description="Flushes tjc's smart toilet :3   (Clears the ai's memory)",
+        integration_type=INTEGRATION_TYPES
+    )
     async def flushAI(self, ctx: Context):
         # if not CONFIG.isTrusted(ctx.author.id):
         #     utils.logNoAuthorization(ctx, Loggers.logger, name="/flushAI", reason="Isn't trusted")
@@ -168,7 +188,11 @@ class AiUtils(commands.Cog):
         Loggers.aiLogger.info(f"Flushed ai's memory for channel ID {ctx.channel_id} for user {ctx.author.name} ({ctx.author.id})")
         await ctx.respond("Flushed tjc's smart toilet !")
         
-    @discord.slash_command(name="global-flush", description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)")
+    @discord.slash_command(
+        name="global-flush",
+        description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)",
+        integration_type=INTEGRATION_TYPES
+        )
     async def flushAIGlobally(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/global-flush", reason="Isn't owner")
@@ -180,7 +204,11 @@ class AiUtils(commands.Cog):
         print("CONFIG.storage.aiPingReply == discord.AllowedMentions.none() =", CONFIG.storage.aiPingReply == discord.AllowedMentions.none())
         await ctx.respond("Flushed every human's smart toilet !")
 
-    @discord.slash_command(name="ai-kill", description="Kill the AI processes")
+    @discord.slash_command(
+        name="ai-kill",
+        description="Kill the AI processes",
+        integration_type=INTEGRATION_TYPES
+        )
     async def killAI(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-kill", reason="Isn't owner")
@@ -251,7 +279,11 @@ class BotAI(commands.Cog):
                     
                     raise e
     
-    @discord.slash_command(name="ai", description="Ask stuff to an ai model and get an answer in probably 7 minutes")
+    @discord.slash_command(
+        name="ai",
+        description="Ask stuff to an ai model and get an answer in probably 7 minutes",
+        integration_type=INTEGRATION_TYPES
+    )
     @discord.option(
         name="prompt",
         input_type=str,
