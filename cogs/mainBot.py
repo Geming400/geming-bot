@@ -78,19 +78,6 @@ class MainBot(commands.Cog):
         else:
             ctx.respond("anton.")
 
-    @discord.slash_command(
-        name="sex",
-        description="Why."
-        )
-    @discord.option(
-        "user",
-        discord.User,
-        description="Why..."
-    )
-    
-    async def sex(self, ctx: Context, user: discord.User):
-        await ctx.respond("https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=68a98ee4&is=68a83d64&hm=85b8d19ac042233ff7ee14ced7e7abeed292cef893a58fa284a5624e7081f7aa&")
-
 
     @discord.slash_command(
         name="linux-icbm",
