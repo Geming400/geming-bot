@@ -14,7 +14,8 @@ __all__ = [
     "formatAiMessages",
     "removeThinkTag",
     "createErrorEmbed",
-    "CONFIG"
+    "CONFIG",
+    "INTEGRATION_TYPES"
 ]
 
 CONFIG: Final[Config] = Config()
@@ -22,11 +23,6 @@ CONFIG: Final[Config] = Config()
 INTEGRATION_TYPES: Final[set[discord.IntegrationType]] = {
     discord.IntegrationType.guild_install,
     discord.IntegrationType.user_install,
-}
-CONTEXTS: Final[set[discord.InteractionContextType]] = {
-    discord.InteractionContextType.bot_dm,
-    discord.InteractionContextType.guild,
-    discord.InteractionContextType.private_channel
 }
 
 def preloadModel(model: str):

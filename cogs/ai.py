@@ -10,7 +10,7 @@ import psutil
 import utils.utils as utils
 from utils.Loggers import Loggers
 from utils.AiHandler import AiHandler
-from utils.utils import CONFIG, INTEGRATION_TYPES, CONTEXTS
+from utils.utils import CONFIG, INTEGRATION_TYPES
 
 
 Context = discord.ApplicationContext
@@ -30,8 +30,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="ai-set-ping-reply",
         description="Enables or disables ping reply for the ai",
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
+        integration_type=INTEGRATION_TYPES
     )
     @discord.option(
         name="ping-reply",
@@ -56,8 +55,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="set-model",
         description="Sets the current model to use for the ai",
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
+        integration_type=INTEGRATION_TYPES
     )
     @discord.option(
         name="model",
@@ -119,8 +117,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="get-memory",
         description="Gets the ai's memory, if no channel is provided, we'll get the memory if this channel",
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
+        integration_type=INTEGRATION_TYPES
         )
     @discord.option(
         name="channel",
@@ -179,8 +176,7 @@ class AiUtils(commands.Cog):
     @discord.slash_command(
         name="flush",
         description="Flushes tjc's smart toilet :3   (Clears the ai's memory)",
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
+        integration_type=INTEGRATION_TYPES
     )
     async def flushAI(self, ctx: Context):
         # if not CONFIG.isTrusted(ctx.author.id):
@@ -286,8 +282,7 @@ class BotAI(commands.Cog):
     @discord.slash_command(
         name="ai",
         description="Ask stuff to an ai model and get an answer in probably 7 minutes",
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
+        integration_type=INTEGRATION_TYPES
     )
     @discord.option(
         name="prompt",

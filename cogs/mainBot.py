@@ -8,7 +8,7 @@ import httpx
 
 from utils import utils
 from utils.Loggers import Loggers
-from utils.utils import CONFIG, CONTEXTS, INTEGRATION_TYPES
+from utils.utils import CONFIG, INTEGRATION_TYPES
 
 
 Context = discord.ApplicationContext
@@ -31,8 +31,7 @@ class MainBot(commands.Cog):
     @discord.slash_command(
         name="dyrs",
         description="Get dyrs' personnal infos ! (for free)",
-        integration_type=INTEGRATION_TYPES,
-        context=CONTEXTS
+        integration_type=INTEGRATION_TYPES
     )
     async def dyrsInfos(self, ctx: Context):
         responses: tuple[str, ...] = (
