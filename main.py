@@ -20,9 +20,9 @@ tempfile.tempdir = "./tempdir/"
 Path(os.path.dirname(tempfile.tempdir)).mkdir(parents=True, exist_ok=True)
 
 bot = discord.Bot()
-bot.debug_guilds = [
+"""bot.debug_guilds = [
     1316947105796984842
-]
+]"""
 
 cogs_list: list[str] = [
     "mainBot",
