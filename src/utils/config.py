@@ -5,7 +5,7 @@ from jsonc_parser.parser import JsoncParser
 import dotenv
 import discord
 
-import SharedStorage
+from utils.SharedStorage import SharedStorage
 
 
 dotenv.load_dotenv(".env")
@@ -34,7 +34,7 @@ class Config(metaclass=Singleton):
         
         self.loadConfigFile()
         
-        self._storage = SharedStorage.SharedStorage(self)
+        self._storage = SharedStorage(self)
         
     @property
     def storage(self): return self._storage
@@ -58,10 +58,10 @@ class Config(metaclass=Singleton):
     @functools.lru_cache
     def getSystemPrompt(self) -> str:
         if self.content["ai"].get("is-system-prompt-file", False):
-            with open(self.content["ai"]["ai-system-prompt"]) as f:
+            with open(self.content["ai"]["system-prompt"]) as f:
                 return f.read()
         else:
-            return self.content.get("ai-system-prompt", "")
+            return self.content.get("system-prompt", "")
         
     def getOwner(self) -> int:
         return self.content["permissions"]["owner-userID"]
@@ -76,3 +76,6 @@ class Config(metaclass=Singleton):
     
     def isTrusted(self, userID: int) -> bool:
         return userID in self.getTrustedUsers()
+    
+    def getDbPath(self) -> str:
+        return self.content["db"]["path"]
