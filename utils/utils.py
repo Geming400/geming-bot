@@ -28,10 +28,12 @@ INTEGRATION_TYPES: Final[set[discord.IntegrationType]] = {
 def preloadModel(model: str):
     Loggers.aiLogger.info(f"Preloading model {model}")
     ollama.generate(model, keep_alive=CONFIG.getKeepAlive())
+    Loggers.aiLogger.info(f"Preloaded model {model}")
     
 async def preloadModelAsync(model: str):
     Loggers.aiLogger.info(f"Preloading model {model} (async)")
     await ollama.AsyncClient().generate(model, keep_alive=CONFIG.getKeepAlive())
+    Loggers.aiLogger.info(f"Preloaded model {model} (async)")
     
 def logNoAuthorization(ctx: discord.ApplicationContext, logger: logging.Logger, cmdname: Optional[str] = None, reason: Optional[str] = None, stacklevel = 2):
     funcName = logger.findCaller(stacklevel=stacklevel)[2]
