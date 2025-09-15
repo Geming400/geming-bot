@@ -18,10 +18,10 @@ aiHandler = CONFIG.storage.aiHandler
 
 
 @functools.lru_cache
-def getTjcsIp():
+async def getTjcsIp():
     Loggers.logger.debug("Cached tjc's ip")
     
-    tjcsIp = httpx.Client().get("https://tjcsucht.net/api/ip")
+    tjcsIp = await httpx.AsyncClient().get("https://tjcsucht.net/api/ip")
     return tjcsIp.text
 
 class MainBot(commands.Cog):
@@ -94,7 +94,7 @@ class MainBot(commands.Cog):
         
         try:
             await asyncio.sleep(5)
-            await ctx.edit(content=f"Done! User's ip is `{getTjcsIp()}`. Sending linus torvalds ICBM...")
+            await ctx.edit(content=f"Done! User's ip is `{await getTjcsIp()}`. Sending linus torvalds ICBM...")
         except:
             await ctx.respond(f"Finding {user.mention}'s location...")
             await asyncio.sleep(5)
@@ -185,9 +185,9 @@ class MainBot(commands.Cog):
         elif CONFIG.isTrusted(user.id):
             usrRole = "trusted"
         elif user.id == 1204083604636827688:
-            usrRole = "cao :333 Mrreow >w<"
+            usrRole = f"cao :333 Mrreow >w< (trusted)"
         elif user.id == 729671931359395940:
-            usrRole = "Popcorn? He's literally food :3"
+            usrRole = f"Popcorn? He's literally food :3 (trusted)"
         elif user.bot:
             usrRole = f"It's literally a bot, what did you expect {ctx.author.display_name} ?"
         
