@@ -50,24 +50,24 @@ class Config(metaclass=Singleton):
         return self.content["log-path"]
     
     def getDefaultModel(self) -> Optional[str]:
-        return self.content.get("default-model")
+        return self.content["ai"].get("default-model")
     
     def getKeepAlive(self) -> int:
-        return self.content.get("keep-alive", 60*5) # default ollama value
+        return self.content["ai"].get("keep-alive", 60*5) # default ollama value
     
     @functools.lru_cache
     def getSystemPrompt(self) -> str:
-        if self.content.get("is-system-prompt-file", False):
-            with open(self.content["ai-system-prompt"]) as f:
+        if self.content["ai"].get("is-system-prompt-file", False):
+            with open(self.content["ai"]["ai-system-prompt"]) as f:
                 return f.read()
         else:
             return self.content.get("ai-system-prompt", "")
         
     def getOwner(self) -> int:
-        return self.content["owner-userID"]
+        return self.content["permissions"]["owner-userID"]
     
     def getTrustedUsers(self) -> list[int]:
-        users: list[int] = self.content.get("trusted-userIDs", [])
+        users: list[int] = self.content["permissions"].get("trusted-userIDs", [])
         users.append(self.getOwner())
         return users
 
