@@ -7,7 +7,8 @@
         1045761412489809975, // tjc
         998995432132853891, // dermuk
         1072494833777782805, // bonzai,
-        1015031565950140457 // Fooy
+        1015031565950140457, // Fooy
+        1204083604636827688 // Cao :3
     ],
     "ai-system-prompt": "./ai/system-prompt.txt",
     "is-system-prompt-file": true,
