@@ -16,7 +16,7 @@ sys.excepthook = exceptHook
 
 dotenv.load_dotenv(".env")
 
-tempfile.tempdir = "./tempdir/"
+tempfile.tempdir = "../tempdir/"
 Path(os.path.dirname(tempfile.tempdir)).mkdir(parents=True, exist_ok=True)
 
 bot = discord.Bot()

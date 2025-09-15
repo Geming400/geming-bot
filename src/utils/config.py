@@ -5,7 +5,7 @@ from jsonc_parser.parser import JsoncParser
 import dotenv
 import discord
 
-from utils import SharedStorage
+import SharedStorage
 
 
 dotenv.load_dotenv(".env")
