@@ -23,7 +23,7 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-# TODO: make the singleton work across different modules
+
 class Config(metaclass=Singleton):
     file: str
     content: dict[str, Any]
