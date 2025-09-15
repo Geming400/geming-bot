@@ -21,12 +21,16 @@ def exceptHook(excT: type[BaseException], exc: BaseException, traceback):
 def sigIntHandler(sig: int, frame: Optional[FrameType]):
     Loggers.logger.info("--- Now exiting ---")
     
-    Loggers.logger.info("Closing db connection")
-    CONFIG.storage.db.connection.close()
-    
-    Loggers.logger.info("Closing discord connection")
-    asyncio.create_task(bot.close()) # we cannot use `asyncio.run(bot.close())` here,
-                                     # since "This event loop is already running"
+    try:
+        Loggers.logger.info("Closing db connection")
+        CONFIG.storage.db.connection.close()
+        
+        Loggers.logger.info("Closing discord connection")
+        asyncio.create_task(bot.close()) # we cannot use `asyncio.run(bot.close())` here,
+                                        # since "This event loop is already running"
+    except Exception as e:
+        Loggers.logger.exception(f"Caught an error while trying to exit: {e}")
+        Loggers.logger.info("Ignoring and now exiting")
     
     Loggers.logger.info("Exiting")
     sys.exit(0)
