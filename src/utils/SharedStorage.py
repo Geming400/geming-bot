@@ -1,13 +1,59 @@
-from typing import TYPE_CHECKING, Literal, Optional, Type, TypeVar, cast
+import functools
+import os
+from pathlib import Path
+from typing import TYPE_CHECKING, Optional, Type, TypeVar, cast
+import sqlite3
 
 import discord
 
+__all__ = [
+    "SharedStorage"
+]
 
 T = TypeVar('T', default=object)
 
 if TYPE_CHECKING:
     import utils.AiHandler as AiHandler
     import utils.config as _config
+
+
+class _Db:
+    """A class to manage the database, it's part of the `SharedStorage`
+    """
+    
+    dbPath: str
+    _connection: Optional[sqlite3.Connection]
+    
+    def __init__(self, dbPath: str) -> None:
+        self.dbPath = dbPath
+        self._connection = None
+        
+        print(f"Creating path {os.path.dirname(dbPath)} if it doesn't exist")
+        Path(os.path.dirname(dbPath)).mkdir(parents=True, exist_ok=True)
+    
+    @property
+    def connection(self) -> sqlite3.Connection:
+        if self._connection: return self._connection
+        
+        try:
+            self._connection = sqlite3.connect(self.dbPath)
+            return self._connection
+        except sqlite3.OperationalError as e:
+            print(f"Failed to open db: {e}")
+            print("If the db wasn't created yet, you might need to relaunch the bot")
+            raise e
+
+    @functools.cached_property
+    def cursor(self) -> sqlite3.Cursor:
+        return self.connection.cursor()
+    
+    def checkIfDbExists(self):
+        try:
+            self.connection
+            return True
+        except:
+            return False
+    
 
 class SharedStorage:
     """A shared storage
@@ -22,6 +68,7 @@ class SharedStorage:
     _aiHandler: Optional["AiHandler.AiHandler"]
     currentModel: str
     aiPingReply: discord.AllowedMentions
+    db: _Db
     
     # -- custom members --
     
@@ -34,8 +81,10 @@ class SharedStorage:
         self._aiHandler = None
         self.currentModel = self.config.getDefaultModel() or "hermes3"
         self.aiPingReply = discord.AllowedMentions.none()
+        self.db = _Db(self.config.getDbPath())
         
         # -- custom members --
+    
     
     # -- custom members --
     
