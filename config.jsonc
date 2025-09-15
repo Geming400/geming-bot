@@ -16,5 +16,8 @@
             1204083604636827688 // Cao :3
         ]
     },
+    "db": {
+        "path": "./db/gemingbot.db"
+    },
     "log-path": "./logs/"
 }
