@@ -59,7 +59,7 @@ def createErrorEmbed(description: Optional[str] = None):
     """Creates an error embed
     """
     
-    username = os.getenv("USERNAME")
+    username = os.getenv("USERNAME") # Just in case
     if username and description:
         description = description.replace(username, "")
     
