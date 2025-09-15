@@ -11,7 +11,7 @@ import sys
 
 def exceptHook(excT: type[BaseException], exc: BaseException, traceback):
     Loggers.logger.exception(f"Exception catched in 'exceptHook' {exc}")
-    
+
 sys.excepthook = exceptHook
 
 dotenv.load_dotenv(".env")
@@ -93,4 +93,3 @@ for cog in cogs_list:
 
 bot.activity = discord.Activity(type=discord.ActivityType.watching, name="geming turning into a transbian furry")
 bot.run(os.getenv("TOKEN"))
-

@@ -222,10 +222,11 @@ class AiUtils(commands.Cog):
                 if os.name == "posix":
                     os.system("pkill ollama")
                 else:
-                    os.system("taskkill /F /IM ollama.exe")
+                    os.system("taskkill /F /IM ollama.exe") # for some reason, it only kills the running ai, not `ollama.exe`
                 
                 await ctx.respond("Killed `ollama` process (if it was running)", ephemeral=True)
                 return
+        await ctx.respond("The `ollama` process wasn't running", ephemeral=True)
         
 class BotAI(commands.Cog):
     def __init__(self, bot: discord.Bot):
@@ -237,7 +238,7 @@ class BotAI(commands.Cog):
             async with message.channel.typing():
                 try:
                     if not aiHandler.isModelPreloaded(CONFIG.storage.currentModel):
-                        utils.preloadModel(CONFIG.storage.currentModel)
+                        await utils.preloadModelAsync(CONFIG.storage.currentModel)
                 
                     Loggers.aiLogger.debug("Adding user's prompt to memory")
                     
@@ -265,13 +266,13 @@ class BotAI(commands.Cog):
                         
                         tmpfile._closer.cleanup()
                     else:
-                        await message.reply(content=content or "**[no response]**", allowed_mentions=CONFIG.storage.aiPingReply)
+                        await message.reply(content=content or "**[no response]**", allowed_mentions=CONFIG.storage.aiPingReply if message.author.bot else None)
                         
                     if content:
                         Loggers.aiLogger.debug("Adding ai's response to memory")
                         aiHandler.addMessage(AiHandler.Role.ASSISTANT, content, message.channel.id)
                 except ConnectionError:
-                    await message.reply(content="`ollama` isn't running, the ai isn't currently avalaible", allowed_mentions=discord.AllowedMentions.none())
+                    await message.reply(content="`ollama` isn't running, the ai isn't currently avalaible")
                 except Exception as e:
                     await message.reply(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
                     await message.add_reaction("⚠️")
@@ -311,7 +312,7 @@ class BotAI(commands.Cog):
         
         try:
             if not aiHandler.isModelPreloaded(CONFIG.storage.currentModel):
-                utils.preloadModel(model)
+                await utils.preloadModelAsync(model)
                 await ctx.edit(content=f"Asking ai...\n-# using preloaded model `{model}`")
                 
         
@@ -337,7 +338,7 @@ class BotAI(commands.Cog):
                 
                 tmpfile._closer.cleanup()
             else:
-                await ctx.edit(content=content or "**[no response]**", allowed_mentions=CONFIG.storage.aiPingReply)
+                await ctx.edit(content=content or "**[no response]**", allowed_mentions=CONFIG.storage.aiPingReply if ctx.author.bot else None)
                 
             if content:
                 Loggers.aiLogger.debug("Adding ai's response to memory")
