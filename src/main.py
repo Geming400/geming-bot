@@ -1,6 +1,8 @@
+import asyncio
 from pathlib import Path
 import tempfile
-from typing import cast
+from types import FrameType
+from typing import Optional, cast
 import dotenv
 import discord
 import os
@@ -8,11 +10,30 @@ from utils import utils
 from utils.Loggers import Loggers
 from utils.utils import CONFIG, INTEGRATION_TYPES
 import sys
+import signal
+
+
+# hooks
 
 def exceptHook(excT: type[BaseException], exc: BaseException, traceback):
     Loggers.logger.exception(f"Exception catched in 'exceptHook' {exc}")
 
+def sigIntHandler(sig: int, frame: Optional[FrameType]):
+    Loggers.logger.info("--- Now exiting ---")
+    
+    Loggers.logger.info("Closing db connection")
+    CONFIG.storage.db.connection.close()
+    
+    Loggers.logger.info("Closing discord connection")
+    asyncio.create_task(bot.close()) # we cannot use `asyncio.run(bot.close())` here,
+                                     # since "This event loop is already running"
+    
+    Loggers.logger.info("Exiting")
+    sys.exit(0)
+
 sys.excepthook = exceptHook
+h = signal.signal(signal.SIGINT, sigIntHandler)
+
 
 dotenv.load_dotenv(".env")
 
@@ -83,13 +104,20 @@ async def on_ready():
 
 @bot.event
 async def on_application_command_error(ctx: discord.ApplicationContext, error: discord.DiscordException):
-    await ctx.respond(utils.createErrorEmbed(str(error)), ephemeral=True)
+    #await ctx.respond(embed=utils.createErrorEmbed(str(error)), ephemeral=True)
     Loggers.logger.exception(f"Handling exception from `on_application_command_error` {error}")
     raise error
 
 for cog in cogs_list:
     bot.load_extension(f'cogs.{cog}')
     Loggers.logger.debug(f"Loaded cog '{cog}'")
+
+
+Loggers.logger.info("Checking if DB exists")
+if CONFIG.storage.db.checkIfDbExists():
+    Loggers.logger.info("Db exists !")
+else:
+    Loggers.logger.info("Db doesn't exists ! It now got created")
 
 bot.activity = discord.Activity(type=discord.ActivityType.watching, name="geming turning into a transbian furry")
 bot.run(os.getenv("TOKEN"))
