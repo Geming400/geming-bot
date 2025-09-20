@@ -6,7 +6,7 @@ from typing import Optional
 import dotenv
 import os
 from utils.Loggers import Loggers
-from utils.db.ServerProfile import ServerProfile
+from utils.db.Profiles import GuildProfile
 from utils.utils import CONFIG
 import sys
 import signal
@@ -65,7 +65,7 @@ else:
         sys.exit(1)
 
 async def test():
-    h = await ServerProfile.createOrGet(12345)
+    h = await GuildProfile.createOrGet(12345)
     perms = await h.getPermissions()
     perms.ai = True
     await perms.save()
