@@ -7,6 +7,7 @@ import tempfile
 from ollama import AsyncClient
 import ollama
 import psutil
+from utils.db import Profiles
 import utils.utils as utils
 from utils.Loggers import Loggers
 from utils.AiHandler import AiHandler
@@ -121,7 +122,7 @@ class AiUtils(commands.Cog):
         )
     @discord.option(
         name="channel",
-        input_type=discord.abc.GuildChannel,
+        input_type=discord.TextChannel,
         description="The channel to check for",
         required=False
     )
@@ -131,7 +132,7 @@ class AiUtils(commands.Cog):
         description="The channel ID to check for",
         required=False
     )
-    async def getAiMemory(self, ctx: Context, channel: Optional[discord.abc.GuildChannel], channel_id: Optional[str]):
+    async def getAiMemory(self, ctx: Context, channel: Optional[discord.TextChannel], channel_id: Optional[str]):
         async def fromChannel(channelID: int):
             if aiHandler.messages.get(channelID):
                 tmpfile = tempfile.TemporaryFile(delete_on_close=False)
@@ -235,10 +236,27 @@ class BotAI(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if self.bot.user in message.mentions:
+            channelID = cast(int, message.channel.id)
+            
+            # If we don't send any messages it's to prevent flooding the current chat
+            # as we cannot send ephemeral messages with `discord.Message.reply()`
+            guildPerms = await Profiles.getGuildPermissionProfile(channelID)
+            if not guildPerms.isAiEnabledGlobally():
+                # await message.reply(content="Sorry, but geming bot's ai has **been disabled on this server** !", ephemeral=True)
+                await message.add_reaction("❌")
+                return
+            
+            if not guildPerms.isChannelAuthorized(channelID):
+                # await message.reply("Sorry, but geming bot's ai is **not enabled on this channel** !", ephemeral=True)
+                await message.add_reaction("❌")
+                return
+            
             async with message.channel.typing():
                 try:
                     if not aiHandler.isModelPreloaded(CONFIG.storage.currentModel):
+                        await message.add_reaction("🔄️")
                         await utils.preloadModelAsync(CONFIG.storage.currentModel)
+                        await message.remove_reaction("🔄️", cast(discord.ClientUser, self.bot.user))
                 
                     Loggers.aiLogger.debug("Adding user's prompt to memory")
                     
@@ -303,10 +321,18 @@ class BotAI(commands.Cog):
         #     await ctx.respond("No (not for the moment at least) :3", ephemeral=True)
         #     return
         
-        if model == None: model = CONFIG.storage.currentModel
         
-        Loggers.aiLogger.debug("ai test")
-        print("ai test")
+        guildPerms = await Profiles.getGuildPermissionProfile(cast(int, ctx.guild_id))
+        if not guildPerms.isAiEnabledGlobally():
+            await ctx.respond("Sorry, but geming bot's ai has **been disabled on this server** !", ephemeral=True)
+            return
+        
+        if not guildPerms.isChannelAuthorized(ctx.channel_id):
+            await ctx.respond("Sorry, but geming bot's ai is **not enabled on this channel** !", ephemeral=True)
+            return
+        
+        
+        if model == None: model = CONFIG.storage.currentModel
         
         await ctx.respond(f"Asking ai...\n-# using model `{model}`")
         
