@@ -66,6 +66,7 @@ bot = discord.Bot()
 
 cogs_list: list[str] = [
     "mainBot",
+    "permissions",
     "ai"
 ]
 
@@ -80,8 +81,7 @@ async def reloadCogs(ctx: discord.ApplicationContext):
         await ctx.respond("No :3", ephemeral=True)
         return
     
-    h: discord.Interaction | discord.WebhookMessage = await ctx.respond("Reloading cogs", ephemeral=True)
-    print("msg id", h.id)
+    await ctx.respond("Reloading cogs", ephemeral=True)
     
     reloadedCogs: list[str] = []
     numCogsError = 0
