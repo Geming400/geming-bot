@@ -1,7 +1,7 @@
-import functools
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Type, TypeVar, cast
+import aiosqlite
 import sqlite3
 
 import discord
@@ -22,37 +22,56 @@ class _Db:
     """
     
     dbPath: str
-    _connection: Optional[sqlite3.Connection]
+    _connection: Optional[aiosqlite.Connection]
     
     def __init__(self, dbPath: str) -> None:
         self.dbPath = dbPath
         self._connection = None
         
-        print(f"Creating path {os.path.dirname(dbPath)} if it doesn't exist")
         Path(os.path.dirname(dbPath)).mkdir(parents=True, exist_ok=True)
     
-    @property
-    def connection(self) -> sqlite3.Connection:
-        if self._connection: return self._connection
+    async def connect(self) -> aiosqlite.Connection:
+        if self._connection != None: return self._connection
         
         try:
-            self._connection = sqlite3.connect(self.dbPath)
+            self._createDbFile()
+            self._connection = await aiosqlite.connect(self.dbPath)
             return self._connection
-        except sqlite3.OperationalError as e:
+        except aiosqlite.OperationalError as e:
             print(f"Failed to open db: {e}")
             print("If the db wasn't created yet, you might need to relaunch the bot")
             raise e
 
-    @functools.cached_property
-    def cursor(self) -> sqlite3.Cursor:
-        return self.connection.cursor()
+    async def close(self):
+        if self._connection: await self._connection.close()
     
-    def checkIfDbExists(self):
-        try:
-            self.connection
-            return True
-        except:
-            return False
+    def _createDbFile(self):
+        connection = sqlite3.connect(self.dbPath)
+        connection.close()
+    
+    @property
+    def exists(self) -> bool:
+        return os.path.exists(self.dbPath)
+    
+    async def initDB(self):
+        """Inits the db, aka, create the tables and stuff
+        """
+        conn = await self.connect() # creating the db
+
+        currentFolder = Path(__file__).parent.resolve()
+        path = currentFolder.parent / "db-init"
+        
+        items = os.scandir(path.absolute())
+        for item in items:
+            if item.is_file() and Path(item.path).suffix == ".sql":
+                print(f"Executing sql file {item.path}")
+                cur = await conn.executescript(open(item.path).read())
+                await cur.close()
+        
+        print(f"Commiting")
+        await conn.commit()
+    
+
     
 
 class SharedStorage:
@@ -116,4 +135,6 @@ class SharedStorage:
         return cast(T, self.storage[name] or type(_type)())
     
     def reload(self):
+        """Reload the storage, this will get called in `Config.reloadConfigs()`
+        """
         self.aiHandler.systemPrompt = self.config.getSystemPrompt()
