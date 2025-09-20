@@ -47,7 +47,7 @@ class Profile(Generic[T]):
             When overriding, you **must parse the `row` arg** according to the **db's table**
 
         Args:
-            row: The row
+            row: The row to parse
         """
         ...
     

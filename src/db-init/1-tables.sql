@@ -1,29 +1,29 @@
-CREATE TABLE servers (
+CREATE TABLE guilds (
     id INTEGER PRIMARY KEY,
-    serverid BIGINT NOT NULL UNIQUE
+    guildid BIGINT NOT NULL UNIQUE
 );
 
-CREATE TABLE server_permissions (
-    serverid BIGINT NOT NULL UNIQUE PRIMARY KEY,
+CREATE TABLE guild_permissions (
+    guildid BIGINT NOT NULL UNIQUE PRIMARY KEY,
     ai BOOLEAN NOT NULL DEFAULT(TRUE),
     ai_channels JSON NOT NULL DEFAULT('[]'),
 
-    FOREIGN KEY(serverid) REFERENCES servers(serverid)
+    FOREIGN KEY(guildid) REFERENCES guilds(guildid)
 );
 
 -- Testing
 
--- INSERT INTO servers(serverid) VALUES(1234);
--- INSERT INTO server_permissions(serverid) VALUES(1234);
+-- INSERT INTO guilds(guildid) VALUES(1234);
+-- INSERT INTO guild_permissions(guildid) VALUES(1234);
 
 
--- UPDATE server_permissions
+-- UPDATE guild_permissions
 -- SET ai_channels = json_insert(
 --     ai_channels,
 --     '$[#]', 55743
 -- )
--- WHERE serverid = 1234;
+-- WHERE guildid = 1234;
 
--- UPDATE server_permissions
+-- UPDATE guild_permissions
 -- SET ai_channels = '[]'
--- WHERE serverid = 10
+-- WHERE guildid = 10
