@@ -70,18 +70,18 @@ class GuildProfile(Profile[int]):
     
     id: int
     guildID: int
-    bannedUsers: list[int]
+    bannedAiUsers: list[int]
     
     def __init__(self, row: Row) -> None:
         self.id = row[0]
         self.guildID = row[1]
-        self.bannedUsers = json.loads(row[2])
+        self.bannedAiUsers = json.loads(row[2])
         super().__init__(row)
     
     @override
     @classmethod
     def default(cls):
-        return cls._default(id=None, guildID=None, bannedUsers=None) # ik it breaks typing, but they will get their real value when needed
+        return cls._default(id=None, guildID=None, bannedAiUsers=None) # ik it breaks typing, but they will get their real value when needed
     
     @classmethod
     async def createOrGet(cls, name: int):
@@ -91,7 +91,7 @@ class GuildProfile(Profile[int]):
     def parseToSql(self, type: SqlParseType) -> str:
         return self._parseToSql(type, (
             ("guildID", self.guildID),
-            ("banned_users", self.bannedUsers)
+            ("banned_users", self.bannedAiUsers)
         ))
     
     @override
@@ -118,7 +118,7 @@ class UserProfile(Profile[int]):
     def __init__(self, row: Row) -> None:
         self.userID = row[0]
         self.role = row[1]
-        self.aiBanned = row[2]
+        self.aiBanned = bool(row[2])
         
         super().__init__(row)
     
