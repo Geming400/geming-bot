@@ -30,24 +30,28 @@ class _Db:
         
         Path(os.path.dirname(dbPath)).mkdir(parents=True, exist_ok=True)
     
-    async def connect(self) -> aiosqlite.Connection:
-        if self._connection != None: return self._connection
+    def connect(self) -> aiosqlite.Connection:
+        # if self._connection != None: return self._connection
         
-        try:
-            self._createDbFile()
-            self._connection = await aiosqlite.connect(self.dbPath)
-            return self._connection
-        except aiosqlite.OperationalError as e:
-            print(f"Failed to open db: {e}")
-            print("If the db wasn't created yet, you might need to relaunch the bot")
-            raise e
+        # try:
+        #     self._createDbFile()
+        #     self._connection = await aiosqlite.connect(self.dbPath)
+        #     return self._connection
+        # except aiosqlite.OperationalError as e:
+        #     print(f"Failed to open db: {e}")
+        #     print("If the db wasn't created yet, you might need to relaunch the bot")
+        #     raise e
+        
+        self._createDbFile()
+        return aiosqlite.connect(self.dbPath)
 
     async def close(self):
         if self._connection: await self._connection.close()
     
     def _createDbFile(self):
-        connection = sqlite3.connect(self.dbPath)
-        connection.close()
+        if not self.exists:
+            connection = sqlite3.connect(self.dbPath)
+            connection.close()
     
     @property
     def exists(self) -> bool:
@@ -70,6 +74,7 @@ class _Db:
         
         print(f"Commiting")
         await conn.commit()
+        await conn.close()
     
 
     
