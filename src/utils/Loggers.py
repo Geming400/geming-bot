@@ -40,3 +40,4 @@ class Loggers:
     logger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "mainbot")
     aiLogger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "AI")
     permLogger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "permissions")
+    modLogger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "moderation")
