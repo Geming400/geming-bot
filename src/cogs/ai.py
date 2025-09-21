@@ -236,11 +236,12 @@ class BotAI(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if self.bot.user in message.mentions:
+            guildID = cast(discord.Guild, message.guild).id
             channelID = cast(int, message.channel.id)
             
             # If we don't send any messages it's to prevent flooding the current chat
             # as we cannot send ephemeral messages with `discord.Message.reply()`
-            guildPerms = await Profiles.getGuildPermissionProfile(channelID)
+            guildPerms = await Profiles.getGuildPermissionProfile(guildID)
             if not guildPerms.isAiEnabledGlobally():
                 # await message.reply(content="Sorry, but geming bot's ai has **been disabled on this server** !", ephemeral=True)
                 await message.add_reaction("❌")
