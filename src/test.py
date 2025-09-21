@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 from types import FrameType
 from typing import Optional
+import aiosqlite
 import dotenv
 import os
 from utils.Loggers import Loggers
@@ -52,7 +53,7 @@ tempfile.tempdir = "../tempdir/"
 Path(os.path.dirname(tempfile.tempdir)).mkdir(parents=True, exist_ok=True)
 
 Loggers.logger.info("Checking if DB exists")
-if CONFIG.storage.db.dbExists():
+if CONFIG.storage.db.exists:
     Loggers.logger.info("Db exists !")
 else:
     Loggers.logger.info("Db doesn't exists, it'll now get created")
@@ -65,11 +66,18 @@ else:
         sys.exit(1)
 
 async def test():
+    print("In async function")
+    async with aiosqlite.connect(CONFIG.storage.db.dbPath) as conn:
+        j = await conn.execute("SELECT * FROM guilds")
+        await j.close()
+            
     h = await GuildProfile.createOrGet(12345)
     perms = await h.getPermissions()
-    perms.ai = True
-    await perms.save()
-    print("Saved")
+    await asyncio.sleep(1)
+    # perms.ai = True
+    # await perms.save()
+    # print("Saved")
 
 asyncio.run(test())
+print("finished")
 sys.exit(0)
