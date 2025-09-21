@@ -24,6 +24,7 @@ class GuildPermissionsProfile(Profile[int]):
         self.guildID = row[0]
         self.ai = bool(row[1])
         self.aiChannels = json.loads(row[2])
+        super().__init__(row)
     
     @override
     @classmethod
@@ -56,14 +57,12 @@ class GuildPermissionsProfile(Profile[int]):
         Returns:
             If the channel is marked as authorized
         """
+        
         if self.aiChannels == []: return True
         return channelID in self.aiChannels
 
     def isAiEnabledGlobally(self) -> bool:
-        if self.ai:
-            return True
-        
-        return self.aiChannels == []
+        return self.ai
 
 class GuildProfile(Profile[int]):
     _table = "guilds"
@@ -73,6 +72,7 @@ class GuildProfile(Profile[int]):
     
     def __init__(self, row: Row) -> None:
         self.id, self.guildID = row
+        super().__init__(row)
     
     @override
     @classmethod
