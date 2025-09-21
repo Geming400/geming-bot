@@ -198,6 +198,28 @@ class MainBot(commands.Cog):
         ), allowed_mentions = discord.AllowedMentions.none())
         
         
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        async def doReaction(): # We gotta implement the furry femboy stuff :33
+            if message.author.bot: return
+            
+            if ":3" in message.content:
+                await message.add_reaction("<:colonthree:1419334742163329034>")
+            elif "3:" in message.content:
+                await message.add_reaction("<:threecolon:1419343595579637810>")
+            elif ">w<" in message.content or ">ω<" in message.content:
+                await message.add_reaction("<:regional_indicator_cuteface:1419357811237716170>")
+            elif "-w-" in message.content or "-ω-" in message.content:
+                await message.add_reaction("<:regional_indicator_eepingface:1419359420386644228>")
+        
+        if not message.author.bot and random.randint(0, 10) == 5 and not (self.bot.user in message.mentions):
+            await doReaction()
+
+        hasVeryNotFunnyMessage = "ollama isn't running, the ai isn't currently avalaible" in message.content or "`ollama` isn't running, the ai isn't currently avalaible" in message.content
+        if hasVeryNotFunnyMessage and not message.author.bot:
+            await message.reply("Shut up 3:")
+            return
+        
 
 def setup(bot: discord.Bot):
     bot.add_cog(MainBot(bot))
