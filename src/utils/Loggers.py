@@ -39,3 +39,4 @@ def getLogger(logPath: str, level: int, name: str = __name__) -> logging.Logger:
 class Loggers:
     logger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "mainbot")
     aiLogger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "AI")
+    permLogger: Final[logging.Logger] = getLogger(_config.getLogPath(), logging.DEBUG, "permissions")
