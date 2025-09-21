@@ -184,10 +184,15 @@ class MainBot(commands.Cog):
             usrRole = "owner"
         elif CONFIG.isTrusted(user.id):
             usrRole = "trusted"
-        elif user.id == 1204083604636827688:
-            usrRole = f"cao :333 Mrreow >w< (trusted)"
-        elif user.id == 729671931359395940:
-            usrRole = f"Popcorn? He's literally food :3 (trusted)"
+            
+        if user.id == 1204083604636827688: # cao
+            usrRole = f"cao :333 Mrreow >w< ({usrRole})"
+        elif user.id == 782022246284656680: # popcorn
+            usrRole = f"Popcorn? He's literally food :3 ({usrRole})"
+        elif user.id == 1159650088038170635: # lynar
+            usrRole = f"Lynar :333333 mrprp >w< ({usrRole})"
+        elif user.id == 1072494833777782805 or user.id == 1237908486638276802: # bonzai / silly billy (aka gay dudes)
+            usrRole = f"gay role ({usrRole})"
         elif user.bot:
             usrRole = f"It's literally a bot, what did you expect {ctx.author.display_name} ?"
         
