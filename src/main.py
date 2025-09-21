@@ -59,7 +59,7 @@ Path(os.path.dirname(tempfile.tempdir)).mkdir(parents=True, exist_ok=True)
 
 # bot
 
-bot = discord.Bot()
+bot = discord.Bot(owner_id=CONFIG.getOwner())
 """bot.debug_guilds = [
     1316947105796984842
 ]"""
@@ -147,4 +147,22 @@ else:
         
 
 bot.activity = discord.Activity(type=discord.ActivityType.watching, name="geming turning into a transbian furry")
-bot.run(os.getenv("TOKEN"))
+
+TOKEN: str = cast(str, os.getenv("TOKEN"))
+if TOKEN == None:
+    raise TypeError("'TOKEN' env variable has not been set !")
+
+#bot.run(os.getenv("TOKEN"))
+try:
+    loop = asyncio.get_event_loop()
+except:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    loop = asyncio.get_event_loop()
+
+try:
+    loop.run_until_complete(bot.start(TOKEN))
+except KeyboardInterrupt:
+    # loop.run_until_complete(bot.close())
+    ... # the `signal.SIGINT` hook will execute
+finally:
+    loop.close()
