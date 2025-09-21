@@ -184,7 +184,9 @@ class MainBot(commands.Cog):
             usrRole = "owner"
         elif CONFIG.isTrusted(user.id):
             usrRole = "trusted"
-            
+        
+        if user.id == 729671931359395940: # geming
+            usrRole = f"Your local furry transfem lesbian ({usrRole})"
         if user.id == 1204083604636827688: # cao
             usrRole = f"cao :333 Mrreow >w< ({usrRole})"
         elif user.id == 782022246284656680: # popcorn
@@ -194,7 +196,11 @@ class MainBot(commands.Cog):
         elif user.id == 1072494833777782805 or user.id == 1237908486638276802: # bonzai / silly billy (aka gay dudes)
             usrRole = f"gay role ({usrRole})"
         elif user.bot:
-            usrRole = f"It's literally a bot, what did you expect {ctx.author.display_name} ?"
+            if usrRole == cast(discord.ClientUser, self.bot.user).id:
+                usrRole = f"gay af bot"
+            else:
+                usrRole = f"It's literally a bot, what did you expect {ctx.author.display_name} ?"
+            
         
         await ctx.respond(embed=discord.Embed(
             title=f"{user.name}'s role",
