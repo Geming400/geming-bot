@@ -37,11 +37,12 @@ class Profile(Generic[T]):
     """
     
     _table: str # to be overriden
+    _lock: asyncio.Lock
     
     @abc.abstractmethod
     def __init__(self, row: sqlite3.Row) -> None:
         """The init function, must **NOT** be called, use `.createOrGet()` instead.
-        Also, if you are subclassing this class and implementing `.__init__()`, do not call `super().__init__()`, as it will do nothing
+        Also, if you are subclassing this class and implementing `.__init__()`
 
         Note:
             When overriding, you **must parse the `row` arg** according to the **db's table**
@@ -49,7 +50,7 @@ class Profile(Generic[T]):
         Args:
             row: The row to parse
         """
-        ...
+        self._lock = asyncio.Lock()
     
     @classmethod
     def _default(cls, **kwargs) -> Self:
@@ -101,11 +102,10 @@ class Profile(Generic[T]):
         """Creates the current object into the db
         """
         
-        conn = await CONFIG.storage.db.connect()
-        
         query = f"INSERT INTO `{self._table}` " + self.parseToSql(SqlParseType.VALUES_COLUMNS)
-        async with conn.execute(query):
-            await conn.commit()
+        async with CONFIG.storage.db.connect() as conn:
+            async with conn.execute(query):
+                await conn.commit()
     
     @classmethod
     async def _createOrGet(cls, name: T, nameVar: str, column: str = "id") -> Self:
@@ -120,24 +120,24 @@ class Profile(Generic[T]):
             An object of type `Self`
         """
         
-        conn = await CONFIG.storage.db.connect()
-        
         query = f"SELECT * FROM `{cls._table}` WHERE `{column}` = {Profile.sqlObjAsStr(name)}"
-        async with conn.execute(query) as cur:
-            fetchedRow = await cur.fetchone()
-            if fetchedRow:
-                return cls(row=fetchedRow)
+        async with CONFIG.storage.db.connect() as conn:
+            async with conn.execute(query) as cur:
+                fetchedRow = await cur.fetchone()
+                if fetchedRow:
+                    return cls(row=fetchedRow)
         
         inst = cls.default()
         setattr(inst, nameVar, name)
         
         await inst._createToDb()
         
-        # redoing a request because of default values
-        async with conn.execute(query) as cur:
-            fetchedRow = await cur.fetchone()
-            if fetchedRow:
-                return cls(row=fetchedRow)
+        # redoing a request because of default values + row id (if avalaible)
+        async with CONFIG.storage.db.connect() as conn:
+            async with conn.execute(query) as cur:
+                fetchedRow = await cur.fetchone()
+                if fetchedRow:
+                    return cls(row=fetchedRow)
             
         raise Exception(f"Fetched row didn't return anything (query: {query})")
     
@@ -162,13 +162,13 @@ class Profile(Generic[T]):
             whereColumnVal: the value of the column
         """
         
-        lock = asyncio.Lock()
-        async with lock:
+        async with self._lock:
             conn = await CONFIG.storage.db.connect()
             
             query = f"UPDATE `{self._table}` {self.parseToSql(SqlParseType.SET)} WHERE `{whereColumn}` = {Profile.sqlObjAsStr(whereColumnVal)}"
             async with conn.execute(query):
                 await conn.commit()
+            await conn.close()
     
     async def save(self):
         """Save the infos to the db
