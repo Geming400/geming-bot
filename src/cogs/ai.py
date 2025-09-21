@@ -291,11 +291,12 @@ class BotAI(commands.Cog):
                         Loggers.aiLogger.debug("Adding ai's response to memory")
                         aiHandler.addMessage(AiHandler.Role.ASSISTANT, content, message.channel.id)
                 except ConnectionError:
+                    Loggers.aiLogger.info(f"User {message.author.name} ({message.author.id}) tried using the ai, but it is unavailable")
                     await message.reply(content="`ollama` isn't running, the ai isn't currently avalaible")
                 except Exception as e:
                     await message.reply(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
                     await message.add_reaction("⚠️")
-                    Loggers.logger.exception(e)
+                    Loggers.logger.exception(f"Catched exception in `BotAI.on_message`: {e}")
                     
                     raise e
     
@@ -371,10 +372,12 @@ class BotAI(commands.Cog):
                 Loggers.aiLogger.debug("Adding ai's response to memory")
                 aiHandler.addMessage(AiHandler.Role.ASSISTANT, content, ctx.channel_id)
         except ConnectionError:
+            Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) tried using the ai, but it is unavailable")
             ctx.edit(content="`ollama` isn't running, the ai isn't currently avalaible", ephemeral=True)
         except Exception as e:
             await ctx.edit(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
-            Loggers.logger.exception(e)
+            Loggers.logger.exception(f"Catched exception in `BotAI.on_message`: {e}")
+            
             raise e
 
 def setup(bot: discord.Bot):
