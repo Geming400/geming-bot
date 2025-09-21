@@ -1,6 +1,8 @@
 CREATE TABLE guilds (
     id INTEGER PRIMARY KEY,
-    guildid BIGINT NOT NULL UNIQUE
+    guildid BIGINT NOT NULL UNIQUE,
+
+    banned_users JSON NOT NULL DEFAULT('[]')
 );
 
 CREATE TABLE guild_permissions (
@@ -10,6 +12,12 @@ CREATE TABLE guild_permissions (
 
     FOREIGN KEY(guildid) REFERENCES guilds(guildid)
 );
+
+CREATE TABLE users (
+    userid INTEGER PRIMARY KEY,
+    role TEXT NOT NULL DEFAULT('user'),
+    ai_banned BOOLEAN NOT NULL DEFAULT(FALSE)
+)
 
 -- Testing
 
