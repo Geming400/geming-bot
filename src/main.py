@@ -59,15 +59,15 @@ Path(os.path.dirname(tempfile.tempdir)).mkdir(parents=True, exist_ok=True)
 
 # bot
 
-bot = discord.Bot(owner_id=CONFIG.getOwner())
+bot = discord.Bot(intents=discord.Intents.all(), owner_id=CONFIG.getOwner())
 """bot.debug_guilds = [
     1316947105796984842
 ]"""
-
 cogs_list: list[str] = [
     "mainBot",
     "permissions",
-    "ai"
+    "moderation",
+    "ai",
 ]
 
 @bot.slash_command(
