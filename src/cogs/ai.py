@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Optional, cast
 import discord
 from discord.ext import commands
@@ -185,6 +186,13 @@ class AiUtils(commands.Cog):
         #     await ctx.respond("No :3", ephemeral=True)
         #     return
         
+        userProfile = await Profiles.UserProfile.createOrGet(ctx.author.id)
+        if userProfile.aiBanned:
+            Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) is banned from using the AI, not continuing (from `/flush`)")
+            await ctx.respond("You are banned from using `gemingbot`'s ai, therefore, you **cannot use this command** !", ephemeral=True)
+            
+            return
+        
         aiHandler.clearMemory(ctx.channel_id)
         Loggers.aiLogger.info(f"Flushed ai's memory for channel ID {ctx.channel_id} for user {ctx.author.name} ({ctx.author.id})")
         await ctx.respond("Flushed tjc's smart toilet !")
@@ -236,21 +244,47 @@ class BotAI(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if self.bot.user in message.mentions:
-            guildID = cast(discord.Guild, message.guild).id
-            channelID = cast(int, message.channel.id)
+            # not funny uber-bot like easter egg
+            pattern = r"remind .+ in \d+ ((second(|s))|(hour(|s))|(day(|s))|(month(|s))|(year(|s))) to" # uber bot ahh regex
+            if re.findall(pattern, message.content, re.RegexFlag.IGNORECASE):
+                await message.reply("I am not uber bot you dumbass")
+                return
+            
+            channelID = message.channel.id
             
             # If we don't send any messages it's to prevent flooding the current chat
             # as we cannot send ephemeral messages with `discord.Message.reply()`
-            guildPerms = await Profiles.getGuildPermissionProfile(guildID)
-            if not guildPerms.isAiEnabledGlobally():
-                # await message.reply(content="Sorry, but geming bot's ai has **been disabled on this server** !", ephemeral=True)
-                await message.add_reaction("❌")
-                return
-            
-            if not guildPerms.isChannelAuthorized(channelID):
-                # await message.reply("Sorry, but geming bot's ai is **not enabled on this channel** !", ephemeral=True)
-                await message.add_reaction("❌")
-                return
+            if isinstance(message.author, discord.Member):
+                guildID = cast(discord.Guild, message.guild).id
+                guildPerms = await Profiles.getGuildPermissionProfile(guildID)
+                
+                guildProfile = await Profiles.GuildProfile.createOrGet(guildID)
+                if message.author.id in guildProfile.bannedAiUsers:
+                    Loggers.aiLogger.info(f"User {message.author.name} ({message.author.id}) is banned from using the AI in the guild {cast(discord.Guild, message.guild).name} ({guildID}), not continuing (from `/ai`)")
+                    await message.reply("You are banned from using `gemingbot`'s ai, therefore, you **cannot use this command** ! (server-specific)")
+                    
+                    return
+                
+                # bypass for the bot owner / server administrators
+                if not (message.author.guild_permissions.administrator or message.author.id == CONFIG.getOwner()):
+                    if not guildPerms.isAiEnabledGlobally():
+                        Loggers.aiLogger.info(f"AI is not enabled in server {guildID}, not continuing")
+                        # await message.reply(content="Sorry, but geming bot's ai has **been disabled on this server** !", ephemeral=True)
+                        # await message.add_reaction("❌")
+                        return
+                    
+                    if not guildPerms.isChannelAuthorized(channelID):
+                        Loggers.aiLogger.info(f"AI is not enabled in channel {channelID}, not continuing")
+                        # await message.reply("Sorry, but geming bot's ai is **not enabled on this channel** !", ephemeral=True)
+                        # await message.add_reaction("❌")
+                        return
+                    
+                userProfile = await Profiles.UserProfile.createOrGet(message.author.id)
+                if userProfile.aiBanned:
+                    Loggers.aiLogger.info(f"User {message.author.name} ({message.author.id}) is banned from using the AI, not continuing (from pinging gemingbot)")
+                    await message.add_reaction("❌")
+                    
+                    return
             
             async with message.channel.typing():
                 try:
@@ -324,15 +358,35 @@ class BotAI(commands.Cog):
         #     return
         
         
-        guildPerms = await Profiles.getGuildPermissionProfile(cast(int, ctx.guild_id))
-        if not guildPerms.isAiEnabledGlobally():
-            await ctx.respond("Sorry, but geming bot's ai has **been disabled on this server** !", ephemeral=True)
+        # If we don't send any messages it's to prevent flooding the current chat
+        # as we cannot send ephemeral messages with `discord.Message.reply()`
+        if isinstance(ctx.author, discord.Member):
+            guildID = cast(discord.Guild, ctx.guild).id
+            guildPerms = await Profiles.getGuildPermissionProfile(guildID)
+            
+            guildProfile = await Profiles.GuildProfile.createOrGet(guildID)
+            if ctx.author.id in guildProfile.bannedAiUsers:
+                Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) is banned from using the AI in the guild {ctx.guild.name} ({guildID}), not continuing (from `/ai`)")
+                await ctx.respond("You are banned from using `gemingbot`'s ai, therefore, you **cannot use this command** ! (server-specific)", ephemeral=True)
+                
+                return
+            
+            # bypass for the bot owner / server administrators
+            if not (ctx.author.guild_permissions.administrator or ctx.author.id == CONFIG.getOwner()):
+                if not guildPerms.isAiEnabledGlobally():
+                    await ctx.respond(content="Sorry, but geming bot's ai has **been disabled on this server** !", ephemeral=True)
+                    return
+                
+                if not guildPerms.isChannelAuthorized(ctx.channel_id):
+                    await ctx.respond("Sorry, but geming bot's ai is **not enabled on this channel** !", ephemeral=True)
+                    return
+            
+        userProfile = await Profiles.UserProfile.createOrGet(ctx.author.id)
+        if userProfile.aiBanned:
+            Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) is banned from using the AI, not continuing (from `/ai`)")
+            await ctx.respond("You are banned from using `gemingbot`'s ai, therefore, you **cannot use this command** !", ephemeral=True)
+            
             return
-        
-        if not guildPerms.isChannelAuthorized(ctx.channel_id):
-            await ctx.respond("Sorry, but geming bot's ai is **not enabled on this channel** !", ephemeral=True)
-            return
-        
         
         if model == None: model = CONFIG.storage.currentModel
         
@@ -373,7 +427,7 @@ class BotAI(commands.Cog):
                 aiHandler.addMessage(AiHandler.Role.ASSISTANT, content, ctx.channel_id)
         except ConnectionError:
             Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) tried using the ai, but it is unavailable")
-            ctx.edit(content="`ollama` isn't running, the ai isn't currently avalaible", ephemeral=True)
+            await ctx.edit(content="`ollama` isn't running, the ai isn't currently avalaible")
         except Exception as e:
             await ctx.edit(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
             Loggers.logger.exception(f"Catched exception in `BotAI.on_message`: {e}")
