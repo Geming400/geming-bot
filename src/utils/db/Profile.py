@@ -125,7 +125,7 @@ class Profile(Generic[T]):
             async with conn.execute(query) as cur:
                 fetchedRow = await cur.fetchone()
                 if fetchedRow:
-                    return cls(row=fetchedRow)
+                    return cls.parseToObj(fetchedRow)
         
         inst = cls.default()
         setattr(inst, nameVar, name)
@@ -137,7 +137,7 @@ class Profile(Generic[T]):
             async with conn.execute(query) as cur:
                 fetchedRow = await cur.fetchone()
                 if fetchedRow:
-                    return cls(row=fetchedRow)
+                    return cls.parseToObj(fetchedRow)
             
         raise Exception(f"Fetched row didn't return anything (query: {query})")
     
