@@ -32,9 +32,8 @@ class Moderation(commands.Cog):
             return
         
         if user.id == ctx.author.id:
-            # await ctx.respond("You cannot ban yourself !", ephemeral=True)
-            # return
-            ...
+            await ctx.respond("You cannot ban yourself !", ephemeral=True)
+            return
         
         requestedBy = f", requested by {ctx.author.name} ({ctx.author.id})"
         Loggers.modLogger.info(f"Banning user {user.name} ({user.id}) from using gemingbot's ai" + requestedBy)
@@ -51,6 +50,12 @@ class Moderation(commands.Cog):
         guildProfile.bannedAiUsers.append(user.id)
         await guildProfile.save()
         
+        if ctx.author.can_send():
+            await ctx.author.send(embed=discord.Embed(
+                title="Gemingbot's AI",
+                description=f"You got banned from Gemingbot's ai in the server `{ctx.guild.name}` !",
+                color=discord.Color.red()
+            ))
         Loggers.modLogger.info(f"Banned user {user.id} ({user.name}) from using gemingbot's ai")
         await ctx.edit(content=f"Banned user <@{user.id}> !")
 
@@ -68,9 +73,8 @@ class Moderation(commands.Cog):
             return
     
         if user.id == ctx.author.id:
-            # await ctx.respond("You cannot unban yourself (as you cannot ban yourself) !", ephemeral=True)
-            # return
-            ...
+            await ctx.respond("You cannot unban yourself (as you cannot ban yourself) !", ephemeral=True)
+            return
         
         await ctx.respond(f"Unbanning user <@{user.id}> ...", ephemeral=True)
         
@@ -88,6 +92,12 @@ class Moderation(commands.Cog):
         guildProfile.bannedAiUsers.remove(user.id)
         await guildProfile.save()
         
+        if ctx.author.can_send():
+            await ctx.author.send(embed=discord.Embed(
+                title="Gemingbot's AI",
+                description=f"You got unbanned from Gemingbot's ai in the server `{ctx.guild.name}` !",
+                color=discord.Color.green()
+            ))
         Loggers.modLogger.info(f"Unbanned user {user.id} ({user.name}) from using gemingbot's ai" + requestedBy)
         await ctx.edit(content=f"Unbanned user <@{user.id}> !")
     
@@ -138,6 +148,12 @@ class GlobalModeration(commands.Cog):
         await userProfile.save()
         
         Loggers.modLogger.info(f"Banned user {user.id} ({user.name}) from using gemingbot's ai (globally)" + requestedBy)
+        if ctx.author.can_send():
+            await ctx.author.send(embed=discord.Embed(
+                title="Gemingbot's AI",
+                description="You got globally banned from Gemingbot's ai !",
+                color=discord.Color.red()
+            ))
         await ctx.edit(content=f"Banned user <@{user.id}> !")
 
     @globalModerationGroup.command(name="unban-ai", description="Unbans a given user from using gemingbot's ai (globally)")
@@ -172,6 +188,12 @@ class GlobalModeration(commands.Cog):
         userProfile.aiBanned = False
         await userProfile.save()
         
+        if ctx.author.can_send():
+            await ctx.author.send(embed=discord.Embed(
+                title="Gemingbot's AI",
+                description="You got globally banned from Gemingbot's ai !",
+                color=discord.Color.green()
+            ))
         Loggers.modLogger.info(f"Unbanned user {user.id} ({user.name}) from using gemingbot's ai" + requestedBy)
         await ctx.edit(content=f"Unbanned user <@{user.id}> !")
         
