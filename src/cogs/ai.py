@@ -289,9 +289,9 @@ class BotAI(commands.Cog):
             async with message.channel.typing():
                 try:
                     if not aiHandler.isModelPreloaded(CONFIG.storage.currentModel):
-                        await message.add_reaction("🔄️")
+                        await message.add_reaction("<:preloading_model:1419412009212051456>")
                         await utils.preloadModelAsync(CONFIG.storage.currentModel)
-                        await message.remove_reaction("🔄️", cast(discord.ClientUser, self.bot.user))
+                        await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
                 
                     Loggers.aiLogger.debug("Adding user's prompt to memory")
                     
