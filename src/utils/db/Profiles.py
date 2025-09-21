@@ -5,8 +5,9 @@ from typing import Optional, override
 from utils.db.Profile import Profile, SqlParseType
 
 __all__ = [
+    "GuildProfile",
     "getGuildPermissionProfile",
-    "GuildProfile"
+    "UserProfile"
 ]
 
 class GuildPermissionsProfile(Profile[int]):
@@ -69,15 +70,18 @@ class GuildProfile(Profile[int]):
     
     id: int
     guildID: int
+    bannedUsers: list[int]
     
     def __init__(self, row: Row) -> None:
-        self.id, self.guildID = row
+        self.id = row[0]
+        self.guildID = row[1]
+        self.bannedUsers = json.loads(row[2])
         super().__init__(row)
     
     @override
     @classmethod
     def default(cls):
-        return cls._default(id=None, guildID=None) # ik it breaks typing, but they will get their real value when needed
+        return cls._default(id=None, guildID=None, bannedUsers=None) # ik it breaks typing, but they will get their real value when needed
     
     @classmethod
     async def createOrGet(cls, name: int):
@@ -85,7 +89,10 @@ class GuildProfile(Profile[int]):
             
     @override
     def parseToSql(self, type: SqlParseType) -> str:
-        return self._parseToSql(type, (("guildID", self.guildID), ))
+        return self._parseToSql(type, (
+            ("guildID", self.guildID),
+            ("banned_users", self.bannedUsers)
+        ))
     
     @override
     async def save(self):
@@ -99,6 +106,44 @@ class GuildProfile(Profile[int]):
         """
         
         return await GuildPermissionsProfile.createOrGet(self.guildID)
+    
+    
+class UserProfile(Profile[int]):
+    _table = "users"
+    
+    userID: int
+    role: str
+    aiBanned: bool
+    
+    def __init__(self, row: Row) -> None:
+        self.userID = row[0]
+        self.role = row[1]
+        self.aiBanned = row[2]
+        
+        super().__init__(row)
+    
+    @override
+    @classmethod
+    def default(cls):
+        return cls._default(userID=None, role="user", aiBanned=False)
+    
+    @override
+    @classmethod
+    async def createOrGet(cls, name: int):
+        return await cls._createOrGet(name, nameVar="userID", column="userid")
+            
+    @override
+    def parseToSql(self, type: SqlParseType) -> str:
+        return self._parseToSql(type, (
+            ("userid", self.userID),
+            ("role", self.role),
+            ("ai_banned", self.aiBanned)
+        ))
+    
+    @override
+    async def save(self):
+        await self._save("userid", self.userID)
+    
 
 
 async def getGuildPermissionProfile(guildID: int) -> GuildPermissionsProfile:
