@@ -196,7 +196,7 @@ class MainBot(commands.Cog):
         elif user.id == 1072494833777782805 or user.id == 1237908486638276802: # bonzai / silly billy (aka gay dudes)
             usrRole = f"gay role ({usrRole})"
         elif user.bot:
-            if usrRole == cast(discord.ClientUser, self.bot.user).id:
+            if user.id == cast(discord.ClientUser, self.bot.user).id:
                 usrRole = f"gay af bot"
             else:
                 usrRole = f"It's literally a bot, what did you expect {ctx.author.display_name} ?"
