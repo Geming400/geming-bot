@@ -222,14 +222,23 @@ class MainBot(commands.Cog):
                 await message.add_reaction("<:regional_indicator_cuteface:1419357811237716170>")
             elif "-w-" in message.content or "-ω-" in message.content:
                 await message.add_reaction("<:regional_indicator_eepingface:1419359420386644228>")
-        
+                
+        hasVeryNotFunnyMessage = "ollama isn't running, the ai isn't currently avalaible" in message.content or "`ollama` isn't running, the ai isn't currently avalaible" in message.content
         if not message.author.bot and random.randint(0, 10) == 5 and not (self.bot.user in message.mentions):
             await doReaction()
-
-        hasVeryNotFunnyMessage = "ollama isn't running, the ai isn't currently avalaible" in message.content or "`ollama` isn't running, the ai isn't currently avalaible" in message.content
-        if hasVeryNotFunnyMessage and not message.author.bot:
+        elif hasVeryNotFunnyMessage and not message.author.bot:
             await message.reply("Shut up 3:")
-            return
+        elif "mreow" in message.content or "meow" in message.content:
+            await message.reply("Mrpprpr >w< Mreeow :33")
+        elif "pur" in message.content:
+            await message.reply("Purrrrr :33")
+        elif "rawr" in message.content:
+            await message.reply("Meeeow :33 Mpprprp >w<")
+        elif "mrrrrrph" in message.content:
+            await message.reply("Mrreeow :3 Nya~ ! Purrrr >w<")
+            
+        if self.bot.user in message.mentions:
+            await doReaction()
         
 
 def setup(bot: discord.Bot):
