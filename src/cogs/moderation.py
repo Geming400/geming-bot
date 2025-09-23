@@ -50,8 +50,8 @@ class Moderation(commands.Cog):
         guildProfile.bannedAiUsers.append(user.id)
         await guildProfile.save()
         
-        if ctx.author.can_send():
-            await ctx.author.send(embed=discord.Embed(
+        if user.can_send():
+            await user.send(embed=discord.Embed(
                 title="Gemingbot's AI",
                 description=f"You got banned from Gemingbot's ai in the server `{ctx.guild.name}` !",
                 color=discord.Color.red()
@@ -92,8 +92,8 @@ class Moderation(commands.Cog):
         guildProfile.bannedAiUsers.remove(user.id)
         await guildProfile.save()
         
-        if ctx.author.can_send():
-            await ctx.author.send(embed=discord.Embed(
+        if user.can_send():
+            await user.send(embed=discord.Embed(
                 title="Gemingbot's AI",
                 description=f"You got unbanned from Gemingbot's ai in the server `{ctx.guild.name}` !",
                 color=discord.Color.green()
@@ -139,8 +139,8 @@ class GlobalModeration(commands.Cog):
         
         
         userProfile = await UserProfile.createOrGet(user.id)
-        if not userProfile.aiBanned:
-            ctx.edit(content=f"Cannot ban globally <@{user.id}> because they are already banned")
+        if userProfile.aiBanned:
+            await ctx.edit(content=f"Cannot ban globally <@{user.id}> because they are already banned")
             Loggers.modLogger.info(f"Tried banning user {user.id} but they are already banned globally")
             return
         
@@ -148,8 +148,8 @@ class GlobalModeration(commands.Cog):
         await userProfile.save()
         
         Loggers.modLogger.info(f"Banned user {user.id} ({user.name}) from using gemingbot's ai (globally)" + requestedBy)
-        if ctx.author.can_send():
-            await ctx.author.send(embed=discord.Embed(
+        if user.can_send():
+            await user.send(embed=discord.Embed(
                 title="Gemingbot's AI",
                 description="You got globally banned from Gemingbot's ai !",
                 color=discord.Color.red()
@@ -180,18 +180,18 @@ class GlobalModeration(commands.Cog):
         
 
         userProfile = await UserProfile.createOrGet(user.id)
-        if userProfile.aiBanned:
-            ctx.edit(content=f"Cannot unban globally <@{user.id}> because they are not banned")
+        if not userProfile.aiBanned:
+            await ctx.edit(content=f"Cannot unban globally <@{user.id}> because they are not banned")
             Loggers.modLogger.info(f"Tried unbanning user {user.id} but they are not banned globally")
             return
             
         userProfile.aiBanned = False
         await userProfile.save()
         
-        if ctx.author.can_send():
-            await ctx.author.send(embed=discord.Embed(
+        if user.can_send():
+            await user.send(embed=discord.Embed(
                 title="Gemingbot's AI",
-                description="You got globally banned from Gemingbot's ai !",
+                description="You got globally unbanned from Gemingbot's ai !",
                 color=discord.Color.green()
             ))
         Loggers.modLogger.info(f"Unbanned user {user.id} ({user.name}) from using gemingbot's ai" + requestedBy)
