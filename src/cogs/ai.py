@@ -330,6 +330,9 @@ class BotAI(commands.Cog):
                 except Exception as e:
                     await message.reply(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
                     await message.add_reaction("⚠️")
+                    try:
+                        await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
+                    except discord.NotFound: ...
                     Loggers.logger.exception(f"Catched exception in `BotAI.on_message`: {e}")
                     
                     raise e
