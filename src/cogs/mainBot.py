@@ -67,17 +67,6 @@ class MainBot(commands.Cog):
         else:
             await ctx.respond(random.choice(responses))
 
-    @discord.slash_command(
-        name="anton",
-        description="idk what this means, ask dyrs",
-        integration_type=INTEGRATION_TYPES
-    )
-    async def anton(self, ctx: Context):
-        if random.randint(0, 100) == 10:
-            ctx.respond("https://tenor.com/view/anton-alert-r74n-gif-7263058800090359550")
-        else:
-            ctx.respond("anton.")
-
 
     @discord.slash_command(
         name="linux-icbm",
@@ -148,7 +137,6 @@ class MainBot(commands.Cog):
             "User commands:",
             "/ai",
             "/dyrs",
-            "/anton",
             "/linux-icbm",
             "/help"
         ]
@@ -211,9 +199,9 @@ class MainBot(commands.Cog):
         
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        if message.author.bot: return
+        
         async def doReaction(): # We gotta implement the furry femboy stuff :33
-            if message.author.bot: return
-            
             if ":3" in message.content:
                 await message.add_reaction("<:colonthree:1419334742163329034>")
             elif "3:" in message.content:
@@ -222,23 +210,22 @@ class MainBot(commands.Cog):
                 await message.add_reaction("<:regional_indicator_cuteface:1419357811237716170>")
             elif "-w-" in message.content or "-ω-" in message.content:
                 await message.add_reaction("<:regional_indicator_eepingface:1419359420386644228>")
-                
-        hasVeryNotFunnyMessage = "ollama isn't running, the ai isn't currently avalaible" in message.content or "`ollama` isn't running, the ai isn't currently avalaible" in message.content
-        if not message.author.bot and random.randint(0, 10) == 5 and not (self.bot.user in message.mentions):
-            await doReaction()
-        elif hasVeryNotFunnyMessage and not message.author.bot:
-            await message.reply("Shut up 3:")
-        elif "mreow" in message.content or "meow" in message.content:
-            await message.reply("Mrpprpr >w< Mreeow :33")
-        elif "pur" in message.content:
-            await message.reply("Purrrrr :33")
-        elif "rawr" in message.content:
-            await message.reply("Meeeow :33 Mpprprp >w<")
-        elif "mrrrrrph" in message.content:
-            await message.reply("Mrreeow :3 Nya~ ! Purrrr >w<")
             
         if self.bot.user in message.mentions:
-            await doReaction()
+            hasVeryNotFunnyMessage = "ollama isn't running, the ai isn't currently avalaible" in message.content or "`ollama` isn't running, the ai isn't currently avalaible" in message.content
+            
+            if random.randint(0, 10) == 5 and not (self.bot.user in message.mentions):
+                await doReaction()
+            elif hasVeryNotFunnyMessage:
+                await message.reply("Shut up 3:")
+            elif "mreow" in message.content or "meow" in message.content:
+                await message.reply("Mrpprpr >w< Mreeow :33")
+            elif "purr" in message.content:
+                await message.reply("Purrrrr :33")
+            elif "rawr" in message.content:
+                await message.reply("Meeeow :33 Mpprprp >w<")
+            elif "mrrrrrph" in message.content:
+                await message.reply("Mrreeow :3 Nya~ ! Purrrr >w<")
         
 
 def setup(bot: discord.Bot):
