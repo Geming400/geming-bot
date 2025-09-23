@@ -153,16 +153,17 @@ if TOKEN == None:
     raise TypeError("'TOKEN' env variable has not been set !")
 
 #bot.run(os.getenv("TOKEN"))
-try:
-    loop = asyncio.get_event_loop()
-except:
-    asyncio.set_event_loop(asyncio.new_event_loop())
-    loop = asyncio.get_event_loop()
+# try:
+#     loop = asyncio.get_event_loop()
+# except:
+#     asyncio.set_event_loop(asyncio.new_event_loop())
+#     loop = asyncio.get_event_loop()
 
 try:
-    loop.run_until_complete(bot.start(TOKEN))
+    #loop.run_until_complete(bot.start(TOKEN))
+    asyncio.run(bot.start(TOKEN))
 except KeyboardInterrupt:
     # loop.run_until_complete(bot.close())
     ... # the `signal.SIGINT` hook will execute
-finally:
-    loop.close()
+# finally:
+#     loop.close()
