@@ -24,8 +24,8 @@ async def asyncSigIntHandler(sig: int, frame: Optional[FrameType]):
     Loggers.logger.info("--- Now exiting ---")
     
     try:
-        Loggers.logger.info("Closing db connection")
-        await CONFIG.storage.db.close()
+        # Loggers.logger.info("Closing db connection")
+        # await CONFIG.storage.db.close()
         
         Loggers.logger.info("Closing discord connection")
         await bot.close() # we cannot use `asyncio.run(bot.close())` here,
@@ -121,6 +121,7 @@ async def reloadCogs(ctx: discord.ApplicationContext):
 async def on_ready():
     Loggers.logger.info(f"Launched bot '{cast(discord.ClientUser, bot.user).name}'")
 
+
 @bot.event
 async def on_application_command_error(ctx: discord.ApplicationContext, error: discord.DiscordException):
     #await ctx.respond(embed=utils.createErrorEmbed(str(error)), ephemeral=True)
@@ -145,25 +146,29 @@ else:
         Loggers.logger.info("Not continuing, exiting")
         sys.exit(1)
         
-
-bot.activity = discord.Activity(type=discord.ActivityType.watching, name="geming turning into a transbian furry")
+# statuses = CONFIG.getStatuses()
+# if statuses:
+#     status = statuses.getRandomStatus()
+#     bot.activity = statuses.ActivityState.toDiscordActivity(status.state, status.text)
 
 TOKEN: str = cast(str, os.getenv("TOKEN"))
 if TOKEN == None:
     raise TypeError("'TOKEN' env variable has not been set !")
 
-#bot.run(os.getenv("TOKEN"))
+
+bot.run(os.getenv("TOKEN"))
+
 # try:
 #     loop = asyncio.get_event_loop()
 # except:
 #     asyncio.set_event_loop(asyncio.new_event_loop())
 #     loop = asyncio.get_event_loop()
 
-try:
-    #loop.run_until_complete(bot.start(TOKEN))
-    asyncio.run(bot.start(TOKEN))
-except KeyboardInterrupt:
-    # loop.run_until_complete(bot.close())
-    ... # the `signal.SIGINT` hook will execute
+# try:
+#     loop.run_until_complete(bot.start(TOKEN))
+#     # asyncio.run(bot.start(TOKEN))
+# except KeyboardInterrupt:
+#     # loop.run_until_complete(bot.close())
+#     ... # the `signal.SIGINT` hook will execute
 # finally:
 #     loop.close()
