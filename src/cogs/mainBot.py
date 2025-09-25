@@ -1,9 +1,10 @@
 import asyncio
 import functools
 import random
-from typing import Optional, cast
+import re
+from typing import Optional, Type, cast
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import httpx
 
 from utils import utils
@@ -27,7 +28,9 @@ async def getTjcsIp():
 class MainBot(commands.Cog):
     def __init__(self, bot: discord.Bot):
         self.bot = bot
+        
     
+    """
     @discord.slash_command(
         name="dyrs",
         description="Get dyrs' personnal infos ! (for free)",
@@ -66,7 +69,7 @@ class MainBot(commands.Cog):
             await ctx.respond(random.choice(responses) + "\n-# Hii dyrs :3333 Mrreeeow >w<")
         else:
             await ctx.respond(random.choice(responses))
-
+    """
 
     @discord.slash_command(
         name="linux-icbm",
@@ -91,6 +94,9 @@ class MainBot(commands.Cog):
         await asyncio.sleep(3)
         await ctx.edit(content="https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=68a98ee4&is=68a83d64&hm=85b8d19ac042233ff7ee14ced7e7abeed292cef893a58fa284a5624e7081f7aa&")
 
+    # NOTE: If "activities" weren't set before, but then were to be added
+    # they won't be registered
+    # also, changes to the `frequency` arg also won't be affected
     @discord.slash_command(
         name="reload-configs",
         description="Reload the config files",
@@ -136,7 +142,7 @@ class MainBot(commands.Cog):
         cmds += [
             "User commands:",
             "/ai",
-            "/dyrs",
+            # "/dyrs",
             "/linux-icbm",
             "/help"
         ]
@@ -196,7 +202,29 @@ class MainBot(commands.Cog):
             footer=discord.EmbedFooter(user.display_name, user.display_avatar.url)
         ), allowed_mentions = discord.AllowedMentions.none())
         
+    
+    @commands.Cog.listener(once=True)
+    async def on_ready(self):
+        if CONFIG.getStatuses():
+            Loggers.logger.debug("Starting task 'changeStatusTask'")
+            self.changeStatusTask.start()
+    
+    @tasks.loop(seconds=CONFIG.getStatuses().frequency) # pyright: ignore[reportOptionalMemberAccess]
+    async def changeStatusTask(self):
+        if not self.bot.is_ready():
+            Loggers.logger.debug("Cannot change status due to the bot still not being logged in")
+            return
         
+        Loggers.logger.debug("Changing status")
+    
+        statuses = CONFIG.getStatuses()
+        if statuses:
+            await statuses.setRandomStatus(self.bot)
+                
+class MainBotButThingIdk(commands.Cog):
+    def __init__(self, bot: discord.Bot):
+        self.bot = bot
+    
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.bot: return
@@ -212,6 +240,12 @@ class MainBot(commands.Cog):
                 await message.add_reaction("<:regional_indicator_eepingface:1419359420386644228>")
             
         if self.bot.user in message.mentions:
+            # not funny uber-bot like easter egg
+            pattern = r"remind .+ in \d+ ((second(|s))|(hour(|s))|(day(|s))|(month(|s))|(year(|s))) to" # uber bot ahh regex
+            if re.findall(pattern, message.content, re.RegexFlag.IGNORECASE):
+                await message.reply("I am not uber bot you dumbass")
+                return
+            
             hasVeryNotFunnyMessage = "ollama isn't running, the ai isn't currently avalaible" in message.content or "`ollama` isn't running, the ai isn't currently avalaible" in message.content
             
             if random.randint(0, 10) == 5 and not (self.bot.user in message.mentions):
@@ -226,8 +260,18 @@ class MainBot(commands.Cog):
                 await message.reply("Meeeow :33 Mpprprp >w<")
             elif "mrrrrrph" in message.content:
                 await message.reply("Mrreeow :3 Nya~ ! Purrrr >w<")
+    
+    @discord.slash_command(name="sync-command-tree", description="Syncs the command tree")
+    async def syncCommandTree(self, ctx: Context):
+        if not CONFIG.isOwner(ctx.author.id):
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/sync-command-tree", reason="Isn't owner")
+            await ctx.respond("No :3", ephemeral=True)
+            return
         
+        await self.bot.sync_commands()
+        await ctx.respond(f"Synced {len(self.bot.commands)} commands !", ephemeral=True)
 
 def setup(bot: discord.Bot):
     bot.add_cog(MainBot(bot))
+    bot.add_cog(MainBotButThingIdk(bot))
     
