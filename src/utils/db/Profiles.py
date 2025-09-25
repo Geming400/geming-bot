@@ -1,6 +1,6 @@
 import json
 from sqlite3 import Row
-from typing import Optional, override
+from typing import override
 
 from utils.db.Profile import Profile, SqlParseType
 
@@ -81,7 +81,7 @@ class GuildProfile(Profile[int]):
     @override
     @classmethod
     def default(cls):
-        return cls._default(id=None, guildID=None, bannedAiUsers=None) # ik it breaks typing, but they will get their real value when needed
+        return cls._default(id=None, guildID=None, bannedAiUsers=[]) # ik it breaks typing, but they will get their real value when needed
     
     @classmethod
     async def createOrGet(cls, name: int):
