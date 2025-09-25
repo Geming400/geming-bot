@@ -244,12 +244,6 @@ class BotAI(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if self.bot.user in message.mentions:
-            # not funny uber-bot like easter egg
-            pattern = r"remind .+ in \d+ ((second(|s))|(hour(|s))|(day(|s))|(month(|s))|(year(|s))) to" # uber bot ahh regex
-            if re.findall(pattern, message.content, re.RegexFlag.IGNORECASE):
-                await message.reply("I am not uber bot you dumbass")
-                return
-            
             channelID = message.channel.id
             
             # If we don't send any messages it's to prevent flooding the current chat
