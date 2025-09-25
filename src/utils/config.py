@@ -1,5 +1,7 @@
+from enum import Enum
 import functools
 import os
+import random
 from typing import Any, Optional
 from jsonc_parser.parser import JsoncParser
 import dotenv
@@ -23,6 +25,79 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+class Activites:
+    class ActivityState(str, Enum):
+        STATUS = "status"
+        PLAYING = "playing"
+        STREAMING = "streaming"
+        LISTENING = "listening"
+        WATCHING = "watching"
+        COMPETING = "competing"
+    
+        @staticmethod
+        def getStateFromVal(val: str) -> "Activites.ActivityState":
+            match val.lower():
+                case "status": return Activites.ActivityState.STATUS
+                case "playing": return Activites.ActivityState.PLAYING
+                case "streaming": return Activites.ActivityState.STREAMING
+                case "listening": return Activites.ActivityState.LISTENING
+                case "watching": return Activites.ActivityState.WATCHING
+                case "competing": return Activites.ActivityState.COMPETING
+                
+            raise ValueError(f"{val} is not a valid value for this enum")
+        
+        @staticmethod
+        def toDiscordActivity(activityType: "Activites.ActivityState", text: str) -> discord.Activity | discord.CustomActivity:
+                match activityType:
+                    case Activites.ActivityState.STATUS: return discord.CustomActivity(name=text)
+                    case Activites.ActivityState.PLAYING: return discord.Activity(type=discord.ActivityType.playing, name=text)
+                    case Activites.ActivityState.STREAMING: return discord.Activity(type=discord.ActivityType.streaming, name=text)
+                    case Activites.ActivityState.LISTENING: return discord.Activity(type=discord.ActivityType.listening, name=text)
+                    case Activites.ActivityState.WATCHING: return discord.Activity(type=discord.ActivityType.watching, name=text)
+                    case Activites.ActivityState.COMPETING: return discord.Activity(type=discord.ActivityType.competing, name=text)
+    
+    class Status:
+        state: "Activites.ActivityState"
+        """The state of the status
+        """
+        
+        text: str
+        """The text of the status
+        """
+        
+        def __init__(self, state: "Activites.ActivityState", text: str) -> None:
+            self.state = state
+            self.text = text
+        
+        def __repr__(self) -> str:
+            return f"Status( state = ActivityState.{self.state.name}, test = {self.text} )"
+    
+
+    frequency: int
+    """How frequent in seconds will the status change
+    """
+    
+    statuses: list[Status]
+    """A set containing all of the activites
+    """
+    
+    def __init__(self, frequency: int, statuses: list["Status"]) -> None:
+        self.frequency = frequency
+        self.statuses = statuses
+    
+    def getRandomStatus(self) -> Status:
+        return random.choice(self.statuses)
+    
+    async def setRandomStatus(self, bot: discord.Bot):
+        if self.statuses == []: return
+        
+        status = self.getRandomStatus()
+        
+        activity = Activites.ActivityState.toDiscordActivity(status.state, status.text)
+        await bot.change_presence(activity=activity)
+    
+    def __repr__(self) -> str:
+        return f"Activities( frequency = {self.frequency}, status = {self.statuses} )"
 
 class Config(metaclass=Singleton):
     file: str
@@ -44,7 +119,9 @@ class Config(metaclass=Singleton):
     
     def reloadConfigs(self):
         self.loadConfigFile()
+        
         self.getSystemPrompt.cache_clear()
+        self.getStatuses.cache_clear()
     
     def getLogPath(self) -> str:
         return self.content["log-path"]
@@ -79,3 +156,21 @@ class Config(metaclass=Singleton):
     
     def getDbPath(self) -> str:
         return self.content["db"]["path"]
+    
+    @functools.lru_cache
+    def getStatuses(self) -> Optional[Activites]:
+        if not self.content.get("activities"): return None
+        
+        frequency: int = self.content["activities"]["frequency"]
+        statuses: list[dict[str, str]] = self.content["activities"]["statuses"]
+        statusesAsObj: list[Activites.Status] = []
+        
+        for status in statuses:
+            statusesAsObj.append(
+                Activites.Status(
+                    state=Activites.ActivityState.getStateFromVal(status["state"]),
+                    text=status["text"]
+                )
+            )
+        
+        return Activites(frequency, statusesAsObj)
