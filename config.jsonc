@@ -1,4 +1,5 @@
 {
+    "$schema": "./config-schem.json",
     "ai": {
         "default-model": "hermes3",
         "system-prompt": "./ai/system-prompt.txt",
@@ -6,7 +7,7 @@
         "keep-alive": 7200
     },
     "permissions": {
-        "owner-userID": 729671931359395940,
+        "owner-userID": 729671931359395940, // Geming
         "trusted-userIDs": [
             782022246284656680, // popcorn
             1045761412489809975, // tjc
@@ -14,11 +15,61 @@
             1072494833777782805, // bonzai,
             1015031565950140457, // Fooy
             1204083604636827688, // Cao :3
-            1159650088038170635 // Lynar :3
+            1159650088038170635, // Lynar :3
+            721365893258674179 // Nooby
         ]
     },
     "db": {
         "path": "./db/gemingbot.db"
     },
-    "log-path": "./logs/"
+    "log-path": "./logs/",
+    "activities": {
+        "frequency": 120,
+        "statuses": [
+            {
+                "state": "watching",
+                "text": "geming turning into a transbian furry"
+            },
+            {
+                "state": "status",
+                "text": "Thinking about my next murder"
+            },
+            {
+                "state": "listening",
+                "text": "for news about geming finally coming out as trans"
+            },
+            {
+                "state": "playing",
+                "text": "agaisn't popcorn"
+            },
+            {
+                "state": "status",
+                "text": ":3"
+            },
+            {
+                "state": "watching",
+                "text": "cdc in his house"
+            },
+            {
+                "state": "status",
+                "text": "leb"
+            },
+            {
+                "state": "status",
+                "text": "hiii :3"
+            },
+            {
+                "state": "status",
+                "text": "hiii tjc !!"
+            },
+            {
+                "state": "status",
+                "text": "hiii skepper :3"
+            },
+            {
+                "state": "listening",
+                "text": "to mythical markus"
+            }
+        ]
+    }
 }

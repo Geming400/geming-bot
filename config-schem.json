@@ -1,0 +1,104 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "Product",
+    "description": "A product in the catalog",
+    "type": "object",
+    "properties": {
+        "ai": {
+            "type": "object",
+            "properties": {
+                "default-model": {
+                    "type": "string",
+                    "default": "hermes3",
+                    "description": "The default model to use when using the AI"
+                },
+                "system-prompt": {
+                    "type": "string",
+                    "description": "The system prompt, to indicate a path file, set `is-system-prompt-file` to `true`"
+                },
+                "is-system-prompt-file": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Wethever or not to indicate if the `system-prompt` key is a file"
+                },
+                "keep-alive": {
+                    "type": "number",
+                    "description": "The amount of time in seconds the model will be kept alive in memory",
+                    "default": 300.0
+                }
+            },
+            "required": ["system-prompt"]
+        },
+
+        "permissions": {
+            "type": "object",
+            "properties": {
+                "owner-userID": {
+                    "type": "integer",
+                    "description": "The userID of the owner of this bot"
+                },
+                "trusted-userIDs": {
+                    "type": "array",
+                    "description": "The userIDs of users marked as 'trusted'",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "required": ["owner-userID", "trusted-userIDs"]
+        },
+
+        "db": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Where the db file will be created",
+                    "default": "./db/gemingbot.db"
+                }
+            }
+        },
+
+        "log-path": {
+            "type": "string",
+            "description": "The folder where the log files will be created",
+            "default": "./logs/"
+        },
+
+        "activities": {
+            "type": "object",
+            "description": "An object containing status that the bot will choose every so often",
+            "properties": {
+                "frequency": {
+                    "type": "number",
+                    "description": "How frequent in seconds will the status change"
+                },
+                "statuses": {
+                    "type": "array",
+                    "description": "The list of status that the bot will change to randomly",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "state": {
+                                "type": "string",
+                                "description": "The state of the activity",
+                                "default": "status",
+                                "enum": ["status", "playing", "streaming", "listening", "watching", "competing"]
+                            },
+                            "text": {
+                                "type": "string",
+                                "description": "The text to set as the status"
+                            }
+                        },
+                        "required": ["text"]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": ["frequency", "statuses"]
+        }
+    },
+
+    "required": ["ai", "permissions", "db", "log-path"]
+}
