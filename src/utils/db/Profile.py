@@ -39,7 +39,6 @@ class Profile(Generic[T]):
     _table: str # to be overriden
     _lock: asyncio.Lock
     
-    @abc.abstractmethod
     def __init__(self, row: sqlite3.Row) -> None:
         """The init function, must **NOT** be called, use `.createOrGet()` instead.
         Also, if you are subclassing this class and implementing `.__init__()`
