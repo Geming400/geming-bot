@@ -22,7 +22,7 @@ class _Db:
     """
     
     dbPath: str
-    _connection: Optional[aiosqlite.Connection]
+    # _connection: Optional[aiosqlite.Connection]
     
     def __init__(self, dbPath: str) -> None:
         self.dbPath = dbPath
@@ -45,8 +45,8 @@ class _Db:
         self._createDbFile()
         return aiosqlite.connect(self.dbPath)
 
-    async def close(self):
-        if self._connection: await self._connection.close()
+    # async def close(self):
+    #     if self._connection: await self._connection.close()
     
     def _createDbFile(self):
         if not self.exists:
