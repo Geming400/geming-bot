@@ -1,6 +1,7 @@
 import abc
 import asyncio
 from enum import Enum
+import functools
 import sqlite3
 from typing import Any, Generic, Optional, Self, Type, TypeVar, overload
 import json
@@ -51,6 +52,7 @@ class Profile(Generic[T]):
         """
         self._lock = asyncio.Lock()
     
+    @functools.lru_cache
     @classmethod
     def _default(cls, **kwargs) -> Self:
         """An helper for `.default()`
