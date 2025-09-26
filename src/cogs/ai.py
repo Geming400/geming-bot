@@ -241,8 +241,8 @@ class BotAI(commands.Cog):
     def __init__(self, bot: discord.Bot):
         self.bot = bot
     
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
+    @commands.Cog.listener(name="on_message")
+    async def aiOnPing(self, message: discord.Message):
         if self.bot.user in message.mentions:
             channelID = message.channel.id
             
@@ -348,7 +348,7 @@ class BotAI(commands.Cog):
         required=False,
         description="The model to use"
     )
-    async def ai(self, ctx: Context, prompt: str, model: Optional[str]):
+    async def aiCmd(self, ctx: Context, prompt: str, model: Optional[str]):
         # if not CONFIG.isTrusted(ctx.author.id):
         #     utils.logNoAuthorization(ctx, Loggers.logger, name="/ai", reason="Isn't trusted")
         #     await ctx.respond("No (not for the moment at least) :3", ephemeral=True)
