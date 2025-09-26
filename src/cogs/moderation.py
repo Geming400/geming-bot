@@ -9,6 +9,54 @@ from utils.db.Profiles import GuildProfile, UserProfile
 
 Context = discord.ApplicationContext
 
+async def ban(ctx: Context, user: discord.User, *, ban: bool, condition: bool, globally: bool = False) -> bool:
+    """"dry" smh
+
+    Args:
+        ctx: The context
+        user: The user to do the action on
+        ban: If set to `True`, we'll ban the user, otherwise, we'll unban it
+        condition: A bool value to know if the user is actually bannable or not
+        globally: If it's a global ban. Defaults to False.
+
+    Returns:
+        If their was an action done on the given user
+    """
+    
+    if user.id == ctx.author.id:
+        # await ctx.respond("You cannot ban yourself !", ephemeral=True)
+        # return False
+        ...
+
+    verb = "ban" if ban else "unban"
+    requestedByText = f", requested by {ctx.author.name} ({ctx.author.id})"
+    globalBanText = f"(**global {verb}**)" if globally else ""
+    
+    Loggers.modLogger.info(f"{verb}ning user {user.name} ({user.id}) from using gemingbot's ai" + requestedByText)
+    await ctx.respond(f"{verb}ning user <@{user.id}> ...", ephemeral=True)
+    
+    if not condition:
+        Loggers.modLogger.info(f"Tried {verb}ning user {user.id} ({user.name}) but they are already {verb}ned {globalBanText}")
+        await ctx.edit(content=f"Cannot {verb} user <@{user.id}> because they are already {verb}ned")
+        
+        return False
+    
+    if user.can_send():
+        embedColor = discord.Color.red() if ban else discord.Color.green()
+        await user.send(embed=discord.Embed(
+            title="Gemingbot's AI",
+            description=f"You got {verb}ned from Gemingbot's ai in the server `{ctx.guild.name}` ! {globalBanText}",
+            color=embedColor
+        ))
+            
+        Loggers.modLogger.info(f"Sent dm to user {user.name} ({user.id})")
+    else:
+        Loggers.modLogger.info(f"Couldn't send dm to user {user.name} ({user.id}) because their dms are disabled")
+    
+    Loggers.modLogger.info(f"{verb}ned user {user.id} ({user.name}) from using gemingbot's ai {globalBanText}")
+    await ctx.edit(content=f"{verb}ned user <@{user.id}> ! {globalBanText}")
+    
+    return True
 
 class Moderation(commands.Cog):
     moderationGroup = discord.SlashCommandGroup(
@@ -31,33 +79,10 @@ class Moderation(commands.Cog):
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
         
-        if user.id == ctx.author.id:
-            await ctx.respond("You cannot ban yourself !", ephemeral=True)
-            return
-        
-        requestedBy = f", requested by {ctx.author.name} ({ctx.author.id})"
-        Loggers.modLogger.info(f"Banning user {user.name} ({user.id}) from using gemingbot's ai" + requestedBy)
-        await ctx.respond(f"Banning user <@{user.id}> ...", ephemeral=True)
-
-        
-        
         guildProfile = await GuildProfile.createOrGet(ctx.guild_id)
-        if user.id in guildProfile.bannedAiUsers:
-            Loggers.modLogger.info(f"Tried banning user {user.id} ({user.name}) but they are already banned")
-            await ctx.edit(content=f"Cannot ban user <@{user.id}> because they are already banned")
-            return
-            
-        guildProfile.bannedAiUsers.append(user.id)
-        await guildProfile.save()
-        
-        if user.can_send():
-            await user.send(embed=discord.Embed(
-                title="Gemingbot's AI",
-                description=f"You got banned from Gemingbot's ai in the server `{ctx.guild.name}` !",
-                color=discord.Color.red()
-            ))
-        Loggers.modLogger.info(f"Banned user {user.id} ({user.name}) from using gemingbot's ai")
-        await ctx.edit(content=f"Banned user <@{user.id}> !")
+        if await ban(ctx, user, ban=True, condition=not user.id in guildProfile.bannedAiUsers, globally=False):
+            guildProfile.bannedAiUsers.append(user.id)
+            await guildProfile.save()
 
     @moderationGroup.command(name="unban-ai", description="Unbans a given user from using gemingbot's ai (in this server)")
     @discord.option(
@@ -72,34 +97,10 @@ class Moderation(commands.Cog):
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
     
-        if user.id == ctx.author.id:
-            await ctx.respond("You cannot unban yourself (as you cannot ban yourself) !", ephemeral=True)
-            return
-        
-        await ctx.respond(f"Unbanning user <@{user.id}> ...", ephemeral=True)
-        
-        requestedBy = f", requested by {ctx.author.name} ({ctx.author.id})"
-        Loggers.modLogger.info(f"Unbanning user {user.name} ({user.id}) from using gemingbot's ai" + requestedBy)
-            
-            
-            
         guildProfile = await GuildProfile.createOrGet(ctx.guild_id)
-        if not user.id in guildProfile.bannedAiUsers:
-            Loggers.modLogger.info(f"Tried unbanning user {user.id} but they are not banned")
-            await ctx.edit(content=f"Cannot unban user <@{user.id}> because they are not banned")
-            return
-        
-        guildProfile.bannedAiUsers.remove(user.id)
-        await guildProfile.save()
-        
-        if user.can_send():
-            await user.send(embed=discord.Embed(
-                title="Gemingbot's AI",
-                description=f"You got unbanned from Gemingbot's ai in the server `{ctx.guild.name}` !",
-                color=discord.Color.green()
-            ))
-        Loggers.modLogger.info(f"Unbanned user {user.id} ({user.name}) from using gemingbot's ai" + requestedBy)
-        await ctx.edit(content=f"Unbanned user <@{user.id}> !")
+        if await ban(ctx, user, ban=False, condition=user.id in guildProfile.bannedAiUsers, globally=False):
+            guildProfile.bannedAiUsers.remove(user.id)
+            await guildProfile.save()
     
 
 class GlobalModeration(commands.Cog):
@@ -128,33 +129,10 @@ class GlobalModeration(commands.Cog):
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
     
-        if user.id == ctx.author.id:
-            await ctx.respond("You cannot ban yourself !", ephemeral=True)
-            return
-        
-        requestedBy = f", requested by {ctx.author.name} ({ctx.author.id})"
-        Loggers.modLogger.info(f"Banning user {user.name} ({user.id}) from using gemingbot's ai (globally)" + requestedBy)
-        await ctx.respond(f"Banning user <@{user.id}> ...", ephemeral=True)
-        
-        
-        
         userProfile = await UserProfile.createOrGet(user.id)
-        if userProfile.aiBanned:
-            await ctx.edit(content=f"Cannot ban globally <@{user.id}> because they are already banned")
-            Loggers.modLogger.info(f"Tried banning user {user.id} but they are already banned globally")
-            return
-        
-        userProfile.aiBanned = True
-        await userProfile.save()
-        
-        Loggers.modLogger.info(f"Banned user {user.id} ({user.name}) from using gemingbot's ai (globally)" + requestedBy)
-        if user.can_send():
-            await user.send(embed=discord.Embed(
-                title="Gemingbot's AI",
-                description="You got globally banned from Gemingbot's ai !",
-                color=discord.Color.red()
-            ))
-        await ctx.edit(content=f"Banned user <@{user.id}> !")
+        if await ban(ctx, user, ban=True, condition=not userProfile.aiBanned, globally=True):
+            userProfile.aiBanned = True
+            await userProfile.save()
 
     @globalModerationGroup.command(name="unban-ai", description="Unbans a given user from using gemingbot's ai (globally)")
     @discord.option(
@@ -169,33 +147,10 @@ class GlobalModeration(commands.Cog):
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
         
-        if user.id == ctx.author.id:
-            await ctx.respond("You cannot unban yourself (as you cannot ban yourself) !", ephemeral=True)
-            return
-        
-        await ctx.respond(f"Unbanning user <@{user.id}> ...", ephemeral=True)
-        
-        requestedBy = f", requested by {ctx.author.name} ({ctx.author.id})"
-        Loggers.modLogger.info(f"Unbanning user {user.name} ({user.id}) from using gemingbot's ai" + requestedBy)
-        
-
         userProfile = await UserProfile.createOrGet(user.id)
-        if not userProfile.aiBanned:
-            await ctx.edit(content=f"Cannot unban globally <@{user.id}> because they are not banned")
-            Loggers.modLogger.info(f"Tried unbanning user {user.id} but they are not banned globally")
-            return
-            
-        userProfile.aiBanned = False
-        await userProfile.save()
-        
-        if user.can_send():
-            await user.send(embed=discord.Embed(
-                title="Gemingbot's AI",
-                description="You got globally unbanned from Gemingbot's ai !",
-                color=discord.Color.green()
-            ))
-        Loggers.modLogger.info(f"Unbanned user {user.id} ({user.name}) from using gemingbot's ai" + requestedBy)
-        await ctx.edit(content=f"Unbanned user <@{user.id}> !")
+        if await ban(ctx, user, ban=False, condition=userProfile.aiBanned, globally=True):
+            userProfile.aiBanned = False
+            await userProfile.save()
         
 
 def setup(bot: discord.Bot):
