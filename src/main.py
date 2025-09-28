@@ -1,7 +1,9 @@
 import asyncio
+import json
 from pathlib import Path
 import tempfile
-from types import FrameType
+import traceback
+from types import FrameType, TracebackType
 from typing import Optional, cast
 import dotenv
 import discord
@@ -17,8 +19,9 @@ dotenv.load_dotenv(".env")
 
 # hooks
 
-def exceptHook(excT: type[BaseException], exc: BaseException, traceback):
+def exceptHook(excT: type[BaseException], exc: BaseException, _traceback: TracebackType):
     Loggers.logger.exception(f"Exception catched in 'exceptHook' {exc}")
+    Loggers.logger.exception(f"Exception catched in 'exceptHook' (traceback) {json.dumps(traceback.format_exception(exc), indent=2)}")
 
 async def asyncSigIntHandler(sig: int, frame: Optional[FrameType]):
     Loggers.logger.info("--- Now exiting ---")
