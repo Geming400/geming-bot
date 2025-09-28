@@ -1,15 +1,163 @@
-from typing import Optional, cast
+import math
+from typing import Callable, Optional, TypeVar, cast
 import discord
 from discord.ext import commands
+from discord.ui.item import Item
 
 from utils import utils
 from utils.Loggers import Loggers
 from utils.db.Profiles import GuildProfile, UserProfile
+from utils.utils import CONFIG
 
 
 Context = discord.ApplicationContext
 
-async def ban(ctx: Context, user: discord.User, *, ban: bool, condition: bool, globally: bool = False) -> bool:
+T = TypeVar('T')
+
+class BannedUsersView(discord.ui.View):
+    class ChangePageButton(discord.ui.Button):
+        currentPage: int
+        action: Callable[[int], int]
+        interactionOwner: discord.Member | discord.User
+        bannedUsers: list[int]
+        
+        def __init__(self, *,
+                     style: discord.ButtonStyle = discord.ButtonStyle.secondary,
+                     label: Optional[str] = None,
+                     disabled: bool = False,
+                     custom_id: Optional[str] = None,
+                     url: Optional[str] = None,
+                     emoji: str | discord.Emoji | discord.PartialEmoji | None = None,
+                     sku_id: Optional[int] = None,
+                     row: Optional[int] = None,
+                     currentPage: int,
+                     action: Callable[[int], int],
+                     interactionOwner: discord.Member | discord.User,
+                     bannedUsers: list[int]
+                     ):
+            super().__init__(style=style, label=label, disabled=disabled, custom_id=custom_id, url=url, emoji=emoji, sku_id=sku_id, row=row)
+            
+            self.currentPage = currentPage
+            self.action = action
+            self.interactionOwner = interactionOwner
+            self.bannedUsers = bannedUsers
+        
+        def checkIsOwner(self, interaction: discord.Interaction) -> bool:
+            if interaction.user:
+                return interaction.user.id == self.interactionOwner.id
+            return False
+        
+        async def callback(self, interaction: discord.Interaction):
+            if self.checkIsOwner(interaction):
+                await cast(discord.Message, interaction.message).edit(view=BannedUsersView(
+                    numPage=self.action(self.currentPage),
+                    bannedUsers=self.bannedUsers,
+                    interactionOwner=self.interactionOwner
+                ), embed=BannedUsersView.createEmbed(self.bannedUsers, self.currentPage))
+            else:
+                # Should never happen, but just in case
+                await interaction.respond("You cannot interact with this since it is not your interaction", ephemeral=True)
+                
+    
+    userPerPages = 10
+    
+    numPage: int
+    interactionOwner: discord.Member | discord.User
+    bannedUsers: list[int]
+    
+    def __init__(self, *items: Item, timeout: Optional[float] = 180, disable_on_timeout: bool = False,
+                 numPage: int,
+                 bannedUsers: list[int],
+                 interactionOwner: discord.Member | discord.User
+                 ):
+        super().__init__(*items, timeout=timeout, disable_on_timeout=disable_on_timeout)
+        
+        self.numPage = numPage
+        self.interactionOwner = interactionOwner
+        self.bannedUsers = bannedUsers
+        self.lastPage = math.ceil(len(bannedUsers) / BannedUsersView.userPerPages) - 1
+        if self.lastPage < 0:
+            self.lastPage = 0
+        
+        self.add_item(BannedUsersView.ChangePageButton(
+            label="<<",
+            disabled=numPage <= 0,
+            
+            currentPage=numPage,
+            action=lambda x: x-1,
+            interactionOwner=self.interactionOwner,
+            bannedUsers=self.bannedUsers
+        ))
+        for i in range(1, 4):
+            if numPage + i >= self.lastPage: break
+            
+            self.add_item(BannedUsersView.ChangePageButton(
+                label=str(numPage + i),
+                
+                currentPage=numPage,
+                action=lambda x: numPage + i,
+                interactionOwner=self.interactionOwner,
+                bannedUsers=self.bannedUsers
+            ))
+        self.add_item(BannedUsersView.ChangePageButton(
+            label=">>",
+            disabled=numPage >= self.lastPage,
+            
+            currentPage=numPage,
+            action=lambda x: x+1,
+            interactionOwner=self.interactionOwner,
+            bannedUsers=self.bannedUsers
+        ))
+    
+    
+    @staticmethod
+    def createEmbed(bannedUsersIDs: list[int], page: int) -> discord.Embed:
+        bannedUsersText = ""
+        for userID in BannedUsersView.splitList(bannedUsersIDs, BannedUsersView.userPerPages, page):
+            bannedUsersText += f"- <@{userID}>\n"
+        
+        embed = discord.Embed(
+            title="Banned users",
+            description=bannedUsersText.removesuffix("\n"),
+            footer=discord.EmbedFooter(text=f"Page {page + 1}")
+        )
+        
+        return embed
+    
+    @staticmethod
+    def splitList(l: list[T], n: int, index: int) -> list[T]:
+        """Splits a list in members of `n` and returns the index `index`
+
+        Args:
+            l: The list to split
+            n: The numbers of sub-list to make
+            index: The index of the sublist to get
+            
+        Returns:
+            The sublist of index `index`
+        """
+        
+        finalLists: list[list[T]] = []
+        currentSubList: list[T] = []
+        
+        for i, v in enumerate(l, start=1):
+            currentSubList.append(v)
+            
+            if i % n == 0:
+                finalLists.append(currentSubList.copy())
+                currentSubList.clear()
+        
+        if currentSubList != []:
+            finalLists.append(currentSubList.copy())
+            currentSubList.clear()
+        
+        try:
+            return finalLists[index]
+        except:
+            return []
+        
+
+async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition: bool, globally: bool = False) -> bool:
     """"dry" smh
 
     Args:
@@ -58,6 +206,8 @@ async def ban(ctx: Context, user: discord.User, *, ban: bool, condition: bool, g
     
     return True
 
+
+
 class Moderation(commands.Cog):
     moderationGroup = discord.SlashCommandGroup(
         "moderation",
@@ -80,7 +230,7 @@ class Moderation(commands.Cog):
             return
         
         guildProfile = await GuildProfile.createOrGet(ctx.guild_id)
-        if await ban(ctx, user, ban=True, condition=not user.id in guildProfile.bannedAiUsers, globally=False):
+        if await doBanAction(ctx, user, ban=True, condition=not user.id in guildProfile.bannedAiUsers, globally=False):
             guildProfile.bannedAiUsers.append(user.id)
             await guildProfile.save()
 
@@ -98,9 +248,25 @@ class Moderation(commands.Cog):
             return
     
         guildProfile = await GuildProfile.createOrGet(ctx.guild_id)
-        if await ban(ctx, user, ban=False, condition=user.id in guildProfile.bannedAiUsers, globally=False):
+        if await doBanAction(ctx, user, ban=False, condition=user.id in guildProfile.bannedAiUsers, globally=False):
             guildProfile.bannedAiUsers.remove(user.id)
             await guildProfile.save()
+    
+    @moderationGroup.command(name="ai-banned-users", description="Gets the banned users of gemingbot's ai in this server")
+    async def getBannedUsers(self, ctx: Context):
+        if isinstance(ctx.author, discord.User):
+            await ctx.respond("Cannot do this in a non-server context !")
+            return
+        
+        if (ctx.author.guild_permissions.ban_members) or (not ctx.author.id == self.bot.owner_id):
+            utils.logNoAuthorization(ctx, Loggers.modLogger, "/oderation ai-banned-users", "Doesn't have the required permissions (banning members)")
+            await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
+            return
+        
+        guildProfile = await GuildProfile.createOrGet(ctx.guild_id)
+        
+        view = BannedUsersView(numPage=0, interactionOwner=ctx.author, bannedUsers=guildProfile.bannedAiUsers)
+        await ctx.respond(view=view, embed=BannedUsersView.createEmbed(guildProfile.bannedAiUsers, page=0))
     
 
 class GlobalModeration(commands.Cog):
@@ -130,7 +296,7 @@ class GlobalModeration(commands.Cog):
             return
     
         userProfile = await UserProfile.createOrGet(user.id)
-        if await ban(ctx, user, ban=True, condition=not userProfile.aiBanned, globally=True):
+        if await doBanAction(ctx, user, ban=True, condition=not userProfile.aiBanned, globally=True):
             userProfile.aiBanned = True
             await userProfile.save()
 
@@ -148,10 +314,27 @@ class GlobalModeration(commands.Cog):
             return
         
         userProfile = await UserProfile.createOrGet(user.id)
-        if await ban(ctx, user, ban=False, condition=userProfile.aiBanned, globally=True):
+        if await doBanAction(ctx, user, ban=False, condition=userProfile.aiBanned, globally=True):
             userProfile.aiBanned = False
             await userProfile.save()
+    
+    
+    @globalModerationGroup.command(name="ai-banned-users", description="Gets the globally banned users of gemingbot's ai")
+    async def getBannedUsers(self, ctx: Context):
+        if not ctx.author.id == self.bot.owner_id:
+            utils.logNoAuthorization(ctx, Loggers.modLogger, "/global-moderation ai-banned-users", "Isn't owner")
+            await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
+            return
         
+        bannedUsers: list[int] = []
+        
+        async with CONFIG.storage.db.connect() as conn:
+            async with conn.execute("SELECT * FROM `users` WHERE ai_banned = 1") as cur:
+                for row in await cur.fetchall():
+                    bannedUsers.append(row[0]) # row[0] = userid
+        
+        view = BannedUsersView(numPage=0, interactionOwner=ctx.author, bannedUsers=bannedUsers)
+        await ctx.respond(view=view, embed=BannedUsersView.createEmbed(bannedUsers, page=0))
 
 def setup(bot: discord.Bot):
     bot.add_cog(Moderation(bot))
