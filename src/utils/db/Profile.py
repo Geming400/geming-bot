@@ -52,7 +52,6 @@ class Profile(Generic[T]):
         """
         self._lock = asyncio.Lock()
     
-    @functools.lru_cache
     @classmethod
     def _default(cls, **kwargs) -> Self:
         """An helper for `.default()`
