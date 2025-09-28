@@ -209,17 +209,31 @@ class MainBot(commands.Cog):
             Loggers.logger.debug("Starting task 'changeStatusTask'")
             self.changeStatusTask.start()
     
+    async def changeStatus(self):
+        Loggers.logger.debug("Changing status")
+    
+        statuses = CONFIG.getStatuses()
+        if statuses:
+            await statuses.setRandomStatus(self.bot)
+    
     @tasks.loop(seconds=CONFIG.getStatuses().frequency) # pyright: ignore[reportOptionalMemberAccess]
     async def changeStatusTask(self):
         if not self.bot.is_ready():
             Loggers.logger.debug("Cannot change status due to the bot still not being logged in")
             return
         
-        Loggers.logger.debug("Changing status")
+        await self.changeStatus()
     
-        statuses = CONFIG.getStatuses()
-        if statuses:
-            await statuses.setRandomStatus(self.bot)
+    @discord.slash_command(name="force-change-status", description="Force changes the status of gemingbot")
+    async def forceChangeStatus(self, ctx: Context):
+        if not CONFIG.isOwner(ctx.author.id):
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/force-change-status", reason="Isn't owner")
+            await ctx.respond("No :3", ephemeral=True)
+            return
+
+        Loggers.logger.debug("Restarted 'changeStatusTask' task because of the command '/force-change-status'")
+        self.changeStatusTask.restart()
+        await ctx.respond("Changed status !", ephemeral=True)
                 
 class MainBotButThingIdk(commands.Cog):
     def __init__(self, bot: discord.Bot):
