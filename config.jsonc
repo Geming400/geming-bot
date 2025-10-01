@@ -36,7 +36,7 @@
             },
             {
                 "state": "listening",
-                "text": "for news about geming finally coming out as trans"
+                "text": "news about geming finally coming out as trans"
             },
             {
                 "state": "playing",
@@ -68,7 +68,7 @@
             },
             {
                 "state": "listening",
-                "text": "to mythical markus"
+                "text": "mythical markus"
             },
             {
                 "state": "streaming",
@@ -92,7 +92,23 @@
             },
             {
                 "state": "status",
-                "text": "what if geming used any pronouns so you could called her with she pronouns :3"
+                "text": "what if geming used any pronouns so you could call her with she pronouns :3"
+            },
+			{
+				"state": "status",
+				"text": "Look again at her pronouns."
+            },
+            {
+                "state": "playing",
+                "text": "geometry dash"
+            },
+            {
+                "state": "status",
+                "text": "Cao is a furry femboy :33"
+            },
+            {
+                "state": "status",
+                "text": "Geming is NOT a gay furry femboy 3:"
             }
         ]
     }
