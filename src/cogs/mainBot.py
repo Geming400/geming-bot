@@ -224,16 +224,37 @@ class MainBot(commands.Cog):
         
         await self.changeStatus()
     
-    @discord.slash_command(name="force-change-status", description="Force changes the status of gemingbot")
-    async def forceChangeStatus(self, ctx: Context):
-        if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/force-change-status", reason="Isn't owner")
-            await ctx.respond("No :3", ephemeral=True)
-            return
+    if CONFIG.getStatuses():
+        @discord.slash_command(name="force-change-status", description="Force changes the status of gemingbot")
+        @discord.option(
+            name="safe",
+            input_type=bool,
+            default=False,
+            description="If set to `True`, it'll not restart the `MainBot.changeStatusTask`. Instead it'll just change it"
+        )
+        # @discord.option(
+        #     name="status",
+        #     input_type=str,
+        #     required=False,
+        #     autocomplete=discord.utils.basic_autocomplete(CONFIG.getStatuses().getFormattedStatusesAsStrList()) # pyright: ignore[reportOptionalMemberAccess]
+        # )
+        async def forceChangeStatus(self, ctx: Context, safe: bool, status: str):
+            if not CONFIG.isOwner(ctx.author.id):
+                utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/force-change-status", reason="Isn't owner")
+                await ctx.respond("No :3", ephemeral=True)
+                return
 
-        Loggers.logger.debug("Restarted 'changeStatusTask' task because of the command '/force-change-status'")
-        self.changeStatusTask.restart()
-        await ctx.respond("Changed status !", ephemeral=True)
+            Loggers.logger.debug("Restarted 'changeStatusTask' task because of the command '/force-change-status'")
+            if safe:
+                await self.changeStatus()
+            else:
+                try:
+                    self.changeStatusTask.restart()
+                    
+                    await ctx.respond("Changed status !", ephemeral=True)
+                except Exception as e:
+                    Loggers.logger.exception(f"Caught an exception while trying to restart the task `MainBot.changeStatusTask` in command '/force-change-status': {e}")
+                    await ctx.respond(embed=utils.createErrorEmbed(str(e)), ephemeral=True)
                 
 class MainBotButThingIdk(commands.Cog):
     def __init__(self, bot: discord.Bot):
