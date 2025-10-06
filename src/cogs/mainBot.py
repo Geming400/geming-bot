@@ -77,8 +77,8 @@ class MainBot(commands.Cog):
         integration_type=INTEGRATION_TYPES
     )
     @discord.option(
-        "user",
-        discord.User,
+        name="user",
+        input_type=discord.User,
         description="The user to send the icmb to"
     )
     async def linux_icbm(self, ctx: Context, user: discord.User):
@@ -118,45 +118,75 @@ class MainBot(commands.Cog):
         description="Get every commands you can access",
         integration_type=INTEGRATION_TYPES
     )
-    async def helpCmd(self, ctx: Context):
+    @discord.option(
+        name="user",
+        description="If not specified, it'll default to you",
+        input_type=discord.User,
+        required=False
+    )
+    async def helpCmd(self, ctx: Context, user: Optional[discord.User]):
         cmds = []
         ret = ""
         
-        if CONFIG.isOwner(ctx.author.id):
+        _user: discord.User | discord.Member = user or ctx.author
+        
+        if _user.bot:
+            ctx.respond("It's literally a bot bro", ephemeral=True)
+            return
+        
+        if isinstance(_user, discord.Member):
+            if _user.guild_permissions.administrator or CONFIG.isOwner(_user.id):
+                cmds += [
+                    "Admin commands (server specific):",
+                    "/permissions enable-ai",
+                    "/permissions enable-ai-per-channel",
+                    "/moderation ban-ai",
+                    "/moderation unban-ai",
+                    "/moderation ai-banned-users"
+                ]
+            
+        if CONFIG.isOwner(_user.id):
             cmds += [
                 "Owner commands:",
                 "/reload-cogs",
                 "/reload-configs",
                 "/ai-set-ping-reply",
                 "/global-flush",
-                "/ai-kill"
+                "/ai-kill",
+                "/global-moderation ban-ai",
+                "/global-moderation unban-ai",
+                "/global-moderation ai-banned-users"
             ]
-        if CONFIG.isTrusted(ctx.author.id):
+        if CONFIG.isTrusted(_user.id):
             cmds += [
                 "Trusted commands:",
                 "/set-model",
                 "/ai-system-prompt",
-                "/get-memory"
+                "/get-memory",
+                "/force-change-status"
             ]
         
         cmds += [
             "User commands:",
+            "/help",
             "/ai",
             # "/dyrs",
             "/linux-icbm",
-            "/help"
+            "/getUserRole",
+            "/cattify"
         ]
         
         s: str
         for s in cmds:
             if s.startswith("/"): # is a command
-                ret += f"- {s}\n"
+                ret += f"- `{s}`\n"
             else:
                 ret += f"## {s}\n"
             
         await ctx.respond(embed=discord.Embed(
             title="Help",
-            description=ret
+            description=ret,
+            footer=None if user == ctx.author else discord.EmbedFooter(f"As {_user.display_name}", _user.display_avatar.url)
             ), ephemeral=not ctx.can_send())
     
     @discord.slash_command(
@@ -189,6 +219,8 @@ class MainBot(commands.Cog):
             usrRole = f"Lynar :333333 mrprp >w< ({usrRole})"
         elif user.id == 1072494833777782805 or user.id == 1237908486638276802: # bonzai / silly billy (aka gay dudes)
             usrRole = f"gay role ({usrRole})"
+        elif user.id == 1045761412489809975 or user.id == 940959889126219856: # tjc / bonzai
+            usrRole = f"trans role :333 ({usrRole})"
         elif user.bot:
             if user.id == cast(discord.ClientUser, self.bot.user).id:
                 usrRole = f"gay af bot"
@@ -238,17 +270,18 @@ class MainBot(commands.Cog):
         #     required=False,
         #     autocomplete=discord.utils.basic_autocomplete(CONFIG.getStatuses().getFormattedStatusesAsStrList()) # pyright: ignore[reportOptionalMemberAccess]
         # )
-        async def forceChangeStatus(self, ctx: Context, safe: bool, status: str):
-            if not CONFIG.isOwner(ctx.author.id):
-                utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/force-change-status", reason="Isn't owner")
+        async def forceChangeStatus(self, ctx: Context, safe: bool):
+            if not CONFIG.isTrusted(ctx.author.id):
+                utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/force-change-status", reason="Isn't trusted")
                 await ctx.respond("No :3", ephemeral=True)
                 return
 
-            Loggers.logger.debug("Restarted 'changeStatusTask' task because of the command '/force-change-status'")
             if safe:
                 await self.changeStatus()
+                await ctx.respond("Changed status !", ephemeral=True)
             else:
                 try:
+                    Loggers.logger.debug("Restarted 'changeStatusTask' task because of the command '/force-change-status'")
                     self.changeStatusTask.restart()
                     
                     await ctx.respond("Changed status !", ephemeral=True)
