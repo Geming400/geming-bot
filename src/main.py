@@ -71,6 +71,7 @@ cogs_list: list[str] = [
     "permissions",
     "moderation",
     "ai",
+    "sillies",
 ]
 
 @bot.slash_command(
