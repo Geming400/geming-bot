@@ -15,6 +15,7 @@ import discord
 from discord.ext import commands
 from PIL import Image
 import ntpath
+import validators
 
 import httpx
 
@@ -138,6 +139,12 @@ class SillyStuff(commands.Cog):
         required=False
     )
     @discord.option(
+        name="url",
+        description="The url of the image to cattify",
+        input_type=str,
+        required=False
+    )
+    @discord.option(
         name="user",
         description="The user's pfp to cattify",
         input_type=discord.User,
@@ -150,7 +157,7 @@ class SillyStuff(commands.Cog):
         autocomplete=getPregeneratedCats,
         required=False
     )
-    async def cattify(self, ctx: Context, image: Optional[discord.Attachment], user: Optional[discord.User], flag: Optional[str]):
+    async def cattify(self, ctx: Context, image: Optional[discord.Attachment], url: Optional[str], user: Optional[discord.User], flag: Optional[str]):
         @functools.lru_cache
         def getImageLayers() -> dict[DICT_LAYER_ENUM, Image.Image]:
             img_layers: dict[DICT_LAYER_ENUM, Image.Image] = {}
@@ -162,11 +169,12 @@ class SillyStuff(commands.Cog):
             
             return img_layers
         
-        if (user, image, flag).count(None) < 2:
+        MAX_PARAMS: Final[int] = 4
+        if (user, image, flag).count(None) < MAX_PARAMS - 1:
             await ctx.respond("You cannot provide values for the `image`, `user` or `flag` arguments at the same time !", ephemeral=True)
             return
         
-        if (user, image, flag).count(None) == 3:
+        if (user, image, flag).count(None) == MAX_PARAMS:
             await ctx.respond("You must at least provide a value for the arguments `image`, `user` or `flag` !", ephemeral=True)
             return
         
@@ -175,13 +183,37 @@ class SillyStuff(commands.Cog):
             imgUrl = image.url
         elif user:
             imgUrl = user.display_avatar.url
+        elif url:
+            _url: Optional[str] = None
+            if not validators.url(url):
+                Loggers.logger.info(f"Url {url} is not a valid url, fallbacking to appending the 'https' scheme and removing '&' at the end (if possible)")
+                
+                # fallbacking to 'https' and removing `&`
+                _url = url.removesuffix("&")
+                if not validators.url(_url):
+                    Loggers.logger.info(f"New url {_url} is still not validated after removing the `&` suffix, appending the 'https' scheme")
+                    _url = f"https://{url}"
+                    
+                    if not validators.url(_url):
+                        Loggers.logger.info(f"New url {_url} is still not validated after appending the 'https' scheme, removing the `&` suffix")
+                        _url = _url.removesuffix("&")
+            
+            
+            if not validators.url(_url or url):
+                Loggers.logger.info(f"Url {_url or url} was never sucessfully validated")
+                
+                await ctx.respond(f"""The given url (`{url}`) is not a valid one !
+-# Tried to ignore this by **appending the `https` url scheme** and **removing `&` at the end of the url** (if possible)""", ephemeral=True)
+                return
+            
+            imgUrl = _url or url
         else:
             wokecatPath = SillyStuff.getCat(flag)
             if wokecatPath:
                 Loggers.logger.info(f"Getting pregenerated cat with flag {flag} and path {wokecatPath} for user {ctx.author.name} ({ctx.author.id})")
                 
                 file = discord.File(wokecatPath, description=f"The pre-generated woke cat (flag = {flag})")
-                await ctx.respond(f"Cattified !\n-# Cattified flag {flag}", file=file)
+                await ctx.respond(f"Cattified !\n-# Cattified `{flag} flag`", file=file)
             else:
                 await ctx.respond(f"The given flag (`{flag}`) is not present in the `flags` list !", ephemeral=True)
             
