@@ -2,13 +2,14 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 import functools
+import glob
 import hashlib
 import io
 from pathlib import Path
 import random
 import string
 import tempfile
-from typing import Optional, cast
+from typing import Final, Optional, cast
 import PIL
 import discord
 from discord.ext import commands
@@ -36,11 +37,12 @@ class DICT_LAYER_ENUM(str, Enum):
     CAT_FEATURES = "cat-features"
     CAT_EARS = "cat-ears"
     
-LAYER_IMG_PREFIX = "./resources/woke-ass-cat-maker"
-LAYERS: dict[DICT_LAYER_ENUM, str] = {
-    DICT_LAYER_ENUM.CAT_OUTLINE: f"{LAYER_IMG_PREFIX}/cat-outline.png",
-    DICT_LAYER_ENUM.CAT_FEATURES: f"{LAYER_IMG_PREFIX}/cat-features.png",
-    DICT_LAYER_ENUM.CAT_EARS: f"{LAYER_IMG_PREFIX}/cat-ears.png"
+LAYERS_FOLDER_PATH: Final[str] = "./resources/woke-ass-cat-maker"
+PREGENERATED_CATS_FOLDER: Final[str] = f"{LAYERS_FOLDER_PATH}/cats"
+LAYERS: Final[dict[DICT_LAYER_ENUM, str]] = {
+    DICT_LAYER_ENUM.CAT_OUTLINE: f"{LAYERS_FOLDER_PATH}/cat-outline.png",
+    DICT_LAYER_ENUM.CAT_FEATURES: f"{LAYERS_FOLDER_PATH}/cat-features.png",
+    DICT_LAYER_ENUM.CAT_EARS: f"{LAYERS_FOLDER_PATH}/cat-ears.png"
 }
 """Those are the layers that will be added to the first image
 """
@@ -52,8 +54,34 @@ class SillyStuff(commands.Cog):
     
     @functools.lru_cache
     @staticmethod
-    async def getPregeneratedCats(ctx: discord.AutocompleteContext):
-        ...
+    def getPregeneratedCats(ctx: Optional[discord.AutocompleteContext]): # We've set the `AutocompleteContext` as optional because of `SillyStuff.getCat`
+        cats = glob.glob(f"{PREGENERATED_CATS_FOLDER}/*.png")
+        ret: list[str] = []
+        
+        for cat in cats:
+            ret.append(
+                Path(cat).stem.removesuffix("cat")
+            )
+            
+        return ret
+    
+    @functools.lru_cache
+    @staticmethod
+    def getCat(flagName: str) -> Optional[str]:
+        """Gets a woke ass cat from a flag
+
+        Args:
+            flagName: The name of the flag
+
+        Returns:
+            The path of the woke ass cat
+        """
+        
+        for wokecat in SillyStuff.getPregeneratedCats(None):
+            if flagName == wokecat:
+                return f"{PREGENERATED_CATS_FOLDER}/{wokecat}cat.png"
+        
+        return None # not needed but it's just for readability
     
     @staticmethod
     def generateCattifyImg(
@@ -115,13 +143,14 @@ class SillyStuff(commands.Cog):
         input_type=discord.User,
         required=False
     )
-    @discord.option( # TODO
+    @discord.option(
         name="flag",
         description="The woke flag to cattify",
         input_type=str,
+        autocomplete=getPregeneratedCats,
         required=False
     )
-    async def cattify(self, ctx: Context, image: Optional[discord.Attachment], user: Optional[discord.User]):
+    async def cattify(self, ctx: Context, image: Optional[discord.Attachment], user: Optional[discord.User], flag: Optional[str]):
         @functools.lru_cache
         def getImageLayers() -> dict[DICT_LAYER_ENUM, Image.Image]:
             img_layers: dict[DICT_LAYER_ENUM, Image.Image] = {}
@@ -133,19 +162,30 @@ class SillyStuff(commands.Cog):
             
             return img_layers
         
-        if user != None and image != None:
-            await ctx.respond("You cannot provide both `image` and `user` arguments at the same time !", ephemeral=True)
+        if (user, image, flag).count(None) < 2:
+            await ctx.respond("You cannot provide values for the `image`, `user` or `flag` arguments at the same time !", ephemeral=True)
             return
         
-        if user == None and image == None:
-            await ctx.respond("You must at least provide a value for the argument `image` or `user` !", ephemeral=True)
+        if (user, image, flag).count(None) == 3:
+            await ctx.respond("You must at least provide a value for the arguments `image`, `user` or `flag` !", ephemeral=True)
             return
         
         imgUrl: str
         if image:
             imgUrl = image.url
+        elif user:
+            imgUrl = user.display_avatar.url
         else:
-            imgUrl = cast(discord.User, user).display_avatar.url
+            wokecatPath = SillyStuff.getCat(flag)
+            if wokecatPath:
+                Loggers.logger.info(f"Getting pregenerated cat with flag {flag} and path {wokecatPath} for user {ctx.author.name} ({ctx.author.id})")
+                
+                file = discord.File(wokecatPath, description=f"The pre-generated woke cat (flag = {flag})")
+                await ctx.respond(f"Cattified !\n-# Cattified flag {flag}", file=file)
+            else:
+                await ctx.respond(f"The given flag (`{flag}`) is not present in the `flags` list !", ephemeral=True)
+            
+            return
         
         Loggers.logger.info(f"Preparing the images for 'cattification' for user {ctx.author.name} ({ctx.author.id})")
     
