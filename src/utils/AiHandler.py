@@ -115,8 +115,8 @@ class AiHandler:
         """
         return self._globalMessages
     
-    def isModelPreloaded(self, modelName: str) -> bool:        
-        for processes in ollama.ps():
+    async def isModelPreloaded(self, modelName: str, host: Optional[str] = None) -> bool:        
+        for processes in await ollama.AsyncClient(host).ps():
             for model in processes[1]:
                 Loggers.aiLogger.debug(f"Checking if model {model.name} is preloaded")
                 if cast(ollama.ProcessResponse.Model, model).name == modelName:

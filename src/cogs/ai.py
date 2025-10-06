@@ -1,6 +1,5 @@
 import os
-import re
-from typing import Optional, cast
+from typing import Final, Optional, cast
 import discord
 from discord.ext import commands
 import tempfile
@@ -20,13 +19,16 @@ Context = discord.ApplicationContext
 aiHandler = CONFIG.storage.aiHandler
 
 
+HOST: Final[Optional[str]] = None
+
 class AiUtils(commands.Cog):
     def __init__(self, bot: discord.Bot):
         self.bot = bot
     
     @staticmethod
     def getModels(ctx: discord.AutocompleteContext):
-        models: list[str] = [model["model"] for model in ollama.list().model_dump()["models"]]
+        _models = ollama.list()
+        models: list[str] = [model["model"] for model in _models.model_dump()["models"]]
         return models
 
     @discord.slash_command(
@@ -77,7 +79,7 @@ class AiUtils(commands.Cog):
         old_model = CONFIG.storage.currentModel
         CONFIG.storage.currentModel = model
         
-        if aiHandler.isModelPreloaded(model):
+        if await aiHandler.isModelPreloaded(model, HOST):
             await ctx.respond(f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`")
             return
             
@@ -282,9 +284,9 @@ class BotAI(commands.Cog):
             
             async with message.channel.typing():
                 try:
-                    if not aiHandler.isModelPreloaded(CONFIG.storage.currentModel):
+                    if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, HOST):
                         await message.add_reaction("<:preloading_model:1419412009212051456>")
-                        await utils.preloadModelAsync(CONFIG.storage.currentModel)
+                        await utils.preloadModelAsync(CONFIG.storage.currentModel, HOST)
                         await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
                 
                     Loggers.aiLogger.debug("Adding user's prompt to memory")
@@ -294,7 +296,7 @@ class BotAI(commands.Cog):
                     aiHandler.addMessage(AiHandler.Role.USER, prompt + aiHandler.getUserInfos(message.author), message.channel.id)
                     
                     Loggers.aiLogger.info(f"Asking prompt for user {message.author.name} ({message.author.id}):\n{prompt}")
-                    response = await AsyncClient().chat(CONFIG.storage.currentModel, messages=aiHandler.getMessagesWithPrompt(message.channel.id), keep_alive=CONFIG.getKeepAlive())
+                    response = await AsyncClient(HOST).chat(CONFIG.storage.currentModel, messages=aiHandler.getMessagesWithPrompt(message.channel.id), keep_alive=CONFIG.getKeepAlive())
                     content = utils.removeThinkTag(response.message.content or "")
                     
                     Loggers.aiLogger.info(f"Got an answer for {message.author.name}'s prompt ({message.author.id}) (prompt: '{message.content}'):\n{content}")
@@ -390,8 +392,8 @@ class BotAI(commands.Cog):
         await ctx.respond(f"Asking ai...\n-# using model `{model}`")
         
         try:
-            if not aiHandler.isModelPreloaded(CONFIG.storage.currentModel):
-                await utils.preloadModelAsync(model)
+            if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, HOST):
+                await utils.preloadModelAsync(model, HOST)
                 await ctx.edit(content=f"Asking ai...\n-# using preloaded model `{model}`")
                 
         
@@ -400,7 +402,7 @@ class BotAI(commands.Cog):
             aiHandler.addMessage(AiHandler.Role.USER, prompt + aiHandler.getUserInfos(ctx.author), ctx.channel_id)
             
             Loggers.aiLogger.info(f"Asking prompt for user {ctx.author.name} ({ctx.author.id}):\n{prompt}")
-            response = await AsyncClient().chat(model, messages=aiHandler.getMessagesWithPrompt(ctx.channel_id), keep_alive=CONFIG.getKeepAlive())
+            response = await AsyncClient(HOST).chat(model, messages=aiHandler.getMessagesWithPrompt(ctx.channel_id), keep_alive=CONFIG.getKeepAlive())
             content = utils.removeThinkTag(response.message.content or "")
             Loggers.aiLogger.info(f"Got an answer for {ctx.author.name}'s prompt ({ctx.author.id}) (prompt {prompt}):\n{content}")
             if len(content or "") >= 2000:
@@ -416,6 +418,7 @@ class BotAI(commands.Cog):
                 await ctx.edit(content="", file=file)
                 
                 tmpfile._closer.cleanup()
+                tmpfile.close()
             else:
                 await ctx.edit(content=content or "**[no response]**", allowed_mentions=CONFIG.storage.aiPingReply if ctx.author.bot else None)
                 

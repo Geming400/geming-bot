@@ -25,19 +25,19 @@ INTEGRATION_TYPES: Final[set[discord.IntegrationType]] = {
     discord.IntegrationType.user_install,
 }
 
-def preloadModel(model: str):
+def preloadModel(model: str, host: Optional[str] = None):
     Loggers.aiLogger.info(f"Preloading model {model}")
-    ollama.generate(model, keep_alive=CONFIG.getKeepAlive())
+    ollama.Client(host).generate(model, keep_alive=CONFIG.getKeepAlive())
     Loggers.aiLogger.info(f"Preloaded model {model}")
     
-async def preloadModelAsync(model: str):
+async def preloadModelAsync(model: str, host: Optional[str] = None):
     Loggers.aiLogger.info(f"Preloading model {model} (async)")
-    await ollama.AsyncClient().generate(model, keep_alive=CONFIG.getKeepAlive())
+    await ollama.AsyncClient(host).generate(model, keep_alive=CONFIG.getKeepAlive())
     Loggers.aiLogger.info(f"Preloaded model {model} (async)")
     
 def logNoAuthorization(ctx: discord.ApplicationContext, logger: logging.Logger, cmdname: Optional[str] = None, reason: Optional[str] = None, stacklevel = 2):
     funcName = logger.findCaller(stacklevel=stacklevel)[2]
-    logger.warning(f"User {ctx.author.name} ({ctx.author.id}) tried running {"command" if cmdname else "command (from function)"} `{cmdname or funcName}` but doesn't have the permissions, reason: {reason or 'No reason provided'}")
+    logger.warning(f"User {ctx.author.name} ({ctx.author.id}) tried running command {"" if cmdname else "(from function)"} `{cmdname or funcName}` but doesn't have the permissions, reason: {reason or 'No reason provided'}")
 
 def formatAiMessages(messages: list[dict[str, str]]) -> str:
     ret: list[str] = []
