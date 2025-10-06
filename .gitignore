@@ -206,3 +206,4 @@ __marimo__/
 tempdir/
 /db/
 src/test.py
+cattify-tempfile
