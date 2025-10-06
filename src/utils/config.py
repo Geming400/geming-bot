@@ -96,8 +96,19 @@ class Activites:
         activity = Activites.ActivityState.toDiscordActivity(status.state, status.text)
         await bot.change_presence(activity=activity)
     
+    def getFormattedStatusesAsStrList(self) -> list[str]:
+        ret = []
+        
+        for status in self.statuses:
+            ret.append(f"({status.state.value}) {status.text}")
+        
+        return ret
+    
     def __repr__(self) -> str:
         return f"Activities( frequency = {self.frequency}, status = {self.statuses} )"
+    
+    def __iter__(self):
+        return self.statuses
 
 class Config(metaclass=Singleton):
     file: str
