@@ -171,14 +171,16 @@ async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition:
         If their was an action done on the given user
     """
     
-    if user.id == ctx.author.id:
-        # await ctx.respond("You cannot ban yourself !", ephemeral=True)
-        # return False
-        ...
+
 
     verb = "ban" if ban else "unban"
     requestedByText = f", requested by {ctx.author.name} ({ctx.author.id})"
     globalBanText = f"(**global {verb}**)" if globally else ""
+    inServerText = "" if globally else f"in the server `{ctx.guild.name}`"
+    
+    if user.id == ctx.author.id:
+        await ctx.respond(f"You cannot {verb} yourself !", ephemeral=True)
+        return False
     
     Loggers.modLogger.info(f"{verb}ning user {user.name} ({user.id}) from using gemingbot's ai" + requestedByText)
     await ctx.respond(f"{verb}ning user <@{user.id}> ...", ephemeral=True)
@@ -189,17 +191,20 @@ async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition:
         
         return False
     
-    if user.can_send():
-        embedColor = discord.Color.red() if ban else discord.Color.green()
-        await user.send(embed=discord.Embed(
-            title="Gemingbot's AI",
-            description=f"You got {verb}ned from Gemingbot's ai in the server `{ctx.guild.name}` ! {globalBanText}",
-            color=embedColor
-        ))
-            
-        Loggers.modLogger.info(f"Sent dm to user {user.name} ({user.id})")
-    else:
-        Loggers.modLogger.info(f"Couldn't send dm to user {user.name} ({user.id}) because their dms are disabled")
+    try:
+        if user.can_send():
+            embedColor = discord.Color.red() if ban else discord.Color.green()
+            await user.send(embed=discord.Embed(
+                title="Gemingbot's AI",
+                description=f"You got {verb}ned from Gemingbot's ai {inServerText} ! {globalBanText}",
+                color=embedColor
+            ))
+                
+            Loggers.modLogger.info(f"Sent dm to user {user.name} ({user.id})")
+        else:
+            Loggers.modLogger.info(f"Couldn't send dm to user {user.name} ({user.id}) because their dms are disabled")
+    except Exception as e:
+        Loggers.modLogger.exception(f"Caught error while trying to {"globally" if globally else ""} {verb} user {user.name}: {e}")
     
     Loggers.modLogger.info(f"{verb}ned user {user.id} ({user.name}) from using gemingbot's ai {globalBanText}")
     await ctx.edit(content=f"{verb}ned user <@{user.id}> ! {globalBanText}")
