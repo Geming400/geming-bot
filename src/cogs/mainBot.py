@@ -173,7 +173,8 @@ class MainBot(commands.Cog):
             # "/dyrs",
             "/linux-icbm",
             "/getUserRole",
-            "/cattify"
+            "/cattify",
+            "/true-or-false"
         ]
         
         s: str
@@ -329,15 +330,15 @@ class MainBotButThingIdk(commands.Cog):
             elif "mrrrrrph" in message.content:
                 await message.reply("Mrreeow :3 Nya~ ! Purrrr >w<")
     
-    @discord.slash_command(name="sync-command-tree", description="Syncs the command tree")
-    async def syncCommandTree(self, ctx: Context):
-        if not CONFIG.isOwner(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/sync-command-tree", reason="Isn't owner")
-            await ctx.respond("No :3", ephemeral=True)
-            return
+    # @discord.slash_command(name="sync-command-tree", description="Syncs the command tree")
+    # async def syncCommandTree(self, ctx: Context):
+    #     if not CONFIG.isOwner(ctx.author.id):
+    #         utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/sync-command-tree", reason="Isn't owner")
+    #         await ctx.respond("No :3", ephemeral=True)
+    #         return
         
-        await self.bot.sync_commands()
-        await ctx.respond(f"Synced {len(self.bot.commands)} commands !", ephemeral=True)
+    #     await self.bot.sync_commands()
+    #     await ctx.respond(f"Synced {len(self.bot.commands)} commands !", ephemeral=True)
 
 def setup(bot: discord.Bot):
     bot.add_cog(MainBot(bot))

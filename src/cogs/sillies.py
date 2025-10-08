@@ -170,11 +170,11 @@ class SillyStuff(commands.Cog):
             return img_layers
         
         MAX_PARAMS: Final[int] = 4
-        if (user, image, flag).count(None) < MAX_PARAMS - 1:
+        if (user, image, flag, url).count(None) < MAX_PARAMS - 1:
             await ctx.respond("You cannot provide values for the `image`, `user` or `flag` arguments at the same time !", ephemeral=True)
             return
         
-        if (user, image, flag).count(None) == MAX_PARAMS:
+        if (user, image, flag, url).count(None) == MAX_PARAMS:
             await ctx.respond("You must at least provide a value for the arguments `image`, `user` or `flag` !", ephemeral=True)
             return
         
@@ -268,6 +268,23 @@ class SillyStuff(commands.Cog):
             asyncio.create_task(sendMsg())
             
         future.add_done_callback(onDone)
+    
+    @discord.slash_command(name="true-or-false", description="Confirms if a message is true or false !!")
+    @discord.option(
+        name="msg",
+        description="What to confirm",
+        input_type=str
+    )
+    async def trueOfFalse(self, ctx: Context, msg: str):
+        if "trans" in msg:
+            if "not" in msg or "nt" in msg or "n't" in msg:
+                response = "true"
+            else:
+                response = "false"
+        else:
+            response = random.Random(msg.lower()).choice(("true", "false"))
+        
+        await ctx.respond(f"`{msg.replace("`", "\\`")}` is {response} :33")
         
 def setup(bot: discord.Bot):
     bot.add_cog(SillyStuff(bot))
