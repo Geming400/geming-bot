@@ -159,6 +159,7 @@ TOKEN: str = cast(str, os.getenv("TOKEN"))
 if TOKEN == None:
     raise TypeError("'TOKEN' env variable has not been set !")
 
+print("h")
 
 bot.run(os.getenv("TOKEN"))
 
