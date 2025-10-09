@@ -159,7 +159,7 @@ TOKEN: Optional[str] = cast(str, os.getenv("TOKEN"))
 if TOKEN == None:
     raise TypeError("'TOKEN' env variable has not been set !")
 
-print("h")
+print("colon three jumpscare :333333")
 
 bot.run(TOKEN)
 
