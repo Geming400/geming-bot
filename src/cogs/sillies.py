@@ -288,7 +288,7 @@ class SillyStuff(commands.Cog):
         await ctx.respond(f"`{msg.replace("`", "\\`")}` is {response} :33")
     
     @discord.message_command(name="Cattify")
-    async def cattifyInteraction(self, ctx: Context, message: discord.Message):
+    async def cattifyMessageInteraction(self, ctx: Context, message: discord.Message):
         def createMessageMention(msg: discord.Message):
             if msg.guild:
                 guildID = msg.guild.id
@@ -298,14 +298,36 @@ class SillyStuff(commands.Cog):
         
         if len(message.attachments) != 0: # 'if message.attachments' doesn't seem to work ??
             attachement = message.attachments[0]
-            await self.cattify(ctx, attachement, None, None, None)
+            await self.cattify(
+                ctx,
+                image=attachement,
+                url=None,
+                user=None,
+                flag=None
+            )
         else:
             urlPattern = r"(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
             url = re.search(urlPattern, message.content)
             if url:
-                await self.cattify(ctx, None, url.string[url.start():url.end()], None, None)
+                await self.cattify(
+                    ctx,
+                    image=None,
+                    url=url.string[url.start():url.end()],
+                    user=None,
+                    flag=None
+                )
             else:
                 await ctx.respond(f"No url or attachements founds in the message {createMessageMention(message)}", ephemeral=True)
+
+    @discord.user_command(name="Cattify pfp")
+    async def cattifyUserInteraction(self, ctx: Context, user: discord.User):
+        await self.cattify(
+            ctx,
+            image=None,
+            url=None,
+            user=user,
+            flag=None
+        )
     
 def setup(bot: discord.Bot):
     bot.add_cog(SillyStuff(bot))
