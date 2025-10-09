@@ -155,13 +155,13 @@ else:
 #     status = statuses.getRandomStatus()
 #     bot.activity = statuses.ActivityState.toDiscordActivity(status.state, status.text)
 
-TOKEN: str = cast(str, os.getenv("TOKEN"))
+TOKEN: Optional[str] = cast(str, os.getenv("TOKEN"))
 if TOKEN == None:
     raise TypeError("'TOKEN' env variable has not been set !")
 
 print("h")
 
-bot.run(os.getenv("TOKEN"))
+bot.run(TOKEN)
 
 # try:
 #     loop = asyncio.get_event_loop()
