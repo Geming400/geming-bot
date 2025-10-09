@@ -7,6 +7,7 @@ import hashlib
 import io
 from pathlib import Path
 import random
+import re
 import string
 import tempfile
 from typing import Final, Optional, cast
@@ -285,7 +286,27 @@ class SillyStuff(commands.Cog):
             response = random.Random(msg.lower()).choice(("true", "false"))
         
         await ctx.respond(f"`{msg.replace("`", "\\`")}` is {response} :33")
+    
+    @discord.message_command(name="Cattify")
+    async def cattifyInteraction(self, ctx: Context, message: discord.Message):
+        def createMessageMention(msg: discord.Message):
+            if msg.guild:
+                guildID = msg.guild.id
+            else:
+                guildID = "@me"
+            return f"https://discord.com/channels/{guildID}/{msg.channel.id}/{msg.id}"
         
+        if len(message.attachments) != 0: # 'if message.attachments' doesn't seem to work ??
+            attachement = message.attachments[0]
+            await self.cattify(ctx, attachement, None, None, None)
+        else:
+            urlPattern = r"(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
+            url = re.search(urlPattern, message.content)
+            if url:
+                await self.cattify(ctx, None, url.string[url.start():url.end()], None, None)
+            else:
+                await ctx.respond(f"No url or attachements founds in the message {createMessageMention(message)}", ephemeral=True)
+    
 def setup(bot: discord.Bot):
     bot.add_cog(SillyStuff(bot))
     
