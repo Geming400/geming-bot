@@ -109,9 +109,13 @@ class MainBot(commands.Cog):
             return
         
         Loggers.logger.info(f"Reloading configs for user {ctx.author.name} ({ctx.author.id})")
-        CONFIG.reloadConfigs()
-        aiHandler.systemPrompt = CONFIG.getSystemPrompt()
-        await ctx.respond("Reloaded configs !", ephemeral=True)
+        try:
+            CONFIG.reloadConfigs()
+            aiHandler.systemPrompt = CONFIG.getSystemPrompt()
+            await ctx.respond("Reloaded configs !", ephemeral=True)
+        except Exception as e:
+            Loggers.logger.exception(f"Caught error while trying to reload configs: {e}")
+            await ctx.respond(embed=utils.createErrorEmbed(f"Error while trying to reload configs: ({e.__class__.__name__}) {e}"), ephemeral=True)
         
     @discord.slash_command(
         name="help",
