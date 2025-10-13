@@ -135,7 +135,7 @@ class MainBot(commands.Cog):
         _user: discord.User | discord.Member = user or ctx.author
         
         if _user.bot:
-            ctx.respond("It's literally a bot bro", ephemeral=True)
+            await ctx.respond("It's literally a bot :sob:", ephemeral=True)
             return
         
         if isinstance(_user, discord.Member):
@@ -178,7 +178,9 @@ class MainBot(commands.Cog):
             "/linux-icbm",
             "/getUserRole",
             "/cattify",
-            "/true-or-false"
+            "/true-or-false",
+            "/yes-or-no",
+            "x-meter"
         ]
         
         s: str
@@ -191,7 +193,7 @@ class MainBot(commands.Cog):
         await ctx.respond(embed=discord.Embed(
             title="Help",
             description=ret,
-            footer=None if user == ctx.author else discord.EmbedFooter(f"As {_user.display_name}", _user.display_avatar.url)
+            footer=None if _user == ctx.author else discord.EmbedFooter(f"As {_user.display_name}", _user.display_avatar.url)
             ), ephemeral=not ctx.can_send())
     
     @discord.slash_command(
@@ -314,7 +316,7 @@ class MainBotButThingIdk(commands.Cog):
             
         if self.bot.user in message.mentions:
             # not funny uber-bot like easter egg
-            pattern = r"remind .+ in \d+ ((second(|s))|(hour(|s))|(day(|s))|(month(|s))|(year(|s))) to" # uber bot ahh regex
+            pattern = r"remind .+ in \d+ (second(|s)|(minute(|s))|(hour(|s))|(day(|s))|(month(|s))|(year(|s))) to" # uber bot ahh regex
             if re.findall(pattern, message.content, re.RegexFlag.IGNORECASE):
                 await message.reply("I am not uber bot you dumbass")
                 return
