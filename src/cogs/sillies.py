@@ -340,6 +340,13 @@ class SillyStuff(commands.Cog):
                 randomNum = 0
         elif _user.id == 1072494833777782805: # bonzai
             randomNum = random.Random(x.lower().strip() + str(_user.id)).randint(90, 100)
+        elif _user.id == 940959889126219856 or _user.id == 1045761412489809975: # trans girls (aka skepper and tjc :3)
+            if "notn't" in x or "notnt" in x:
+                randomNum = 100
+            elif "not" in x or "nt" in x or "n't" in x:
+                randomNum = 0
+            else:
+                randomNum = 100
         else:
             randomNum: int = random.Random(x.lower().strip() + str(_user.id)).randint(0, 100)
         
