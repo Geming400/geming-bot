@@ -157,7 +157,7 @@ class BannedUsersView(discord.ui.View):
             return []
         
 
-async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition: bool, globally: bool = False) -> bool:
+async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition: bool, globally: bool = False, silent: bool = False) -> bool:
     """"dry" smh
 
     Args:
@@ -166,6 +166,7 @@ async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition:
         ban: If set to `True`, we'll ban the user, otherwise, we'll unban it
         condition: A bool value to know if the user is actually bannable or not
         globally: If it's a global ban. Defaults to False.
+        silent: If a message will be sent to the user
 
     Returns:
         If their was an action done on the given user
@@ -191,20 +192,23 @@ async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition:
         
         return False
     
-    try:
-        if user.can_send():
-            embedColor = discord.Color.red() if ban else discord.Color.green()
-            await user.send(embed=discord.Embed(
-                title="Gemingbot's AI",
-                description=f"You got {verb}ned from Gemingbot's ai {inServerText} ! {globalBanText}",
-                color=embedColor
-            ))
-                
-            Loggers.modLogger.info(f"Sent dm to user {user.name} ({user.id})")
-        else:
-            Loggers.modLogger.info(f"Couldn't send dm to user {user.name} ({user.id}) because their dms are disabled")
-    except Exception as e:
-        Loggers.modLogger.exception(f"Caught error while trying to {"globally" if globally else ""} {verb} user {user.name}: {e}")
+    if silent:
+        try:
+            if user.can_send():
+                embedColor = discord.Color.red() if ban else discord.Color.green()
+                await user.send(embed=discord.Embed(
+                    title="Gemingbot's AI",
+                    description=f"You got {verb}ned from Gemingbot's ai {inServerText} ! {globalBanText}",
+                    color=embedColor
+                ))
+                    
+                Loggers.modLogger.info(f"Sent dm to user {user.name} ({user.id})")
+            else:
+                Loggers.modLogger.info(f"Couldn't send dm to user {user.name} ({user.id}) because their dms are disabled")
+        except Exception as e:
+            Loggers.modLogger.exception(f"Caught error while trying to {"globally" if globally else ""} {verb} user {user.name}: {e}")
+    else:
+        Loggers.modLogger.info(f"Will not send a dm to the user {user.name} ({user.id}) because they got {verb}ned silently")
     
     Loggers.modLogger.info(f"{verb}ned user {user.id} ({user.name}) from using gemingbot's ai {globalBanText}")
     await ctx.edit(content=f"{verb}ned user <@{user.id}> ! {globalBanText}")
@@ -228,14 +232,20 @@ class Moderation(commands.Cog):
         input_type=discord.User,
         description="The user to ban"
     )
-    async def banAI(self, ctx: Context, user: discord.User):
+    @discord.option(
+        name="silent",
+        input_type=bool,
+        default=False,
+        description="If a DM will be sent to the user or not (defaults to false)"
+    )
+    async def banAI(self, ctx: Context, user: discord.User, silent: bool):
         if not (cast(discord.Member, ctx.author).guild_permissions.ban_members or ctx.author.id == self.bot.owner_id):
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/moderation ban-ai", "Doesn't have the 'ban members' permissions")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
         
         guildProfile = await GuildProfile.createOrGet(ctx.guild_id)
-        if await doBanAction(ctx, user, ban=True, condition=not user.id in guildProfile.bannedAiUsers, globally=False):
+        if await doBanAction(ctx, user, ban=True, condition=not user.id in guildProfile.bannedAiUsers, globally=False, silent=silent):
             guildProfile.bannedAiUsers.append(user.id)
             await guildProfile.save()
 
@@ -246,14 +256,20 @@ class Moderation(commands.Cog):
         description="The user to ban",
         required=False
     )
-    async def unbanAI(self, ctx: Context, user: discord.User):
+    @discord.option(
+        name="silent",
+        input_type=bool,
+        default=False,
+        description="If a DM will be sent to the user or not (defaults to false)"
+    )
+    async def unbanAI(self, ctx: Context, user: discord.User, silent: bool):
         if not (cast(discord.Member, ctx.author).guild_permissions.ban_members or ctx.author.id == self.bot.owner_id):
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/moderation unban-ai", "Doesn't have the 'ban members' permissions")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
     
         guildProfile = await GuildProfile.createOrGet(ctx.guild_id)
-        if await doBanAction(ctx, user, ban=False, condition=user.id in guildProfile.bannedAiUsers, globally=False):
+        if await doBanAction(ctx, user, ban=False, condition=user.id in guildProfile.bannedAiUsers, globally=False, silent=silent):
             guildProfile.bannedAiUsers.remove(user.id)
             await guildProfile.save()
     
@@ -294,14 +310,20 @@ class GlobalModeration(commands.Cog):
         description="The user to ban",
         required=False
     )
-    async def banAI(self, ctx: Context, user: discord.User):
+    @discord.option(
+        name="silent",
+        input_type=bool,
+        default=False,
+        description="If a DM will be sent to the user or not (defaults to false)"
+    )
+    async def banAI(self, ctx: Context, user: discord.User, silent: bool):
         if not ctx.author.id == self.bot.owner_id:
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/global-moderation ban-ai", "Isn't owner")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
     
         userProfile = await UserProfile.createOrGet(user.id)
-        if await doBanAction(ctx, user, ban=True, condition=not userProfile.aiBanned, globally=True):
+        if await doBanAction(ctx, user, ban=True, condition=not userProfile.aiBanned, globally=True, silent=silent):
             userProfile.aiBanned = True
             await userProfile.save()
 
@@ -312,14 +334,20 @@ class GlobalModeration(commands.Cog):
         description="The user to ban",
         required=False
     )
-    async def unbanAI(self, ctx: Context, user: discord.User):
+    @discord.option(
+        name="silent",
+        input_type=bool,
+        default=False,
+        description="If a DM will be sent to the user or not (defaults to false)"
+    )
+    async def unbanAI(self, ctx: Context, user: discord.User, silent: bool):
         if not ctx.author.id == self.bot.owner_id:
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/global-moderation unban-ai", "Isn't owner")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
         
         userProfile = await UserProfile.createOrGet(user.id)
-        if await doBanAction(ctx, user, ban=False, condition=userProfile.aiBanned, globally=True):
+        if await doBanAction(ctx, user, ban=False, condition=userProfile.aiBanned, globally=True, silent=silent):
             userProfile.aiBanned = False
             await userProfile.save()
     
