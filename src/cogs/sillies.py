@@ -278,7 +278,9 @@ class SillyStuff(commands.Cog):
     )
     async def trueOfFalse(self, ctx: Context, msg: str):
         if "trans" in msg:
-            if "not" in msg or "nt" in msg or "n't" in msg:
+            if "notn't" in msg or "notnt" in msg:
+                response = "false"
+            elif "not" in msg or "nt" in msg or "n't" in msg:
                 response = "true"
             else:
                 response = "false"
@@ -286,7 +288,63 @@ class SillyStuff(commands.Cog):
             response = random.Random(msg.lower()).choice(("true", "false"))
         
         await ctx.respond(f"`{msg.replace("`", "\\`")}` is {response} :33")
-    
+
+    @discord.slash_command(name="yes-or-no", description="Yes or no ?")
+    @discord.option(
+        name="msg",
+        description="What to confirm",
+        input_type=str
+    )
+    async def yesOrNo(self, ctx: Context, msg: str):
+        response = random.Random(msg.lower()).choice(("yes", "no"))
+        
+        if msg.endswith("?"):
+            msg.removesuffix("?")
+        
+        if ctx.author.id == 1072494833777782805 and "gay" in msg:
+            response = "yes"
+        if "trans" in msg and ctx.author.id == 729671931359395940: # geming
+            if "notn't" in msg or "notnt" in msg:
+                response = "no"
+            elif "not" in msg or "nt" in msg or "n't" in msg:
+                response = "yes"
+            else:
+                response = "no"
+        
+        await ctx.respond(f"`{msg.replace("`", "\\`").strip()}` ? {response} :33")
+
+    @discord.slash_command(name="x-meter", description="Measures a thing")
+    @discord.option(
+        name="x",
+        description="The thing to measure",
+        input_type=str
+    )
+    @discord.option(
+        name="user",
+        description="The user to measure this on. Defaults to you",
+        input_type=discord.User,
+        required=False
+    )
+    async def xmeter(self, ctx: Context, x: str, user: Optional[discord.User]):
+        if x.strip() == "":
+            await ctx.respond("The `x` parameter must not be empty", ephemeral=True)
+            return
+        
+        _user: discord.User | discord.Member = user or ctx.author
+        if "trans" in x and _user.id == 729671931359395940: # geming
+            if "notn't" in x or "notnt" in x:
+                randomNum = 0
+            elif "not" in x or "nt" in x or "n't" in x:
+                randomNum = 100
+            else:
+                randomNum = 0
+        elif _user.id == 1072494833777782805: # bonzai
+            randomNum = random.Random(x.lower().strip() + str(_user.id)).randint(90, 100)
+        else:
+            randomNum: int = random.Random(x.lower().strip() + str(_user.id)).randint(0, 100)
+        
+        await ctx.respond(f"{_user.mention} is {randomNum}% {x} :3333", allowed_mentions=discord.AllowedMentions.none())
+
     @discord.message_command(name="Cattify")
     async def cattifyMessageInteraction(self, ctx: Context, message: discord.Message):
         def createMessageMention(msg: discord.Message):
@@ -328,6 +386,7 @@ class SillyStuff(commands.Cog):
             user=user,
             flag=None
         )
+
     
 def setup(bot: discord.Bot):
     bot.add_cog(SillyStuff(bot))
