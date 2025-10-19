@@ -192,7 +192,7 @@ async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition:
         
         return False
     
-    if silent:
+    if not silent:
         try:
             if user.can_send():
                 embedColor = discord.Color.red() if ban else discord.Color.green()
