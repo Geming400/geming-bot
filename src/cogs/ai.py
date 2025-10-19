@@ -243,6 +243,20 @@ class BotAI(commands.Cog):
     def __init__(self, bot: discord.Bot):
         self.bot = bot
     
+    @staticmethod
+    async def sendReaction(message: discord.Message, reaction: str):
+        try:
+            await message.add_reaction(reaction)
+        except discord.errors.Forbidden: # cannot react
+            ...
+    
+    @staticmethod
+    async def removeReaction(message: discord.Message, reaction: str, user: discord.abc.Snowflake):
+        try:
+            await message.remove_reaction(reaction, user)
+        except discord.errors.Forbidden: # cannot react
+            ...
+    
     @commands.Cog.listener(name="on_message")
     async def aiOnPing(self, message: discord.Message):
         if self.bot.user in message.mentions:
@@ -285,9 +299,11 @@ class BotAI(commands.Cog):
             async with message.channel.typing():
                 try:
                     if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, HOST):
-                        await message.add_reaction("<:preloading_model:1419412009212051456>")
+                        # await message.add_reaction("<:preloading_model:1419412009212051456>")
+                        await BotAI.sendReaction(message, "<:preloading_model:1419412009212051456>")
                         await utils.preloadModelAsync(CONFIG.storage.currentModel, HOST)
-                        await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
+                        # await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
+                        await BotAI.removeReaction(message, "<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
                 
                     Loggers.aiLogger.debug("Adding user's prompt to memory")
                     
@@ -297,9 +313,8 @@ class BotAI(commands.Cog):
                     
                     Loggers.aiLogger.info(f"Asking prompt for user {message.author.name} ({message.author.id}):\n{prompt}")
                     response = await AsyncClient(HOST).chat(CONFIG.storage.currentModel, messages=aiHandler.getMessagesWithPrompt(message.channel.id), keep_alive=CONFIG.getKeepAlive())
+                    Loggers.aiLogger.info(f"Got an answer for {message.author.name}'s prompt ({message.author.id}) (prompt: '{message.content}'):\n{response.message.content}")
                     content = utils.removeThinkTag(response.message.content or "")
-                    
-                    Loggers.aiLogger.info(f"Got an answer for {message.author.name}'s prompt ({message.author.id}) (prompt: '{message.content}'):\n{content}")
                     
                     if len(content or "") >= 2000:
                         tmpfile = tempfile.TemporaryFile(delete_on_close=False)
@@ -403,8 +418,9 @@ class BotAI(commands.Cog):
             
             Loggers.aiLogger.info(f"Asking prompt for user {ctx.author.name} ({ctx.author.id}):\n{prompt}")
             response = await AsyncClient(HOST).chat(model, messages=aiHandler.getMessagesWithPrompt(ctx.channel_id), keep_alive=CONFIG.getKeepAlive())
+            Loggers.aiLogger.info(f"Got an answer for {ctx.author.name}'s prompt ({ctx.author.id}) (prompt {prompt}):\n{response.message.content}")
             content = utils.removeThinkTag(response.message.content or "")
-            Loggers.aiLogger.info(f"Got an answer for {ctx.author.name}'s prompt ({ctx.author.id}) (prompt {prompt}):\n{content}")
+            
             if len(content or "") >= 2000:
                 tmpfile = tempfile.TemporaryFile(delete_on_close=False)
                 tmpfile.write(content.encode())
