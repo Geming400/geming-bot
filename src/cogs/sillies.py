@@ -50,6 +50,7 @@ LAYERS: Final[dict[DICT_LAYER_ENUM, str]] = {
 """Those are the layers that will be added to the first image
 """
 
+BAN_SILLY_BILLY: Final[bool] = False
 
 def substrInStrInList(s: str, elems: Iterable[Any]) -> bool:
     for item in elems:
@@ -58,15 +59,22 @@ def substrInStrInList(s: str, elems: Iterable[Any]) -> bool:
 
 class SillyStuff(commands.Cog):
     notFunnyWordList: ClassVar[tuple[str, ...]] = (
-        "trans",
-        "feminine",
-        "woman", "women", "girl"
+        "trans", "transgender", "mtf", "ftm", "transition",
+        "woman", "women", "girl", "female", "feminine", "she/her", "lady", "miss",
+        "femboy", "fem", "femme", "nonbinary", "nb", "enby",
+        
+        "furry"
     )
     funnyWordList: ClassVar[tuple[str, ...]] = (
-        "masculine",
-        "dude", "boy",
-        "man", "men"
+        "cis", "masc", "masculine", "he/him", "guy", "man", "men", "male", "dude",
+        "bro", "king", "gentleman", "boy", "boys"
     )
+
+    negationsList: ClassVar[tuple[str, ...]] = (
+        "not", "n't", "dont", "do not", "isnt", "is not", "arent", "ain't",
+        "no", "never", "without", "opposite", "reverse", "contrary", "against"
+    )
+        
     
     def __init__(self, bot: discord.Bot):
         self.bot = bot
@@ -288,20 +296,16 @@ class SillyStuff(commands.Cog):
         future.add_done_callback(onDone)
     
     @staticmethod
+    def count_negations(msg: str) -> int:
+        msg_lower = msg.lower()
+        return sum(msg_lower.count(neg) for neg in SillyStuff.negationsList)
+    
+    @staticmethod
     def check(msg: str, false: T, true: T) -> T:
-        negationList = (
-            "not", "nt", "nt",
-            "reverse"
-        )
-        
-        negationCount = 0
-        for negation in negationList:
-            negationCount += msg.count(negation)
-        
-        if negationCount % 2 == 0: # odd num of negations (negate)
-            return false
-        else: # even num of negations (doesn't negate)
-            return true
+        # Even negation count = not inverted
+        # Odd negation count = inverted meaning
+        negation_count = SillyStuff.count_negations(msg)
+        return true if negation_count % 2 == 0 else false
     
     @discord.slash_command(name="true-or-false", description="Confirms if a message is true or false !!")
     @discord.option(
@@ -310,6 +314,10 @@ class SillyStuff(commands.Cog):
         input_type=str
     )
     async def trueOfFalse(self, ctx: Context, msg: str):
+        if ctx.author.id == 1237908486638276802 and BAN_SILLY_BILLY: # Fuck you billy
+            await ctx.respond("No.")
+            return
+        
         if substrInStrInList(msg, SillyStuff.notFunnyWordList):
             response = SillyStuff.check(msg, "false", "true")
         elif substrInStrInList(msg, SillyStuff.funnyWordList):
@@ -327,6 +335,10 @@ class SillyStuff(commands.Cog):
     )
     async def yesOrNo(self, ctx: Context, msg: str):
         response = random.Random(msg.lower()).choice(("yes", "no"))
+        
+        if ctx.author.id == 1237908486638276802 and BAN_SILLY_BILLY: # Fuck you billy
+            await ctx.respond("No.")
+            return
         
         if msg.endswith("?"):
             msg.removesuffix("?")
@@ -358,6 +370,10 @@ class SillyStuff(commands.Cog):
             return
         
         _user: discord.User | discord.Member = user or ctx.author
+        if (_user.id == 1237908486638276802 or ctx.author.id == 1237908486638276802) and BAN_SILLY_BILLY: # Fuck you billy
+            await ctx.respond("No.")
+            return
+        
         if substrInStrInList(x, SillyStuff.notFunnyWordList) and _user.id == 729671931359395940: # geming
             randomNum = SillyStuff.check(x, 0, 100)
         elif substrInStrInList(x, SillyStuff.funnyWordList) and _user.id == 729671931359395940: # geming
