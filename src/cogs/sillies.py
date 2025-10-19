@@ -10,7 +10,7 @@ import random
 import re
 import string
 import tempfile
-from typing import Final, Optional, cast
+from typing import Any, ClassVar, Final, Iterable, Optional, TypeVar, cast
 import PIL
 import discord
 from discord.ext import commands
@@ -25,6 +25,7 @@ from utils.Loggers import Loggers
 
 Context = discord.ApplicationContext
 
+T = TypeVar("T")
 
 def checkIfSameSize(images: list[Image.Image]) -> bool:
     sizes = set([img.size for img in images])
@@ -50,7 +51,23 @@ LAYERS: Final[dict[DICT_LAYER_ENUM, str]] = {
 """
 
 
+def substrInStrInList(s: str, elems: Iterable[Any]) -> bool:
+    for item in elems:
+        if item in s: return True
+    return False
+
 class SillyStuff(commands.Cog):
+    notFunnyWordList: ClassVar[tuple[str, ...]] = (
+        "trans",
+        "feminine",
+        "woman", "women", "girl"
+    )
+    funnyWordList: ClassVar[tuple[str, ...]] = (
+        "masculine",
+        "dude", "boy",
+        "man", "men"
+    )
+    
     def __init__(self, bot: discord.Bot):
         self.bot = bot
     
@@ -270,6 +287,22 @@ class SillyStuff(commands.Cog):
             
         future.add_done_callback(onDone)
     
+    @staticmethod
+    def check(msg: str, false: T, true: T) -> T:
+        negationList = (
+            "not", "nt", "nt",
+            "reverse"
+        )
+        
+        negationCount = 0
+        for negation in negationList:
+            negationCount += msg.count(negation)
+        
+        if negationCount % 2 == 0: # odd num of negations (negate)
+            return false
+        else: # even num of negations (doesn't negate)
+            return true
+    
     @discord.slash_command(name="true-or-false", description="Confirms if a message is true or false !!")
     @discord.option(
         name="msg",
@@ -277,13 +310,10 @@ class SillyStuff(commands.Cog):
         input_type=str
     )
     async def trueOfFalse(self, ctx: Context, msg: str):
-        if "trans" in msg:
-            if "notn't" in msg or "notnt" in msg:
-                response = "false"
-            elif "not" in msg or "nt" in msg or "n't" in msg:
-                response = "true"
-            else:
-                response = "false"
+        if substrInStrInList(msg, SillyStuff.notFunnyWordList):
+            response = SillyStuff.check(msg, "false", "true")
+        elif substrInStrInList(msg, SillyStuff.funnyWordList):
+            response = SillyStuff.check(msg, "true", "false")
         else:
             response = random.Random(msg.lower()).choice(("true", "false"))
         
@@ -300,16 +330,13 @@ class SillyStuff(commands.Cog):
         
         if msg.endswith("?"):
             msg.removesuffix("?")
-        
-        if ctx.author.id == 1072494833777782805 and "gay" in msg:
+            
+        if substrInStrInList(msg, SillyStuff.notFunnyWordList):
+            response = SillyStuff.check(msg, "no", "yes")
+        elif substrInStrInList(msg, SillyStuff.funnyWordList):
+            response = SillyStuff.check(msg, "yes", "no")
+        elif ctx.author.id == 1072494833777782805 and "gay" in msg:
             response = "yes"
-        if "trans" in msg and ctx.author.id == 729671931359395940: # geming
-            if "notn't" in msg or "notnt" in msg:
-                response = "no"
-            elif "not" in msg or "nt" in msg or "n't" in msg:
-                response = "yes"
-            else:
-                response = "no"
         
         await ctx.respond(f"`{msg.replace("`", "\\`").strip()}` ? {response} :33")
 
@@ -331,15 +358,12 @@ class SillyStuff(commands.Cog):
             return
         
         _user: discord.User | discord.Member = user or ctx.author
-        if "trans" in x and _user.id == 729671931359395940: # geming
-            if "notn't" in x or "notnt" in x:
-                randomNum = 0
-            elif "not" in x or "nt" in x or "n't" in x:
-                randomNum = 100
-            else:
-                randomNum = 0
+        if substrInStrInList(x, SillyStuff.notFunnyWordList) and _user.id == 729671931359395940: # geming
+            randomNum = SillyStuff.check(x, 0, 100)
+        elif substrInStrInList(x, SillyStuff.funnyWordList) and _user.id == 729671931359395940: # geming
+            randomNum = SillyStuff.check(x, 100, 0)
         elif _user.id == 1072494833777782805: # bonzai
-            randomNum = random.Random(x.lower().strip() + str(_user.id)).randint(90, 100)
+            randomNum = random.Random(x.lower().strip() + str(_user.id)).randint(0, 10000)
         elif _user.id == 940959889126219856 or _user.id == 1045761412489809975: # trans girls (aka skepper and tjc :3)
             if "notn't" in x or "notnt" in x:
                 randomNum = 100
