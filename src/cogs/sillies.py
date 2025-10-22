@@ -50,7 +50,9 @@ LAYERS: Final[dict[DICT_LAYER_ENUM, str]] = {
 """Those are the layers that will be added to the first image
 """
 
-BAN_SILLY_BILLY: Final[bool] = False
+BAN_SHITTY_USERS: Final[list[int]] = [
+    
+]
 
 def substrInStrInList(s: str, elems: Iterable[Any]) -> bool:
     for item in elems:
@@ -304,8 +306,11 @@ class SillyStuff(commands.Cog):
     def check(msg: str, false: T, true: T) -> T:
         # Even negation count = not inverted
         # Odd negation count = inverted meaning
-        negation_count = SillyStuff.count_negations(msg)
-        return true if negation_count % 2 == 0 else false
+        negationCount = SillyStuff.count_negations(msg)
+        if negationCount % 2 == 0: # odd num of negations (negate)
+            return false
+        else: # even num of negations (doesn't negate)
+            return true
     
     @discord.slash_command(name="true-or-false", description="Confirms if a message is true or false !!")
     @discord.option(
@@ -314,7 +319,7 @@ class SillyStuff(commands.Cog):
         input_type=str
     )
     async def trueOfFalse(self, ctx: Context, msg: str):
-        if ctx.author.id == 1237908486638276802 and BAN_SILLY_BILLY: # Fuck you billy
+        if ctx.author.id in BAN_SHITTY_USERS:
             await ctx.respond("No.")
             return
         
@@ -336,7 +341,7 @@ class SillyStuff(commands.Cog):
     async def yesOrNo(self, ctx: Context, msg: str):
         response = random.Random(msg.lower()).choice(("yes", "no"))
         
-        if ctx.author.id == 1237908486638276802 and BAN_SILLY_BILLY: # Fuck you billy
+        if ctx.author.id in BAN_SHITTY_USERS:
             await ctx.respond("No.")
             return
         
@@ -370,7 +375,7 @@ class SillyStuff(commands.Cog):
             return
         
         _user: discord.User | discord.Member = user or ctx.author
-        if (_user.id == 1237908486638276802 or ctx.author.id == 1237908486638276802) and BAN_SILLY_BILLY: # Fuck you billy
+        if (_user.id in BAN_SHITTY_USERS or ctx.author.id in BAN_SHITTY_USERS):
             await ctx.respond("No.")
             return
         
