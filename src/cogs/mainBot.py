@@ -2,7 +2,7 @@ import asyncio
 import functools
 import random
 import re
-from typing import Optional, Type, cast
+from typing import Final, Optional, cast
 import discord
 from discord.ext import commands, tasks
 import httpx
@@ -228,6 +228,8 @@ class MainBot(commands.Cog):
             usrRole = f"gay role ({usrRole})"
         elif user.id == 1045761412489809975 or user.id == 940959889126219856: # tjc / bonzai
             usrRole = f"trans role :333 ({usrRole})"
+        elif user.id == 1240083891432194181:
+            usrRole = f"straight af role :33 ({usrRole})"
         elif user.bot:
             if user.id == cast(discord.ClientUser, self.bot.user).id:
                 usrRole = f"gay af bot"
@@ -295,6 +297,55 @@ class MainBot(commands.Cog):
                 except Exception as e:
                     Loggers.logger.exception(f"Caught an exception while trying to restart the task `MainBot.changeStatusTask` in command '/force-change-status': {e}")
                     await ctx.respond(embed=utils.createErrorEmbed(str(e)), ephemeral=True)
+    
+    @discord.slash_command(
+        name="fact",
+        description="Get a geming bot fact !",
+        integration_type=INTEGRATION_TYPES
+    )
+    async def getFact(self, ctx: Context):
+        facts: Final[list[str]] = [
+            "Geming is cis",
+            "I am a bot",
+            "I am trans",
+            "I am a furry",
+            "I was made by geming400\n-# (who could've guessed)",
+            f"I am {cast(discord.ClientUser, self.bot.user).mention}",
+            f"I have {len(self.bot.commands) + random.randint(0, 2)} commands I think. I might have gotten the number wrong",
+            "help",
+            "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
+            "I am in geming's basement",
+            "I'm in love with the concept",
+            "Geming's pronouns are not she/her",
+            "Geming's pronouns are not she/they",
+            "Geming is not trans smh",
+            "Geming is not a furry smh",
+            "Geming is not lesbian smh"   ,
+            "Geming's github is <https://github.com/Geming400/>",
+            "I am self aware actually",
+            "Geming is NOT genderfluid skepper",
+            "I play gd idfk",
+            "I'm gay",
+            "-# Don't tell geming but he's actually gay, he just doesn't know yet",
+            f"I'm better than {ctx.author.mention}",
+            "I'm literally geming but better",
+            "I am better that chat-gpt",
+            "geming's pronouns are actually `he/any` :3"
+        ]
+        
+        statuses = CONFIG.getStatuses()
+        if statuses:
+            randomStatus = statuses.getRandomStatus()
+            
+            statusName = ""
+            if randomStatus.state.name != "STATUS":
+                statusName = randomStatus.state.name.lower()
+            
+            facts.append(f"Here's one of my random status: {statusName} {randomStatus.text}")
+        else:
+            facts.append(f"I don't have any random status 33:")
+        
+        await ctx.respond(random.choice(facts), allowed_mentions=discord.AllowedMentions.none())
                 
 class MainBotButThingIdk(commands.Cog):
     def __init__(self, bot: discord.Bot):
