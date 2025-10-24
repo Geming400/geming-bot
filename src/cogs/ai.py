@@ -19,7 +19,7 @@ Context = discord.ApplicationContext
 aiHandler = CONFIG.storage.aiHandler
 
 
-HOST: Final[Optional[str]] = None
+# HOST: Final[Optional[str]] = CONFIG.getAiHost()
 
 class AiUtils(commands.Cog):
     def __init__(self, bot: discord.Bot):
@@ -79,7 +79,7 @@ class AiUtils(commands.Cog):
         old_model = CONFIG.storage.currentModel
         CONFIG.storage.currentModel = model
         
-        if await aiHandler.isModelPreloaded(model, HOST):
+        if await aiHandler.isModelPreloaded(model, CONFIG.getAiHost()):
             await ctx.respond(f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`")
             return
             
@@ -298,10 +298,10 @@ class BotAI(commands.Cog):
             
             async with message.channel.typing():
                 try:
-                    if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, HOST):
+                    if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, CONFIG.getAiHost()):
                         # await message.add_reaction("<:preloading_model:1419412009212051456>")
                         await BotAI.sendReaction(message, "<:preloading_model:1419412009212051456>")
-                        await utils.preloadModelAsync(CONFIG.storage.currentModel, HOST)
+                        await utils.preloadModelAsync(CONFIG.storage.currentModel, CONFIG.getAiHost())
                         # await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
                         await BotAI.removeReaction(message, "<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
                 
@@ -312,7 +312,7 @@ class BotAI(commands.Cog):
                     aiHandler.addMessage(AiHandler.Role.USER, prompt + aiHandler.getUserInfos(message.author), message.channel.id)
                     
                     Loggers.aiLogger.info(f"Asking prompt for user {message.author.name} ({message.author.id}):\n{prompt}")
-                    response = await AsyncClient(HOST).chat(CONFIG.storage.currentModel, messages=aiHandler.getMessagesWithPrompt(message.channel.id), keep_alive=CONFIG.getKeepAlive())
+                    response = await AsyncClient(CONFIG.getAiHost()).chat(CONFIG.storage.currentModel, messages=aiHandler.getMessagesWithPrompt(message.channel.id), keep_alive=CONFIG.getKeepAlive())
                     Loggers.aiLogger.info(f"Got an answer for {message.author.name}'s prompt ({message.author.id}) (prompt: '{message.content}'):\n{response.message.content}")
                     content = utils.removeThinkTag(response.message.content or "")
                     
@@ -407,9 +407,9 @@ class BotAI(commands.Cog):
         await ctx.respond(f"Asking ai...\n-# using model `{model}`")
         
         try:
-            if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, HOST):
-                await utils.preloadModelAsync(model, HOST)
-                await ctx.edit(content=f"Asking ai...\n-# using preloaded model `{model}`")
+            # if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, HOST):
+            #     await utils.preloadModelAsync(model, HOST)
+            #     await ctx.edit(content=f"Asking ai...\n-# using preloaded model `{model}`")
                 
         
             Loggers.aiLogger.debug("Adding user's prompt to memory")
@@ -417,7 +417,7 @@ class BotAI(commands.Cog):
             aiHandler.addMessage(AiHandler.Role.USER, prompt + aiHandler.getUserInfos(ctx.author), ctx.channel_id)
             
             Loggers.aiLogger.info(f"Asking prompt for user {ctx.author.name} ({ctx.author.id}):\n{prompt}")
-            response = await AsyncClient(HOST).chat(model, messages=aiHandler.getMessagesWithPrompt(ctx.channel_id), keep_alive=CONFIG.getKeepAlive())
+            response = await AsyncClient(CONFIG.getAiHost()).chat(model, messages=aiHandler.getMessagesWithPrompt(ctx.channel_id), keep_alive=CONFIG.getKeepAlive())
             Loggers.aiLogger.info(f"Got an answer for {ctx.author.name}'s prompt ({ctx.author.id}) (prompt {prompt}):\n{response.message.content}")
             content = utils.removeThinkTag(response.message.content or "")
             
