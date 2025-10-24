@@ -115,7 +115,7 @@ class Config(metaclass=Singleton):
     content: dict[str, Any]
     
     def __init__(self) -> None:
-        self.file = os.getenv("CONFIG-PATH") or "config.json"
+        self.file = os.getenv("CONFIG-PATH") or "config.jsonc"
         self.content = {}
         
         self.loadConfigFile()
@@ -167,6 +167,9 @@ class Config(metaclass=Singleton):
     
     def getDbPath(self) -> str:
         return self.content["db"]["path"]
+    
+    def getAiHost(self) -> Optional[str]:
+        return os.getenv("AI-HOST")
     
     @functools.lru_cache
     def getStatuses(self) -> Optional[Activites]:
