@@ -19,6 +19,8 @@ It has:
 It's literally in `./src/main.py`.
 I'm too lazy to make a `run.sh` and `run.bat` file
 
-## Why is it silly
+## Keys in `.env`
 
-Because yes :3333
+- `TOKEN`: The bot's token, **this is needed**
+- `CONFIG-PATH`: Defaults to `./config.jsonc`
+- `AI-HOST`: The host for the AI server. Defaults to `localhost`
