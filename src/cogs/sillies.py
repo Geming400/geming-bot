@@ -54,22 +54,24 @@ BAN_SHITTY_USERS: Final[list[int]] = [
     
 ]
 
-def substrInStrInList(s: str, elems: Iterable[Any]) -> bool:
+def substrInStrInList(s: str, elems: Iterable[str]) -> bool:
     for item in elems:
-        if item in s: return True
+        if item.lower() in s.lower(): return True
     return False
 
 class SillyStuff(commands.Cog):
     notFunnyWordList: ClassVar[tuple[str, ...]] = (
         "trans", "transgender", "mtf", "ftm", "transition",
         "woman", "women", "girl", "female", "feminine", "she/her", "lady", "miss",
-        "femboy", "fem", "femme", "nonbinary", "nb", "enby",
+        "femboy", "fem",
         
         "furry"
     )
     funnyWordList: ClassVar[tuple[str, ...]] = (
-        "cis", "masc", "masculine", "he/him", "guy", "man", "men", "male", "dude",
-        "bro", "king", "gentleman", "boy", "boys"
+        "cis", "he/him"
+        "masc", "masculine",
+        "guy", "man", "men", "male", "dude", "boy"
+        "bro", "gentleman" # idk chat-gpt wanted me to add this
     )
 
     negationsList: ClassVar[tuple[str, ...]] = (
@@ -379,6 +381,8 @@ class SillyStuff(commands.Cog):
             await ctx.respond("No.")
             return
         
+        rigged = False
+        
         if substrInStrInList(x, SillyStuff.notFunnyWordList) and _user.id == 729671931359395940: # geming
             randomNum = SillyStuff.check(x, 0, 100)
         elif substrInStrInList(x, SillyStuff.funnyWordList) and _user.id == 729671931359395940: # geming
@@ -392,10 +396,17 @@ class SillyStuff(commands.Cog):
                 randomNum = 0
             else:
                 randomNum = 100
+        elif x.lower() == "silly":
+            randomNum = 100
+            rigged = True
         else:
             randomNum: int = random.Random(x.lower().strip() + str(_user.id)).randint(0, 100)
         
-        await ctx.respond(f"{_user.mention} is {randomNum}% {x} :3333", allowed_mentions=discord.AllowedMentions.none())
+        msg = f"{_user.mention} is {":" if randomNum == 33 else ""}{randomNum}% {x} :3333"
+        if rigged:
+            msg += "\n-# This might have been rigged, but shh"
+            
+        await ctx.respond(msg, allowed_mentions=discord.AllowedMentions.none())
 
     @discord.message_command(name="Cattify")
     async def cattifyMessageInteraction(self, ctx: Context, message: discord.Message):
