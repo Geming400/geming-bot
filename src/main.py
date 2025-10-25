@@ -56,8 +56,11 @@ signal.signal(signal.SIGINT, sigIntHandler)
 
 
 
-tempfile.tempdir = "../tempdir/"
-Path(os.path.dirname(tempfile.tempdir)).mkdir(parents=True, exist_ok=True)
+tempfile.tempdir = "./tempdir/"
+path = Path(os.path.dirname(tempfile.tempdir))
+path.mkdir(parents=True, exist_ok=True)
+
+Loggers.logger.debug(f"Setting temp directory to {path.absolute()}")
 
 
 # bot
