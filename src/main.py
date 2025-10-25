@@ -62,6 +62,13 @@ Path(os.path.dirname(tempfile.tempdir)).mkdir(parents=True, exist_ok=True)
 
 # bot
 
+try:
+    asyncio.get_event_loop()
+    Loggers.logger.debug("Found asyncio event loop")
+except RuntimeError:
+    Loggers.logger.debug("No asyncio event loop found. Creating one")
+    asyncio.set_event_loop(asyncio.new_event_loop())    
+    
 bot = discord.Bot(intents=discord.Intents.all(), owner_id=CONFIG.getOwner())
 """bot.debug_guilds = [
     1316947105796984842
