@@ -298,12 +298,12 @@ class BotAI(commands.Cog):
             
             async with message.channel.typing():
                 try:
-                    if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, CONFIG.getAiHost()):
-                        # await message.add_reaction("<:preloading_model:1419412009212051456>")
-                        await BotAI.sendReaction(message, "<:preloading_model:1419412009212051456>")
-                        await utils.preloadModelAsync(CONFIG.storage.currentModel, CONFIG.getAiHost())
-                        # await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
-                        await BotAI.removeReaction(message, "<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
+                    # if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, CONFIG.getAiHost()):
+                    #     # await message.add_reaction("<:preloading_model:1419412009212051456>")
+                    #     await BotAI.sendReaction(message, "<:preloading_model:1419412009212051456>")
+                    #     await utils.preloadModelAsync(CONFIG.storage.currentModel, CONFIG.getAiHost())
+                    #     # await message.remove_reaction("<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
+                    #     await BotAI.removeReaction(message, "<:preloading_model:1419412009212051456>", cast(discord.ClientUser, self.bot.user))
                 
                     Loggers.aiLogger.debug("Adding user's prompt to memory")
                     
