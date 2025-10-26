@@ -1,5 +1,5 @@
 import os
-from typing import Final, Optional, cast
+from typing import Optional, cast
 import discord
 from discord.ext import commands
 import tempfile
@@ -40,6 +40,7 @@ class AiUtils(commands.Cog):
         name="ping-reply",
         input_type=bool
     )
+    @commands.is_owner()
     async def aiSetPingReply(self, ctx: Context, ping_reply: bool):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-set-ping-reply", reason="Isn't owner")
@@ -204,6 +205,7 @@ class AiUtils(commands.Cog):
         description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)",
         integration_type=INTEGRATION_TYPES
     )
+    @commands.is_owner()
     async def flushAIGlobally(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/global-flush", reason="Isn't owner")
@@ -220,6 +222,7 @@ class AiUtils(commands.Cog):
         description="Kill the AI processes",
         integration_type=INTEGRATION_TYPES
     )
+    @commands.is_owner()
     async def killAI(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/ai-kill", reason="Isn't owner")

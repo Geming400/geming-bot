@@ -220,7 +220,10 @@ async def doBanAction(ctx: Context, user: discord.User, *, ban: bool, condition:
 class Moderation(commands.Cog):
     moderationGroup = discord.SlashCommandGroup(
         "moderation",
-        "Useful commands to moderate users (only on this server)"
+        "Useful commands to moderate users (only on this server)",
+        checks=[
+            commands.has_permissions(ban_members=True).predicate # pyright: ignore[reportFunctionMemberAccess]
+        ]  # Ensures the owner_id user can access this group, and no one else
     )
         
     def __init__(self, bot: discord.Bot):
@@ -296,7 +299,7 @@ class GlobalModeration(commands.Cog):
         "Useful commands to moderate users globally",
         checks=[
             commands.is_owner().predicate # pyright: ignore[reportFunctionMemberAccess]
-        ],  # Ensures the owner_id user can access this group, and no one else
+        ]  # Ensures the owner_id user can access this group, and no one else
     )
         
     def __init__(self, bot: discord.Bot):

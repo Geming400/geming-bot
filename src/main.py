@@ -7,6 +7,7 @@ from types import FrameType, TracebackType
 from typing import Optional, cast
 import dotenv
 import discord
+from discord.ext import commands
 import os
 from utils import utils
 from utils.Loggers import Loggers
@@ -91,6 +92,7 @@ cogs_list: list[str] = [
     description="Reloads all cogs",
     integration_type=INTEGRATION_TYPES
 )
+@commands.is_owner()
 async def reloadCogs(ctx: discord.ApplicationContext):
     if not CONFIG.isOwner(ctx.author.id):
         utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-cogs", reason="Isn't owner")

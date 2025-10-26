@@ -10,7 +10,7 @@ import random
 import re
 import string
 import tempfile
-from typing import Any, ClassVar, Final, Iterable, Optional, TypeVar, cast
+from typing import ClassVar, Final, Iterable, Optional, TypeVar, cast
 import PIL
 import discord
 from discord.ext import commands

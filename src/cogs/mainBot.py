@@ -102,6 +102,7 @@ class MainBot(commands.Cog):
         description="Reload the config files",
         integration_type=INTEGRATION_TYPES
     )
+    @commands.is_owner()
     async def reloadConfigs(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-configs", reason="Isn't owner")
@@ -157,6 +158,13 @@ class MainBot(commands.Cog):
                 "/ai-set-ping-reply",
                 "/global-flush",
                 "/ai-kill",
+                "/global-moderation ban-ai",
+                "/global-moderation unban-ai",
+                "/global-moderation ai-banned-users"
+            ]
+        if (isinstance(ctx.author, discord.Member) and ctx.author.guild_permissions.ban_members) or CONFIG.isOwner(_user.id):
+            cmds += [
+                "Mod commands:",
                 "/global-moderation ban-ai",
                 "/global-moderation unban-ai",
                 "/global-moderation ai-banned-users"
