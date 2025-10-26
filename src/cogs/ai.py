@@ -110,14 +110,14 @@ class AiUtils(commands.Cog):
             fp=tmpfile.name,
             filename="output.txt",
             description=f"The system prompt of geming bot"
-            )
+        )
         
         await ctx.respond(
             content=f"The system prompt of {cast(discord.ClientUser, self.bot.user).mention} is:",
             file=file,
             ephemeral=True,
             allowed_mentions=discord.AllowedMentions.none()
-            )
+        )
     
     @discord.slash_command(
         name="get-memory",
@@ -214,7 +214,6 @@ class AiUtils(commands.Cog):
         
         aiHandler.clearMemory()
         Loggers.aiLogger.info(f"Flushed ai's globally memory for user {ctx.author.name} ({ctx.author.id})")
-        print("CONFIG.storage.aiPingReply == discord.AllowedMentions.none() =", CONFIG.storage.aiPingReply == discord.AllowedMentions.none())
         await ctx.respond("Flushed every human's smart toilet !")
 
     @discord.slash_command(
