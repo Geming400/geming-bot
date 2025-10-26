@@ -2,7 +2,7 @@ from enum import Enum
 import functools
 import os
 import random
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from jsonc_parser.parser import JsoncParser
 import dotenv
 import discord
@@ -168,8 +168,8 @@ class Config(metaclass=Singleton):
     def getDbPath(self) -> str:
         return self.content["db"]["path"]
     
-    def getAiHost(self) -> Optional[str]:
-        return os.getenv("AI-HOST")
+    def getAiHost(self) -> str | Literal["127.0.0.1"]:
+        return os.getenv("AI-HOST") or "127.0.0.1"
     
     @functools.lru_cache
     def getStatuses(self) -> Optional[Activites]:
