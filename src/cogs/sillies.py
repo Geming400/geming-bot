@@ -71,7 +71,9 @@ class SillyStuff(commands.Cog):
         "cis", "he/him"
         "masc", "masculine",
         "guy", "man", "men", "male", "dude", "boy"
-        "bro", "gentleman" # idk chat-gpt wanted me to add this
+        "bro", "gentleman", # idk chat-gpt wanted me to add this,
+        
+        "silly"
     )
 
     negationsList: ClassVar[tuple[str, ...]] = (
