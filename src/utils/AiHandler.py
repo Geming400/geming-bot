@@ -1,8 +1,10 @@
 import copy
 from enum import Enum
-from typing import Final, Optional, cast, overload
+from typing import Optional, cast, overload
 
 import discord
+import httpcore
+import httpx
 import ollama
 
 from utils.utils import CONFIG
@@ -114,6 +116,14 @@ class AiHandler:
         """Returns a list of "global messages" (not channelID dependant)
         """
         return self._globalMessages
+    
+    async def isOllamaRunning(self, host: str) -> bool:
+        async with httpx.AsyncClient() as client:
+            try:
+                await client.get(f"http://{host}:11434", timeout=1.5)
+                return True
+            except (httpx.ConnectError, httpx.TimeoutException):
+                return False
     
     async def isModelPreloaded(self, modelName: str, host: Optional[str] = None) -> bool:        
         for processes in await ollama.AsyncClient(host).ps():

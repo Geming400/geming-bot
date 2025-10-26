@@ -296,6 +296,13 @@ class BotAI(commands.Cog):
                     
                     return
             
+            Loggers.aiLogger.info("Checking if ollama is up")
+            if not await CONFIG.storage.aiHandler.isOllamaRunning(CONFIG.getAiHost()):
+                Loggers.aiLogger.info(f"User {message.author.name} ({message.author.id}) tried using the ai, but it is unavailable")
+                await message.reply(content="`ollama` isn't running, the ai isn't currently available")
+                
+                return
+            
             async with message.channel.typing():
                 try:
                     # if not await aiHandler.isModelPreloaded(CONFIG.storage.currentModel, CONFIG.getAiHost()):
@@ -335,9 +342,6 @@ class BotAI(commands.Cog):
                     if content:
                         Loggers.aiLogger.debug("Adding ai's response to memory")
                         aiHandler.addMessage(AiHandler.Role.ASSISTANT, content, message.channel.id)
-                except ConnectionError:
-                    Loggers.aiLogger.info(f"User {message.author.name} ({message.author.id}) tried using the ai, but it is unavailable")
-                    await message.reply(content="`ollama` isn't running, the ai isn't currently avalaible")
                 except Exception as e:
                     await message.reply(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
                     await message.add_reaction("⚠️")
@@ -402,6 +406,13 @@ class BotAI(commands.Cog):
             
             return
         
+        Loggers.aiLogger.info("Checking if ollama is up")
+        if not await CONFIG.storage.aiHandler.isOllamaRunning(CONFIG.getAiHost()):
+            Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) tried using the ai, but it is unavailable")
+            await ctx.edit(content="`ollama` isn't running, the ai isn't currently available")
+            
+            return
+        
         if model == None: model = CONFIG.storage.currentModel
         
         await ctx.respond(f"Asking ai...\n-# using model `{model}`")
@@ -441,9 +452,6 @@ class BotAI(commands.Cog):
             if content:
                 Loggers.aiLogger.debug("Adding ai's response to memory")
                 aiHandler.addMessage(AiHandler.Role.ASSISTANT, content, ctx.channel_id)
-        except ConnectionError:
-            Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) tried using the ai, but it is unavailable")
-            await ctx.edit(content="`ollama` isn't running, the ai isn't currently avalaible")
         except Exception as e:
             await ctx.edit(content="", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), allowed_mentions=discord.AllowedMentions.none())
             Loggers.logger.exception(f"Catched exception in `BotAI.on_message`: {e}")
