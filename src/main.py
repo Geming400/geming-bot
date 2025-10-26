@@ -72,7 +72,9 @@ except RuntimeError:
     Loggers.logger.debug("No asyncio event loop found. Creating one")
     asyncio.set_event_loop(asyncio.new_event_loop())    
     
-bot = discord.Bot(intents=discord.Intents.all(), owner_id=CONFIG.getOwner())
+intents = discord.Intents.default()
+intents.message_content = True
+bot = discord.Bot(intents=intents, owner_id=CONFIG.getOwner())
 """bot.debug_guilds = [
     1316947105796984842
 ]"""
@@ -86,7 +88,7 @@ cogs_list: list[str] = [
 
 @bot.slash_command(
     name="reload-cogs",
-    description="Reload all cogs.",
+    description="Reloads all cogs",
     integration_type=INTEGRATION_TYPES
 )
 async def reloadCogs(ctx: discord.ApplicationContext):
