@@ -25,11 +25,10 @@ class AiUtils(commands.Cog):
     def __init__(self, bot: discord.Bot):
         self.bot = bot
     
-    @staticmethod
-    def getModels(ctx: discord.AutocompleteContext):
-        _models = ollama.Client(CONFIG.getAiHost()).list()
-        models: list[str] = [model["model"] for model in _models.model_dump()["models"]]
-        return models
+    async def getModels(self, ctx: discord.AutocompleteContext) -> list[str]:
+        if await CONFIG.storage.aiHandler.isOllamaRunningAsync(CONFIG.getAiHost()):
+            return await CONFIG.storage.aiHandler.getModelsAsync(CONFIG.getAiHost())
+        return ["❌ OLLAMA ISN'T UP, NO MODELS AVAILABLE"]
 
     @discord.slash_command(
         name="ai-set-ping-reply",
@@ -72,6 +71,10 @@ class AiUtils(commands.Cog):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/set-model", reason="Isn't trusted")
             await ctx.respond("No :3", ephemeral=True)
             return
+        
+        if not model in await CONFIG.storage.aiHandler.getModelsAsync(CONFIG.getAiHost()):
+            await ctx.respond(f"`{model}` model is not a valid model !", ephemeral=True)
+            return 
         
         if model == CONFIG.storage.currentModel:
             await ctx.respond(f"`{model}` model is already in use !", ephemeral=True)
@@ -299,7 +302,7 @@ class BotAI(commands.Cog):
                     return
             
             Loggers.aiLogger.info("Checking if ollama is up")
-            if not await CONFIG.storage.aiHandler.isOllamaRunning(CONFIG.getAiHost()):
+            if not await CONFIG.storage.aiHandler.isOllamaRunningAsync(CONFIG.getAiHost()):
                 Loggers.aiLogger.info(f"User {message.author.name} ({message.author.id}) tried using the ai, but it is unavailable")
                 await message.reply(content="`ollama` isn't running, the ai isn't currently available")
                 
@@ -378,6 +381,10 @@ class BotAI(commands.Cog):
         #     return
         
         
+        if model and (not model in await CONFIG.storage.aiHandler.getModelsAsync(CONFIG.getAiHost())):
+            await ctx.respond(f"`{model}` model is not a valid model !", ephemeral=True)
+            return 
+        
         # If we don't send any messages it's to prevent flooding the current chat
         # as we cannot send ephemeral messages with `discord.Message.reply()`
         if isinstance(ctx.author, discord.Member):
@@ -409,7 +416,7 @@ class BotAI(commands.Cog):
             return
         
         Loggers.aiLogger.info("Checking if ollama is up")
-        if not await CONFIG.storage.aiHandler.isOllamaRunning(CONFIG.getAiHost()):
+        if not await CONFIG.storage.aiHandler.isOllamaRunningAsync(CONFIG.getAiHost()):
             Loggers.aiLogger.info(f"User {ctx.author.name} ({ctx.author.id}) tried using the ai, but it is unavailable")
             await ctx.edit(content="`ollama` isn't running, the ai isn't currently available")
             
