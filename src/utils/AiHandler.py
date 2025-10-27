@@ -117,7 +117,15 @@ class AiHandler:
         """
         return self._globalMessages
     
-    async def isOllamaRunning(self, host: str) -> bool:
+    def isOllamaRunning(self, host: str) -> bool:
+        with httpx.Client() as client:
+            try:
+                client.get(f"http://{host}:11434", timeout=1.5)
+                return True
+            except (httpx.ConnectError, httpx.TimeoutException):
+                return False
+            
+    async def isOllamaRunningAsync(self, host: str) -> bool:
         async with httpx.AsyncClient() as client:
             try:
                 await client.get(f"http://{host}:11434", timeout=1.5)
@@ -133,3 +141,20 @@ class AiHandler:
                     Loggers.aiLogger.debug(f"Model {modelName} is preloaded")
                     return True
         return False
+    
+    def getModels(self, host: Optional[str] = None) -> list[str]:
+        try:
+            _models = ollama.Client(host).list()
+            models: list[str] = [model["model"] for model in _models.model_dump()["models"]]
+            return models
+        except ConnectionError:
+            return []
+
+    async def getModelsAsync(self, host: Optional[str] = None) -> list[str]:
+        try:
+            _models = await ollama.AsyncClient(host).list()
+            models: list[str] = [model["model"] for model in _models.model_dump()["models"]]
+            return models
+        except ConnectionError:
+            return []
+            
