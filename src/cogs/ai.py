@@ -27,7 +27,7 @@ class AiUtils(commands.Cog):
     
     @staticmethod
     def getModels(ctx: discord.AutocompleteContext):
-        _models = ollama.list()
+        _models = ollama.Client(CONFIG.getAiHost()).list()
         models: list[str] = [model["model"] for model in _models.model_dump()["models"]]
         return models
 
@@ -85,7 +85,7 @@ class AiUtils(commands.Cog):
             return
             
         await ctx.respond(f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`\n-# Preloading model...")
-        await utils.preloadModelAsync(model)
+        await utils.preloadModelAsync(model, CONFIG.getAiHost())
         
         await ctx.edit(content=f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`\n-# Preloaded model !")
     
