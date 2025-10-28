@@ -1,8 +1,9 @@
 import json
 from sqlite3 import Row
-from typing import override
+from typing import overload, override
 
 from utils.db.Profile import Profile, SqlParseType
+from utils.utils import CONFIG
 
 __all__ = [
     "GuildProfile",
@@ -145,7 +146,6 @@ class UserProfile(Profile[int]):
         await self._save("userid", self.userID)
     
 
-
 async def getGuildPermissionProfile(guildID: int) -> GuildPermissionsProfile:
     """Helper method to get a `ServerPermissionsProfile` instance
 
@@ -158,3 +158,95 @@ async def getGuildPermissionProfile(guildID: int) -> GuildPermissionsProfile:
     
     server = await GuildProfile.createOrGet(guildID)
     return await server.getPermissions()
+
+
+class FactProfile(Profile[int]):
+    _table = "facts"
+    
+    id: int
+    fact: str
+    
+    def __init__(self, row: Row) -> None:
+        self.id = row[0]
+        self.fact = row[1]
+        super().__init__(row)
+    
+    @override
+    @classmethod
+    def default(cls):
+        return cls._default(id=None, fact=None) # ik it breaks typing, but they will get their real value when needed
+    
+    @classmethod
+    async def createOrGet(cls, name: int):
+        return await cls._createOrGet(name, nameVar="id", column="id")
+            
+    @override
+    def parseToSql(self, type: SqlParseType) -> str:
+        return self._parseToSql(type, (
+            ("fact", self.fact),
+        ))
+    
+    @override
+    async def save(self):
+        await self._save("id", self.id)
+    
+    @staticmethod
+    async def getFactsWithIDs() -> list[tuple[int, str]]:
+        ret: list[tuple[int, str]] = []
+        
+        
+        conn = await CONFIG.storage.db.connect()
+        
+        query = f"SELECT * FROM {FactProfile._table}"
+        async with conn.execute(query) as cur:
+            rows = await cur.fetchall()
+            for row in rows:
+                ret.append((row[0], row[1]))
+                
+        await conn.close()
+        
+        return ret
+    
+    @staticmethod
+    async def getFacts() -> list[str]:
+        ret: list[str] = []
+        
+        
+        conn = await CONFIG.storage.db.connect()
+        
+        query = f"SELECT `fact` FROM {FactProfile._table}"
+        async with conn.execute(query) as cur:
+            rows = await cur.fetchall()
+            for row in rows:
+                ret.append(row[0])
+                
+        await conn.close()
+        
+        return ret
+    
+    @staticmethod
+    async def addFact(fact: str):
+        conn = await CONFIG.storage.db.connect()
+        
+        query = f"INSERT INTO `{FactProfile._table}` (`fact`) VALUES ({FactProfile.sqlObjAsStr(fact)})"
+        async with conn.execute(query):
+            await conn.commit()
+        await conn.close()
+    
+    @staticmethod
+    async def removeFact(fact: str):
+        conn = await CONFIG.storage.db.connect()
+        
+        query = f"DELETE FROM `{FactProfile._table}` WHERE `fact` = {FactProfile.sqlObjAsStr(fact)}"
+        async with conn.execute(query):
+            await conn.commit()
+        await conn.close()
+        
+    @staticmethod
+    async def removeFactFromID(factID: int):
+        conn = await CONFIG.storage.db.connect()
+        
+        query = f"DELETE FROM `{FactProfile._table}` WHERE `id` = {factID}"
+        async with conn.execute(query):
+            await conn.commit()
+        await conn.close()
