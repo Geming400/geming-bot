@@ -82,7 +82,7 @@ class MainBot(commands.Cog):
         description="The user to send the icmb to"
     )
     async def linux_icbm(self, ctx: Context, user: discord.User):
-        await ctx.respond(f"Finding {user.mention}'s location...")
+        await ctx.respond(f"Finding {user.mention}'s location...", allowed_mentions=discord.AllowedMentions.none() if user.bot else discord.AllowedMentions.all())
         
         try:
             await asyncio.sleep(5)
