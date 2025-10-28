@@ -17,7 +17,12 @@ CREATE TABLE users (
     userid INTEGER PRIMARY KEY,
     role TEXT NOT NULL DEFAULT('user'),
     ai_banned BOOLEAN NOT NULL DEFAULT(FALSE)
-)
+);
+
+CREATE TABLE facts (
+    id INTEGER PRIMARY KEY,
+    fact TEXT NOT NULL
+);
 
 -- Testing
 
