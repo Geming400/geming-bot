@@ -91,7 +91,7 @@ class Profile(Generic[T]):
             The object but readable to the SQL language (eg: `"test"` -> `"'test'"`)
         """
         
-        if isinstance(obj, str): return f"'{obj}'"
+        if isinstance(obj, str): return f"'{obj.replace("'", "\'")}'"
         if isinstance(obj, (dict, list)): return f"'{json.dumps(obj)}'"
         if isinstance(obj, (set)): return f"'{json.dumps(list(obj))}'"
         if isinstance(obj, bool): return str(int(obj))
