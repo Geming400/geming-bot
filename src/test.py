@@ -8,7 +8,7 @@ import aiosqlite
 import dotenv
 import os
 from utils.Loggers import Loggers
-from utils.db.Profiles import GuildProfile
+from utils.db.Profiles import FactProfile, GuildProfile
 from utils.utils import CONFIG
 import sys
 import signal
@@ -16,17 +16,20 @@ import signal
 dotenv.load_dotenv(".env")
 
 async def test():
-    print("In async function")
-    async with aiosqlite.connect(CONFIG.storage.db.dbPath) as conn:
-        j = await conn.execute("SELECT * FROM guilds")
-        await j.close()
+    # print("In async function")
+    # async with aiosqlite.connect(CONFIG.storage.db.dbPath) as conn:
+    #     j = await conn.execute("SELECT * FROM guilds")
+    #     await j.close()
             
-    h = await GuildProfile.createOrGet(12345)
-    perms = await h.getPermissions()
-    await asyncio.sleep(1)
-    # perms.ai = True
-    # await perms.save()
-    # print("Saved")
+    # h = await GuildProfile.createOrGet(12345)
+    # perms = await h.getPermissions()
+    # await asyncio.sleep(1)
+    # # perms.ai = True
+    # # await perms.save()
+    # # print("Saved")
+    
+    print("facts:")
+    pprint(await FactProfile.getFacts())
 
 T = TypeVar('T')
 
@@ -58,10 +61,10 @@ def splitList(l: list[T], n: int, index: int) -> list[T]:
     
     return finalLists[index]
 
-#asyncio.run(test())
-#pprint(CONFIG.getStatuses())
+asyncio.run(test())
+# pprint(CONFIG.getStatuses())
 
-print(splitList([10, 20, 30, 40, 50], 1, 0))
+# print(splitList([10, 20, 30, 40, 50], 1, 0))
 
 print("finished")
 sys.exit(0)
