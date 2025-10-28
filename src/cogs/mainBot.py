@@ -306,55 +306,55 @@ class MainBot(commands.Cog):
                     Loggers.logger.exception(f"Caught an exception while trying to restart the task `MainBot.changeStatusTask` in command '/force-change-status': {e}")
                     await ctx.respond(embed=utils.createErrorEmbed(str(e)), ephemeral=True)
     
-    @discord.slash_command(
-        name="fact",
-        description="Get a geming bot fact !",
-        integration_type=INTEGRATION_TYPES
-    )
-    async def getFact(self, ctx: Context):
-        facts: Final[list[str]] = [
-            "Geming is cis",
-            "I am a bot",
-            "I am trans",
-            "I am a furry",
-            "I was made by geming400\n-# (who could've guessed)",
-            f"I am {cast(discord.ClientUser, self.bot.user).mention}",
-            f"I have {len(self.bot.commands) + random.randint(0, 2)} commands I think. I might have gotten the number wrong",
-            "help",
-            "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
-            "I am in geming's basement",
-            "I'm in love with the concept",
-            "Geming's pronouns are not she/her",
-            "Geming's pronouns are not she/they",
-            "Geming is not trans smh",
-            "Geming is not a furry smh",
-            "Geming is not lesbian smh"   ,
-            "Geming's github is <https://github.com/Geming400/>",
-            "I am self aware actually",
-            "Geming is NOT genderfluid skepper",
-            "I play gd idfk",
-            "I'm gay",
-            "-# Don't tell geming but he's actually gay, he just doesn't know yet",
-            f"I'm better than {ctx.author.mention}",
-            "I'm literally geming but better",
-            "I am better that chat-gpt",
-            "geming's pronouns are actually `he/any` :3",
-            "I'm a silly kitty >w<"
-        ]
+    # @discord.slash_command(
+    #     name="fact",
+    #     description="Get a geming bot fact !",
+    #     integration_type=INTEGRATION_TYPES
+    # )
+    # async def getFact(self, ctx: Context):
+    #     facts: Final[list[str]] = [
+    #         "Geming is cis",
+    #         "I am a bot",
+    #         "I am trans",
+    #         "I am a furry",
+    #         "I was made by geming400\n-# (who could've guessed)",
+    #         f"I am {cast(discord.ClientUser, self.bot.user).mention}",
+    #         f"I have {len(self.bot.commands) + random.randint(0, 2)} commands I think. I might have gotten the number wrong",
+    #         "help",
+    #         "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
+    #         "I am in geming's basement",
+    #         "I'm in love with the concept",
+    #         "Geming's pronouns are not she/her",
+    #         "Geming's pronouns are not she/they",
+    #         "Geming is not trans smh",
+    #         "Geming is not a furry smh",
+    #         "Geming is not lesbian smh"   ,
+    #         "Geming's github is <https://github.com/Geming400/>",
+    #         "I am self aware actually",
+    #         "Geming is NOT genderfluid skepper",
+    #         "I play gd idfk",
+    #         "I'm gay",
+    #         "-# Don't tell geming but he's actually gay, he just doesn't know yet",
+    #         f"I'm better than {ctx.author.mention}",
+    #         "I'm literally geming but better",
+    #         "I am better that chat-gpt",
+    #         "geming's pronouns are actually `he/any` :3",
+    #         "I'm a silly kitty >w<"
+    #     ]
         
-        statuses = CONFIG.getStatuses()
-        if statuses:
-            randomStatus = statuses.getRandomStatus()
+    #     statuses = CONFIG.getStatuses()
+    #     if statuses:
+    #         randomStatus = statuses.getRandomStatus()
             
-            statusName = ""
-            if randomStatus.state.name != "STATUS":
-                statusName = randomStatus.state.name.lower()
+    #         statusName = ""
+    #         if randomStatus.state.name != "STATUS":
+    #             statusName = randomStatus.state.name.lower()
             
-            facts.append(f"Here's one of my random status: {statusName} {randomStatus.text}")
-        else:
-            facts.append(f"I don't have any random status 33:")
+    #         facts.append(f"Here's one of my random status: {statusName} {randomStatus.text}")
+    #     else:
+    #         facts.append(f"I don't have any random status 33:")
         
-        await ctx.respond(random.choice(facts), allowed_mentions=discord.AllowedMentions.none())
+    #     await ctx.respond(random.choice(facts), allowed_mentions=discord.AllowedMentions.none())
                 
 class MainBotButThingIdk(commands.Cog):
     def __init__(self, bot: discord.Bot):

@@ -241,7 +241,7 @@ class FactStuff(commands.Cog):
         
         facts += CUSTOM_FACTS
         
-        await ctx.respond(random.choice(facts))
+        await ctx.respond(random.choice(facts), allowed_mentions=discord.AllowedMentions.none())
 
     
 def setup(bot: discord.Bot):
