@@ -158,12 +158,20 @@ class Config(metaclass=Singleton):
         users: list[int] = self.content["permissions"].get("trusted-userIDs", [])
         users.append(self.getOwner())
         return users
+    
+    def getFactPermissionsUsers(self) -> list[int]:
+        users: list[int] = self.content["permissions"].get("facts-add-remove-userIDs", [])
+        users.append(self.getOwner())
+        return users
 
     def isOwner(self, userID: int) -> bool:
         return userID == self.getOwner()
     
     def isTrusted(self, userID: int) -> bool:
         return userID in self.getTrustedUsers()
+    
+    def canEditFacts(self, userID: int) -> bool:
+        return userID in self.getFactPermissionsUsers()
     
     def getDbPath(self) -> str:
         return self.content["db"]["path"]
