@@ -7,12 +7,10 @@ from discord.ext import commands
 from utils import utils
 from utils.Loggers import Loggers
 from utils.db import Profiles
+from utils.utils import CONFIG
 
 Context = discord.ApplicationContext
 
-ALLOWED_PEOPLE: Final[tuple[int]] = (
-    1045761412489809975, # TJC
-)
 
 class FactStuff(commands.Cog):
     factGroup = discord.SlashCommandGroup(
@@ -87,8 +85,8 @@ class FactStuff(commands.Cog):
         required=False
     )
     async def removeFact(self, ctx: Context, fact: Optional[str], fact_id: Optional[int]):
-        if not utils.CONFIG.isOwner(ctx.author.id) or ctx.author.id in ALLOWED_PEOPLE:
-            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/fact remove", reason="Isn't owner")
+        if not CONFIG.canEditFacts(ctx.author.id):
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/fact remove", reason="Cannot edit facts")
             await ctx.respond("No :3", ephemeral=True)
             return
         
@@ -177,7 +175,7 @@ class FactStuff(commands.Cog):
         input_type=str
     )
     async def addFact(self, ctx: Context, fact: str):
-        if not utils.CONFIG.isOwner(ctx.author.id) or ctx.author.id in ALLOWED_PEOPLE:
+        if not CONFIG.canEditFacts(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/fact add", reason="Isn't owner")
             await ctx.respond("No :3", ephemeral=True)
             return
