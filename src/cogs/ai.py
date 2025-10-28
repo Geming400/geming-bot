@@ -304,7 +304,9 @@ class BotAI(commands.Cog):
             Loggers.aiLogger.info("Checking if ollama is up")
             if not await CONFIG.storage.aiHandler.isOllamaRunningAsync(CONFIG.getAiHost()):
                 Loggers.aiLogger.info(f"User {message.author.name} ({message.author.id}) tried using the ai, but it is unavailable")
-                await message.reply(content="`ollama` isn't running, the ai isn't currently available")
+                await message.add_reaction("⚠️")
+                # This is really annoying, disabling
+                # await message.reply(content="`ollama` isn't running, the ai isn't currently available")
                 
                 return
             
@@ -385,8 +387,6 @@ class BotAI(commands.Cog):
             await ctx.respond(f"`{model}` model is not a valid model !", ephemeral=True)
             return 
         
-        # If we don't send any messages it's to prevent flooding the current chat
-        # as we cannot send ephemeral messages with `discord.Message.reply()`
         if isinstance(ctx.author, discord.Member):
             guildID = cast(discord.Guild, ctx.guild).id
             guildPerms = await Profiles.getGuildPermissionProfile(guildID)
