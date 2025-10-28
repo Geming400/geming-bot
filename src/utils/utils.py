@@ -69,5 +69,7 @@ def createErrorEmbed(description: Optional[str] = None):
         colour=discord.Colour.red()
         )
 
-
-    
+# from:
+# https://stackoverflow.com/questions/18854620/whats-the-best-way-to-split-a-string-into-fixed-length-chunks-and-work-with-the
+def chunkString(string: str, size: int):
+    return (string[0+i : size+i] for i in range(0, len(string), size))
