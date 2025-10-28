@@ -121,6 +121,8 @@ class AiUtils(commands.Cog):
             ephemeral=True,
             allowed_mentions=discord.AllowedMentions.none()
         )
+        
+        tmpfile._closer.cleanup()
     
     @discord.slash_command(
         name="get-memory",
