@@ -2,7 +2,7 @@ import asyncio
 import functools
 import random
 import re
-from typing import Final, Optional, cast
+from typing import Optional, cast
 import discord
 from discord.ext import commands, tasks
 import httpx
@@ -149,7 +149,7 @@ class MainBot(commands.Cog):
                     "/moderation unban-ai",
                     "/moderation ai-banned-users"
                 ]
-            
+        
         if CONFIG.isOwner(_user.id):
             cmds += [
                 "Owner commands:",
@@ -161,6 +161,12 @@ class MainBot(commands.Cog):
                 "/global-moderation ban-ai",
                 "/global-moderation unban-ai",
                 "/global-moderation ai-banned-users"
+            ]
+        if CONFIG.canEditFacts(_user.id):
+            cmds += [
+                "Fact editors commands:",
+                "/facts add",
+                "/facts remove"
             ]
         if (isinstance(ctx.author, discord.Member) and ctx.author.guild_permissions.ban_members) or CONFIG.isOwner(_user.id):
             cmds += [
@@ -188,7 +194,10 @@ class MainBot(commands.Cog):
             "/cattify",
             "/true-or-false",
             "/yes-or-no",
-            "x-meter"
+            "/x-meter",
+            
+            "/facts get",
+            "/facts get-facts"
         ]
         
         s: str
