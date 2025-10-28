@@ -232,7 +232,7 @@ class FactStuff(commands.Cog):
         
         await ctx.respond(f"sucessfully added fact `{fact}` !", ephemeral=True)
         
-    @factGroup.command(name="get", description="Gets a random gemingbot fact")
+    @factGroup.command(name="get", description="Gets a random gemingbot fact !")
     async def getFact(self, ctx: Context):
         Loggers.factsLogger.info(f"Getting random fact for user {ctx.author.name} ({ctx.author.id})")
         
@@ -246,6 +246,9 @@ class FactStuff(commands.Cog):
         
         await ctx.respond(random.choice(facts), allowed_mentions=discord.AllowedMentions.none())
 
+    @discord.slash_command(name="fact", description="Gets a random gemingbot fact !")
+    async def oldGetFact(self, ctx: Context):
+        await self.getFact(ctx)
     
 def setup(bot: discord.Bot):
     bot.add_cog(FactStuff(bot))
