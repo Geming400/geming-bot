@@ -17,7 +17,7 @@ ALLOWED_PEOPLE: Final[tuple[int]] = (
 class FactStuff(commands.Cog):
     factGroup = discord.SlashCommandGroup(
         "facts",
-        "Facts related commands"
+        description="Facts related commands"
     )
         
     def __init__(self, bot: discord.Bot):
@@ -28,7 +28,7 @@ class FactStuff(commands.Cog):
         
         facts = await Profiles.FactProfile.getFactsWithIDs()
         if not facts:
-            return ["No facts found !"]
+            return ["No harcoded facts found !"]
         
         for fact in facts:
             factID, factContent = fact
@@ -202,10 +202,44 @@ class FactStuff(commands.Cog):
     async def getFact(self, ctx: Context):
         Loggers.factsLogger.info(f"Getting random fact for user {ctx.author.name} ({ctx.author.id})")
         
+        # the original facts
+        # I'm keeping them harcoded
+        CUSTOM_FACTS: Final[list[str]] = [
+            "Geming is cis",
+            "I am a bot",
+            "I am trans",
+            "I am a furry",
+            "I was made by geming400\n-# (who could've guessed)",
+            f"I am {cast(discord.ClientUser, self.bot.user).mention}",
+            f"I have {len(self.bot.commands) + random.randint(-2, 2)} commands I think. I might have gotten the number wrong",
+            "help",
+            "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
+            "I am in geming's basement",
+            "I'm in love with the concept",
+            "Geming's pronouns are not she/her",
+            "Geming's pronouns are not she/they",
+            "Geming is not trans smh",
+            "Geming is not a furry smh",
+            "Geming is not lesbian smh"   ,
+            "Geming's github is <https://github.com/Geming400/>",
+            "I am self aware actually",
+            "Geming is NOT genderfluid skepper",
+            "I play gd idfk",
+            "I'm gay",
+            "-# Don't tell geming but he's actually gay, he just doesn't know yet",
+            f"I'm better than {ctx.author.mention}",
+            "I'm literally geming but better",
+            "I am better that chat-gpt",
+            "geming's pronouns are actually `he/any` :3",
+            "I'm a silly kitty >w<"
+        ]
+        
         facts = await Profiles.FactProfile.getFacts()
-        if not facts:
+        if not facts and not CUSTOM_FACTS:
             await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
             return
+        
+        facts += CUSTOM_FACTS
         
         await ctx.respond(random.choice(facts))
 
