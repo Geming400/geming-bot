@@ -39,13 +39,20 @@
                 },
                 "trusted-userIDs": {
                     "type": "array",
-                    "description": "The userIDs of users marked as 'trusted'",
+                    "description": "The userIDs of the users marked as 'trusted'",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "facts-add-remove-userIDs": {
+                    "type": "array",
+                    "description": "The userIDs that can add/remove facts from gemingbot",
                     "items": {
                         "type": "integer"
                     }
                 }
             },
-            "required": ["owner-userID", "trusted-userIDs"]
+            "required": ["owner-userID"]
         },
 
         "db": {
