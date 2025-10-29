@@ -60,7 +60,7 @@ class FactStuff(commands.Cog):
         
         facts = await Profiles.FactProfile.getFactsWithIDs()
         if not facts:
-            return ["No harcoded facts found !"]
+            return ["No non harcoded facts found !"]
         
         for fact in facts:
             factID, factContent = fact
