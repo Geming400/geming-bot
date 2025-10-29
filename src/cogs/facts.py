@@ -153,56 +153,6 @@ class FactStuff(commands.Cog):
         await Profiles.FactProfile.removeFactFromID(_fact[0])
         
         await ctx.respond(f"Sucessfully removed fact `{_fact[1]}` with ID `{_fact[0]}` !", ephemeral=True)
-        
-    @factGroup.command(name="get-facts", description="Get every gemingbot facts")
-    @discord.option(
-        name="as_file",
-        description="If there's too much facts to be send on discord, send the facts as messages or as a file ?",
-        input_type=bool,
-        default=True
-    )
-    async def getFacts(self, ctx: Context, as_file: bool):
-        Loggers.factsLogger.info(f"Getting facts for user {ctx.author.name} ({ctx.author.id})")
-        
-        customFacts = self.getCustomFacts(ctx)
-        facts = await Profiles.FactProfile.getFactsWithIDs()
-        if not facts and not customFacts:
-            await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
-            return
-        
-        ret = "Here are gemingbot's facts:\n```"
-        for fact in facts:
-            factID, factContent = fact
-            ret += f"- [{factID}] {factContent}\n"
-        for customFact in customFacts:
-            ret += f"- [HARDCODED] {customFact}\n"
-        ret += "```"
-        
-        if len(ret) > 2000:
-            if as_file: # send as a file
-                tmpfile = tempfile.TemporaryFile(delete_on_close=False)
-                tmpfile.write(ret.encode())
-                tmpfile.close()
-                
-                file = discord.File(
-                    fp=tmpfile.name,
-                    filename="output.txt",
-                    description=f"The system prompt of geming bot"
-                )
-                
-                await ctx.respond(
-                    content=f"Here are gemingbot's facts:",
-                    file=file,
-                    ephemeral=True
-                )
-                
-                tmpfile._closer.cleanup()
-            else: # send messages in chunks
-                for s in utils.chunkString(ret, 2000):
-                    await ctx.respond(s, ephemeral=True)
-        else:
-            await ctx.respond(ret, ephemeral=True)
-    
     
     @factGroup.command(name="add", description="Add a fact to gemingbot")
     @discord.option(
@@ -245,7 +195,65 @@ class FactStuff(commands.Cog):
         facts += customFacts
         
         await ctx.respond(random.choice(facts), allowed_mentions=discord.AllowedMentions.none())
-
+            
+    @factGroup.command(name="get-facts", description="Get every gemingbot facts")
+    @discord.option(
+        name="as_file",
+        description="If there's too much facts to be send on discord, send the facts as messages or as a file ?",
+        input_type=bool,
+        default=True
+    )
+    @discord.option(
+        name="no_hardcoded_facts",
+        description="If set to `True`, only manually added facts will be outputted",
+        input_type=bool,
+        default=False
+    )
+    async def getFacts(self, ctx: Context, as_file: bool, no_hardcoded_facts: bool):
+        Loggers.factsLogger.info(f"Getting facts for user {ctx.author.name} ({ctx.author.id})")
+        
+        customFacts = self.getCustomFacts(ctx)
+        facts = await Profiles.FactProfile.getFactsWithIDs()
+        if not facts and not customFacts:
+            await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
+            return
+        
+        ret = "Here are gemingbot's facts:\n```"
+        
+        facts.reverse()
+        for fact in facts:
+            factID, factContent = fact
+            ret += f"- [{factID}] {factContent}\n"
+        if not no_hardcoded_facts:
+            for customFact in customFacts:
+                ret += f"- [HARDCODED] {customFact}\n"
+        ret += "```"
+        
+        if len(ret) > 2000:
+            if as_file: # send as a file
+                tmpfile = tempfile.TemporaryFile(delete_on_close=False)
+                tmpfile.write(ret.encode())
+                tmpfile.close()
+                
+                file = discord.File(
+                    fp=tmpfile.name,
+                    filename="output.txt",
+                    description=f"The system prompt of geming bot"
+                )
+                
+                await ctx.respond(
+                    content=f"Here are gemingbot's facts:",
+                    file=file,
+                    ephemeral=True
+                )
+                
+                tmpfile._closer.cleanup()
+            else: # send messages in chunks
+                for s in utils.chunkString(ret, 2000):
+                    await ctx.respond(s, ephemeral=True)
+        else:
+            await ctx.respond(ret, ephemeral=True)
+            
     @discord.slash_command(name="fact", description="Gets a random gemingbot fact !")
     async def oldGetFact(self, ctx: Context):
         await self.getFact(ctx)
