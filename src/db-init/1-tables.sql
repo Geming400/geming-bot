@@ -21,7 +21,9 @@ CREATE TABLE users (
 
 CREATE TABLE facts (
     id INTEGER PRIMARY KEY,
-    fact TEXT NOT NULL
+    fact TEXT NOT NULL,
+    locked BOOLEAN NOT NULL DEFAULT(FALSE),
+    added_by BIGINT
 );
 
 -- Testing
