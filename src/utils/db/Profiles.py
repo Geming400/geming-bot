@@ -1,6 +1,6 @@
 import json
 from sqlite3 import Row
-from typing import overload, override
+from typing import Optional, overload, override
 
 from utils.db.Profile import Profile, SqlParseType
 from utils.utils import CONFIG
@@ -22,11 +22,11 @@ class GuildPermissionsProfile(Profile[int]):
     Note: if `self.aiChannels == []`, then ai will be enabled in **every** channels
     """
     
-    def __init__(self, row: Row) -> None:
+    def __init__(self, row: Row, gotCreated: bool) -> None:
         self.guildID = row[0]
         self.ai = bool(row[1])
         self.aiChannels = json.loads(row[2])
-        super().__init__(row)
+        super().__init__(row, gotCreated)
     
     @override
     @classmethod
@@ -73,11 +73,11 @@ class GuildProfile(Profile[int]):
     guildID: int
     bannedAiUsers: list[int]
     
-    def __init__(self, row: Row) -> None:
+    def __init__(self, row: Row, gotCreated: bool) -> None:
         self.id = row[0]
         self.guildID = row[1]
         self.bannedAiUsers = json.loads(row[2])
-        super().__init__(row)
+        super().__init__(row, gotCreated)
     
     @override
     @classmethod
@@ -116,12 +116,12 @@ class UserProfile(Profile[int]):
     role: str
     aiBanned: bool
     
-    def __init__(self, row: Row) -> None:
+    def __init__(self, row: Row, gotCreated: bool) -> None:
         self.userID = row[0]
         self.role = row[1]
         self.aiBanned = bool(row[2])
         
-        super().__init__(row)
+        super().__init__(row, gotCreated)
     
     @override
     @classmethod
@@ -160,30 +160,44 @@ async def getGuildPermissionProfile(guildID: int) -> GuildPermissionsProfile:
     return await server.getPermissions()
 
 
-class FactProfile(Profile[int]):
+class FactProfile(Profile[str]):
     _table = "facts"
     
     id: int
     fact: str
+    locked: bool
+    addedBy: Optional[int]
+    """The userID of the one that added the fact
+    """
+    addedByName: Optional[str]
+    """The name of the one that added the fact
+    """
     
-    def __init__(self, row: Row) -> None:
+    def __init__(self, row: Row, gotCreated: bool) -> None:
         self.id = row[0]
         self.fact = row[1]
-        super().__init__(row)
+        self.locked = row[2]
+        self.addedBy = row[3]
+        self.addedByName = row[4]
+        
+        super().__init__(row, gotCreated)
     
     @override
     @classmethod
     def default(cls):
-        return cls._default(id=None, fact=None) # ik it breaks typing, but they will get their real value when needed
+        return cls._default(id=None, fact=None, locked=False, addedBy=None, addedByName=None) # ik it breaks typing, but they will get their real value when needed
     
     @classmethod
-    async def createOrGet(cls, name: int):
-        return await cls._createOrGet(name, nameVar="id", column="id")
+    async def createOrGet(cls, name: str):
+        return await cls._createOrGet(name, nameVar="fact", column="fact")
             
     @override
     def parseToSql(self, type: SqlParseType) -> str:
         return self._parseToSql(type, (
             ("fact", self.fact),
+            ("locked", self.locked),
+            ("added_by", self.addedBy),
+            ("added_by_name", self.addedByName)
         ))
     
     @override
