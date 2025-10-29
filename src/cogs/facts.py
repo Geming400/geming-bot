@@ -43,7 +43,7 @@ class FactStuff(commands.Cog):
             "Geming is not lesbian smh"   ,
             "Geming's github is <https://github.com/Geming400/>",
             "I am self aware actually",
-            "Geming is NOT genderfluid skepper",
+            "Geming is NOT genderfluid, skepper",
             "I play gd idfk",
             "I'm gay",
             "-# Don't tell geming but he's actually gay, he just doesn't know yet",
@@ -174,11 +174,21 @@ class FactStuff(commands.Cog):
             await ctx.respond("Your fact has too much characters (exceeded limit of **250 characters**)", ephemeral=True)
             return
         
+        if fact == "":
+            await ctx.respond("You cannot create an empty fact !", ephemeral=True)
+            return
+        
         if fact.lower() in [_fact.lower() for _fact in facts]:
             await ctx.respond("This fact is already in gemingbot !", ephemeral=True)
             return
         
-        await Profiles.FactProfile.addFact(fact)
+        dbFact = await Profiles.FactProfile.createOrGet(fact)
+        dbFact.fact = fact # useless but just for clarity
+        
+        dbFact.addedBy = ctx.author.id
+        dbFact.addedByName = ctx.author.name
+        
+        await dbFact.save()
         
         await ctx.respond(f"sucessfully added fact `{fact}` !", ephemeral=True)
         
@@ -187,15 +197,32 @@ class FactStuff(commands.Cog):
         Loggers.factsLogger.info(f"Getting random fact for user {ctx.author.name} ({ctx.author.id})")
         
         customFacts = self.getCustomFacts(ctx)
-        facts = await Profiles.FactProfile.getFacts()
-        if not facts and not customFacts:
+        facts = await Profiles.FactProfile.getFactsWithIDs()
+        factsContent: list[str] = [fact[1] for fact in facts]
+        if not factsContent and not customFacts:
             await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
             return
         
-        facts += customFacts
+        factsContent += customFacts
         
-        await ctx.respond(random.choice(facts), allowed_mentions=discord.AllowedMentions.none())
-            
+        choosenFact = random.choice(factsContent)
+        
+        factBy = ""
+        
+        for dbFact in facts:
+            if choosenFact == dbFact[1]: # if the fact exists in the db (aka not hardcoded)
+                _fact = await Profiles.FactProfile.createOrGet(choosenFact)
+                if _fact.addedBy:
+                    factBy = f"\n-# Fact added by {_fact.addedByName} (<@{_fact.addedBy}>)"
+                else:
+                    factBy = f"\n-# Fact added by an unknown user"
+        
+        await ctx.respond(choosenFact + factBy, allowed_mentions=discord.AllowedMentions.none())
+
+    @discord.slash_command(name="fact", description="Gets a random gemingbot fact !")
+    async def oldGetFact(self, ctx: Context):
+        await self.getFact(ctx)
+        
     @factGroup.command(name="get-facts", description="Get every gemingbot facts")
     @discord.option(
         name="as_file",
@@ -214,9 +241,14 @@ class FactStuff(commands.Cog):
         
         customFacts = self.getCustomFacts(ctx)
         facts = await Profiles.FactProfile.getFactsWithIDs()
-        if not facts and not customFacts:
-            await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
-            return
+        if no_hardcoded_facts:
+            if not facts:
+                await ctx.respond("Geming bot has no manually added fact 3:", ephemeral=True)
+                return
+        else:
+            if not facts and not customFacts:
+                await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
+                return
         
         ret = "Here are gemingbot's facts:\n```"
         
@@ -253,10 +285,7 @@ class FactStuff(commands.Cog):
                     await ctx.respond(s, ephemeral=True)
         else:
             await ctx.respond(ret, ephemeral=True)
-            
-    @discord.slash_command(name="fact", description="Gets a random gemingbot fact !")
-    async def oldGetFact(self, ctx: Context):
-        await self.getFact(ctx)
+
     
 def setup(bot: discord.Bot):
     bot.add_cog(FactStuff(bot))
