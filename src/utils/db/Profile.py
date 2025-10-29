@@ -39,10 +39,11 @@ class Profile(Generic[T]):
     
     _table: str # to be overriden
     _lock: asyncio.Lock
+    _gotCreated: bool
     
-    def __init__(self, row: sqlite3.Row) -> None:
-        """The init function, must **NOT** be called, use `.createOrGet()` instead.
-        Also, if you are subclassing this class and implementing `.__init__()`
+    def __init__(self, row: sqlite3.Row, gotCreated: bool) -> None:
+        """The init function, must **NOT** be called (except when using `super().__init__()`), use `.createOrGet()` instead.
+        Also, if you are subclassing this class and implementing `.__init__()`, be sure to override what's written in the class's docstring
 
         Note:
             When overriding, you **must parse the `row` arg** according to the **db's table**
@@ -50,6 +51,8 @@ class Profile(Generic[T]):
         Args:
             row: The row to parse
         """
+        
+        self._gotCreated = gotCreated
         self._lock = asyncio.Lock()
     
     @classmethod
@@ -95,6 +98,7 @@ class Profile(Generic[T]):
         if isinstance(obj, (dict, list)): return f"'{json.dumps(obj)}'"
         if isinstance(obj, (set)): return f"'{json.dumps(list(obj))}'"
         if isinstance(obj, bool): return str(int(obj))
+        if obj == None: return "NULL"
         
         return str(obj)
     
@@ -125,7 +129,7 @@ class Profile(Generic[T]):
             async with conn.execute(query) as cur:
                 fetchedRow = await cur.fetchone()
                 if fetchedRow:
-                    return cls.parseToObj(fetchedRow)
+                    return cls.parseToObj(fetchedRow, gotCreated=False)
         
         inst = cls.default()
         setattr(inst, nameVar, name)
@@ -137,7 +141,7 @@ class Profile(Generic[T]):
             async with conn.execute(query) as cur:
                 fetchedRow = await cur.fetchone()
                 if fetchedRow:
-                    return cls.parseToObj(fetchedRow)
+                    return cls.parseToObj(fetchedRow, gotCreated=True)
             
         raise Exception(f"Fetched row didn't return anything (query: {query})")
     
@@ -176,17 +180,18 @@ class Profile(Generic[T]):
         ...
     
     @classmethod
-    def parseToObj(cls, response: aiosqlite.Row) -> Self:
+    def parseToObj(cls, response: aiosqlite.Row, gotCreated: bool) -> Self:
         """Parse a sql response to an object of type `Self`
 
         Args:
             response: the response of a sql query (`cur.fetchone()`)
+            gotCreated: if the object just got created
 
         Returns:
             A class of type `Self`
         """
         
-        return cls(response)
+        return cls(response, gotCreated=True)
         
     
     def _parseToSql(self, type: SqlParseType, members: tuple[tuple[str, Any], ...], primaryKeyVar: Optional[str] = None) -> str:
@@ -230,3 +235,9 @@ class Profile(Generic[T]):
     
     @property
     def table(self): return self._table
+    
+    @property
+    def gotCreated(self):
+        """Did this `Profile` instance get created in the db ?
+        """
+        return self._gotCreated
