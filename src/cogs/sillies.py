@@ -71,14 +71,16 @@ class SillyStuff(commands.Cog):
         "cis", "he/him"
         "masc", "masculine",
         "guy", "man", "men", "male", "dude", "boy"
-        "bro", "gentleman", # idk chat-gpt wanted me to add this,
+        "bro", "gentleman", # idk chat-gpt wanted me to add this
         
         "silly"
     )
 
     negationsList: ClassVar[tuple[str, ...]] = (
-        "not", "n't", "dont", "do not", "isnt", "is not", "arent", "ain't",
-        "no", "never", "without", "opposite", "reverse", "contrary", "against"
+        "not", "n't", "nt", "ns't", "nst"
+        "no",
+        "never",
+        "opposite", "reverse", "contrary"
     )
         
     
@@ -303,8 +305,7 @@ class SillyStuff(commands.Cog):
     
     @staticmethod
     def count_negations(msg: str) -> int:
-        msg_lower = msg.lower()
-        return sum(msg_lower.count(neg) for neg in SillyStuff.negationsList)
+        return sum(msg.lower().count(neg) for neg in SillyStuff.negationsList)
     
     @staticmethod
     def check(msg: str, false: T, true: T) -> T:
