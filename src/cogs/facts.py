@@ -162,7 +162,7 @@ class FactStuff(commands.Cog):
     )
     async def addFact(self, ctx: Context, fact: str):
         if not CONFIG.canEditFacts(ctx.author.id):
-            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/fact add", reason="Isn't owner")
+            utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/fact add", reason="Cannot edit facts")
             await ctx.respond("No :3", ephemeral=True)
             return
         
