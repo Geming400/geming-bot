@@ -1,6 +1,6 @@
 import random
 import tempfile
-from typing import Final, Optional, cast
+from typing import Optional, cast
 import discord
 from discord.ext import commands
 
