@@ -156,10 +156,15 @@ class FactStuff(commands.Cog):
             await ctx.respond(f"Sucessfully removed fact `{_fact[1]}` with ID `{_fact[0]}` !", ephemeral=True)
         except Exception as e:
             Loggers.factsLogger.exception(f"Caught exception while trying to remove a fact: {e}")
-            await ctx.respond("There has been an error while trying to remove a fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            await ctx.respond(
+                "There has been an error while trying to remove a fact!",
+                embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"),
+                ephemeral=True
+            )
             
             raise e
     
+    # TODO: unbreak this command
     @factGroup.command(name="add", description="Add a fact to gemingbot")
     @discord.option(
         name="fact",
@@ -200,7 +205,11 @@ class FactStuff(commands.Cog):
             await ctx.respond(f"sucessfully added fact `{fact}` !", ephemeral=True)
         except Exception as e:
             Loggers.factsLogger.exception(f"Caught exception while trying to add fact: {e}")
-            await ctx.respond("There has been an error while trying to add a fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            await ctx.respond(
+                "There has been an error while trying to add a fact! (This command is very broken, contact geming to warn him about it)",
+                embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"),
+                ephemeral=True
+            )
             
             raise e
         
@@ -233,7 +242,7 @@ class FactStuff(commands.Cog):
             await ctx.respond(choosenFact + factBy, allowed_mentions=discord.AllowedMentions.none())
         except Exception as e:
             Loggers.factsLogger.exception(f"Caught exception while trying to get a random fact: {e}")
-            await ctx.respond("There has been an error while trying to get a random fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            await ctx.respond("There has been an error while trying to get a random fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), ephemeral=True)
             
             raise e
 
@@ -306,7 +315,7 @@ class FactStuff(commands.Cog):
                 await ctx.respond(ret, ephemeral=True)
         except Exception as e:
             Loggers.factsLogger.exception(f"Caught exception while trying to get every facts: {e}")
-            await ctx.respond("There has been an error while trying to get every facts!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            await ctx.respond("There has been an error while trying to get every facts!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), ephemeral=True)
             
             raise e
 
