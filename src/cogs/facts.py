@@ -131,28 +131,34 @@ class FactStuff(commands.Cog):
             await ctx.respond("You cannot set a value for both parameter `fact` and `fact_id` !", ephemeral=True)
             return
         
-        _fact: tuple[int, str]
-        if fact:
-            foundFact = await self.getFactFromAutocomplete(fact)
-            if foundFact:
-                _fact = foundFact
+        try:
+            _fact: tuple[int, str]
+            if fact:
+                foundFact = await self.getFactFromAutocomplete(fact)
+                if foundFact:
+                    _fact = foundFact
+                else:
+                    Loggers.factsLogger.info(f"Tried getting fact from autocomplete ('{fact}') but failed")
+                    await ctx.respond(f"Tried getting fact from autocomplete (`{fact}`) but failed, **does the fact exist** ?", ephemeral=True)
+                    return
             else:
-                Loggers.factsLogger.info(f"Tried getting fact from autocomplete ('{fact}') but failed")
-                await ctx.respond(f"Tried getting fact from autocomplete (`{fact}`) but failed, **does the fact exist** ?", ephemeral=True)
-                return
-        else:
-            foundFact = await self.getFactFromID(cast(int, fact_id))
-            if foundFact:
-                _fact = foundFact
-            else:
-                Loggers.factsLogger.info(f"Tried getting fact from the fact ID ('{fact_id}') but failed")
-                await ctx.respond(f"Tried getting fact from the fact ID (`{fact_id}`) but failed, **does the fact exist** ?", ephemeral=True)
-                return
-        
-        Loggers.factsLogger.info(f"Removing fact '{_fact[1]}' with ID '{_fact[0]}' for user {ctx.author.name} ({ctx.author.id})")
-        await Profiles.FactProfile.removeFactFromID(_fact[0])
-        
-        await ctx.respond(f"Sucessfully removed fact `{_fact[1]}` with ID `{_fact[0]}` !", ephemeral=True)
+                foundFact = await self.getFactFromID(cast(int, fact_id))
+                if foundFact:
+                    _fact = foundFact
+                else:
+                    Loggers.factsLogger.info(f"Tried getting fact from the fact ID ('{fact_id}') but failed")
+                    await ctx.respond(f"Tried getting fact from the fact ID (`{fact_id}`) but failed, **does the fact exist** ?", ephemeral=True)
+                    return
+            
+            Loggers.factsLogger.info(f"Removing fact '{_fact[1]}' with ID '{_fact[0]}' for user {ctx.author.name} ({ctx.author.id})")
+            await Profiles.FactProfile.removeFactFromID(_fact[0])
+            
+            await ctx.respond(f"Sucessfully removed fact `{_fact[1]}` with ID `{_fact[0]}` !", ephemeral=True)
+        except Exception as e:
+            Loggers.factsLogger.exception(f"Caught exception while trying to remove a fact: {e}")
+            await ctx.respond("There has been an error while trying to remove a fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            
+            raise e
     
     @factGroup.command(name="add", description="Add a fact to gemingbot")
     @discord.option(
@@ -168,56 +174,68 @@ class FactStuff(commands.Cog):
         
         Loggers.factsLogger.info(f"Adding fact '{fact}' for user {ctx.author.name} ({ctx.author.id})")
         
-        facts = await Profiles.FactProfile.getFacts()
-        
-        if len(fact) >= 250:
-            await ctx.respond("Your fact has too much characters (exceeded limit of **250 characters**)", ephemeral=True)
-            return
-        
-        if fact == "":
-            await ctx.respond("You cannot create an empty fact !", ephemeral=True)
-            return
-        
-        if fact.lower() in [_fact.lower() for _fact in facts]:
-            await ctx.respond("This fact is already in gemingbot !", ephemeral=True)
-            return
-        
-        dbFact = await Profiles.FactProfile.createOrGet(fact)
-        dbFact.fact = fact # useless but just for clarity
-        
-        dbFact.addedBy = ctx.author.id
-        dbFact.addedByName = ctx.author.name
-        
-        await dbFact.save()
-        
-        await ctx.respond(f"sucessfully added fact `{fact}` !", ephemeral=True)
+        try:
+            facts = await Profiles.FactProfile.getFacts()
+            
+            if len(fact) >= 250:
+                await ctx.respond("Your fact has too much characters (exceeded limit of **250 characters**)", ephemeral=True)
+                return
+            
+            if fact == "":
+                await ctx.respond("You cannot create an empty fact !", ephemeral=True)
+                return
+            
+            if fact.lower() in [_fact.lower() for _fact in facts]:
+                await ctx.respond("This fact is already in gemingbot !", ephemeral=True)
+                return
+            
+            dbFact = await Profiles.FactProfile.createOrGet(fact)
+            dbFact.fact = fact # useless but just for clarity
+            
+            dbFact.addedBy = ctx.author.id
+            dbFact.addedByName = ctx.author.name
+            
+            await dbFact.save()
+            
+            await ctx.respond(f"sucessfully added fact `{fact}` !", ephemeral=True)
+        except Exception as e:
+            Loggers.factsLogger.exception(f"Caught exception while trying to add fact: {e}")
+            await ctx.respond("There has been an error while trying to add a fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            
+            raise e
         
     @factGroup.command(name="get", description="Gets a random gemingbot fact !")
     async def getFact(self, ctx: Context):
         Loggers.factsLogger.info(f"Getting random fact for user {ctx.author.name} ({ctx.author.id})")
         
-        customFacts = self.getCustomFacts(ctx)
-        facts = await Profiles.FactProfile.getFactsWithIDs()
-        factsContent: list[str] = [fact[1] for fact in facts]
-        if not factsContent and not customFacts:
-            await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
-            return
-        
-        factsContent += customFacts
-        
-        choosenFact = random.choice(factsContent)
-        
-        factBy = ""
-        
-        for dbFact in facts:
-            if choosenFact == dbFact[1]: # if the fact exists in the db (aka not hardcoded)
-                _fact = await Profiles.FactProfile.createOrGet(choosenFact)
-                if _fact.addedBy:
-                    factBy = f"\n-# Fact added by {_fact.addedByName} (<@{_fact.addedBy}>)"
-                else:
-                    factBy = f"\n-# Fact added by an unknown user"
-        
-        await ctx.respond(choosenFact + factBy, allowed_mentions=discord.AllowedMentions.none())
+        try:
+            customFacts = self.getCustomFacts(ctx)
+            facts = await Profiles.FactProfile.getFactsWithIDs()
+            factsContent: list[str] = [fact[1] for fact in facts]
+            if not factsContent and not customFacts:
+                await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
+                return
+            
+            factsContent += customFacts
+            
+            choosenFact = random.choice(factsContent)
+            
+            factBy = ""
+            
+            for dbFact in facts:
+                if choosenFact == dbFact[1]: # if the fact exists in the db (aka not hardcoded)
+                    _fact = await Profiles.FactProfile.createOrGet(choosenFact)
+                    if _fact.addedBy:
+                        factBy = f"\n-# Fact added by {_fact.addedByName} (<@{_fact.addedBy}>)"
+                    else:
+                        factBy = f"\n-# Fact added by an unknown user"
+            
+            await ctx.respond(choosenFact + factBy, allowed_mentions=discord.AllowedMentions.none())
+        except Exception as e:
+            Loggers.factsLogger.exception(f"Caught exception while trying to get a random fact: {e}")
+            await ctx.respond("There has been an error while trying to get a random fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            
+            raise e
 
     @discord.slash_command(name="fact", description="Gets a random gemingbot fact !")
     async def oldGetFact(self, ctx: Context):
@@ -239,52 +257,58 @@ class FactStuff(commands.Cog):
     async def getFacts(self, ctx: Context, as_file: bool, no_hardcoded_facts: bool):
         Loggers.factsLogger.info(f"Getting facts for user {ctx.author.name} ({ctx.author.id})")
         
-        customFacts = self.getCustomFacts(ctx)
-        facts = await Profiles.FactProfile.getFactsWithIDs()
-        if no_hardcoded_facts:
-            if not facts:
-                await ctx.respond("Geming bot has no manually added fact 3:", ephemeral=True)
-                return
-        else:
-            if not facts and not customFacts:
-                await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
-                return
-        
-        ret = "Here are gemingbot's facts:\n```"
-        
-        facts.reverse()
-        for fact in facts:
-            factID, factContent = fact
-            ret += f"- [{factID}] {factContent}\n"
-        if not no_hardcoded_facts:
-            for customFact in customFacts:
-                ret += f"- [HARDCODED] {customFact}\n"
-        ret += "```"
-        
-        if len(ret) > 2000:
-            if as_file: # send as a file
-                tmpfile = tempfile.TemporaryFile(delete_on_close=False)
-                tmpfile.write(ret.encode())
-                tmpfile.close()
-                
-                file = discord.File(
-                    fp=tmpfile.name,
-                    filename="output.txt",
-                    description=f"The system prompt of geming bot"
-                )
-                
-                await ctx.respond(
-                    content=f"Here are gemingbot's facts:",
-                    file=file,
-                    ephemeral=True
-                )
-                
-                tmpfile._closer.cleanup()
-            else: # send messages in chunks
-                for s in utils.chunkString(ret, 2000):
-                    await ctx.respond(s, ephemeral=True)
-        else:
-            await ctx.respond(ret, ephemeral=True)
+        try:
+            customFacts = self.getCustomFacts(ctx)
+            facts = await Profiles.FactProfile.getFactsWithIDs()
+            if no_hardcoded_facts:
+                if not facts:
+                    await ctx.respond("Geming bot has no manually added fact 3:", ephemeral=True)
+                    return
+            else:
+                if not facts and not customFacts:
+                    await ctx.respond("Geming bot has no fact 3:", ephemeral=True)
+                    return
+            
+            ret = "Here are gemingbot's facts:\n```"
+            
+            facts.reverse()
+            for fact in facts:
+                factID, factContent = fact
+                ret += f"- [{factID}] {factContent}\n"
+            if not no_hardcoded_facts:
+                for customFact in customFacts:
+                    ret += f"- [HARDCODED] {customFact}\n"
+            ret += "```"
+            
+            if len(ret) > 2000:
+                if as_file: # send as a file
+                    tmpfile = tempfile.TemporaryFile(delete_on_close=False)
+                    tmpfile.write(ret.encode())
+                    tmpfile.close()
+                    
+                    file = discord.File(
+                        fp=tmpfile.name,
+                        filename="output.txt",
+                        description=f"The system prompt of geming bot"
+                    )
+                    
+                    await ctx.respond(
+                        content=f"Here are gemingbot's facts:",
+                        file=file,
+                        ephemeral=True
+                    )
+                    
+                    tmpfile._closer.cleanup()
+                else: # send messages in chunks
+                    for s in utils.chunkString(ret, 2000):
+                        await ctx.respond(s, ephemeral=True)
+            else:
+                await ctx.respond(ret, ephemeral=True)
+        except Exception as e:
+            Loggers.factsLogger.exception(f"Caught exception while trying to get every facts: {e}")
+            await ctx.respond("There has been an error while trying to get every facts!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"))
+            
+            raise e
 
     
 def setup(bot: discord.Bot):
