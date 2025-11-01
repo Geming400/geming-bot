@@ -65,6 +65,7 @@ class SillyStuff(commands.Cog):
         "woman", "women", "girl", "female", "feminine", "she/her",
         "lady", "miss", # idk chat-gpt wanted me to add this
         "girlie",
+        "lesbian"
         "fem",
         
         "furry"
