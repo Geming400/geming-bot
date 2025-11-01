@@ -1,7 +1,7 @@
 {
     "$schema": "./config-schem.json",
     "ai": {
-        "default-model": "hermes3",
+        "default-model": "hermes3:latest",
         "system-prompt": "./ai/system-prompt.txt",
         "is-system-prompt-file": true,
         "keep-alive": 7200

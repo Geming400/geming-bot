@@ -103,7 +103,7 @@ class SharedStorage:
         # -- custom members --
         
         self._aiHandler = None
-        self.currentModel = self.config.getDefaultModel() or "hermes3"
+        self.currentModel = self.config.getDefaultModel() or "hermes3:latest"
         self.aiPingReply = discord.AllowedMentions.none()
         self.db = _Db(self.config.getDbPath())
         
