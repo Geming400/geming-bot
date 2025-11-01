@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from typing import Final, Optional
 import discord
 import ollama
@@ -68,6 +69,9 @@ def createErrorEmbed(description: Optional[str] = None):
         description=description,
         colour=discord.Colour.red()
         )
+
+def canDeleteFileOnClose():
+    return os.name != 'posix' or sys.platform == 'cygwin'
 
 # from:
 # https://stackoverflow.com/questions/18854620/whats-the-best-way-to-split-a-string-into-fixed-length-chunks-and-work-with-the
