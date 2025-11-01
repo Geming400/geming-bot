@@ -143,13 +143,16 @@ class Config(metaclass=Singleton):
     def getKeepAlive(self) -> int:
         return self.content["ai"].get("keep-alive", 60*5) # default ollama value
     
+    def getSystemPromptPath(self) -> str:
+        return self.content["ai"]["system-prompt"]
+    
     @functools.lru_cache
     def getSystemPrompt(self) -> str:
         if self.content["ai"].get("is-system-prompt-file", False):
             with open(self.content["ai"]["system-prompt"]) as f:
                 return f.read()
         else:
-            return self.content.get("system-prompt", "")
+            return self.content["ai"]["system-prompt"]
         
     def getOwner(self) -> int:
         return self.content["permissions"]["owner-userID"]
