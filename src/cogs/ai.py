@@ -5,7 +5,6 @@ from discord.ext import commands
 import tempfile
 
 from ollama import AsyncClient
-import ollama
 import psutil
 from utils.db import Profiles
 import utils.utils as utils
@@ -103,14 +102,10 @@ class AiUtils(commands.Cog):
             await ctx.respond("No :3", ephemeral=True)
             return
         
-        tmpfile = tempfile.TemporaryFile(delete_on_close=False)
-        tmpfile.write(aiHandler.systemPrompt.encode())
-        tmpfile.close()
-        
         Loggers.aiLogger.info(f"Getting system prompt for user {ctx.author.name} ({ctx.author.id})")
         
         file = discord.File(
-            fp=tmpfile.name,
+            fp=CONFIG.getSystemPromptPath(),
             filename="output.txt",
             description=f"The system prompt of geming bot"
         )
@@ -121,8 +116,6 @@ class AiUtils(commands.Cog):
             ephemeral=True,
             allowed_mentions=discord.AllowedMentions.none()
         )
-        
-        tmpfile._closer.cleanup()
     
     @discord.slash_command(
         name="get-memory",
