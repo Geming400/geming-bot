@@ -84,12 +84,10 @@ class MainBot(commands.Cog):
     async def linux_icbm(self, ctx: Context, user: discord.User):
         await ctx.respond(f"Finding {user.mention}'s location...", allowed_mentions=discord.AllowedMentions.none() if user.bot else discord.AllowedMentions.all())
         
+        await asyncio.sleep(5)
         try:
-            await asyncio.sleep(5)
             await ctx.edit(content=f"Done! User's ip is `{await getTjcsIp()}`. Sending linus torvalds ICBM...")
         except:
-            await ctx.respond(f"Finding {user.mention}'s location...")
-            await asyncio.sleep(5)
             await ctx.edit(content="Done! Sending linus torvalds ICBM...")
         await asyncio.sleep(3)
         await ctx.edit(content="https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=68a98ee4&is=68a83d64&hm=85b8d19ac042233ff7ee14ced7e7abeed292cef893a58fa284a5624e7081f7aa&")
