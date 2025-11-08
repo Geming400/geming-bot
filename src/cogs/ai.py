@@ -90,6 +90,15 @@ class AiUtils(commands.Cog):
         
         await ctx.edit(content=f"Sucessfully changed model from `{old_model}` to `{CONFIG.storage.currentModel}`\n-# Preloaded model !")
     
+    @discord.slash_command(name="get-current-model", description="Get the current model used")
+    async def getCurrentModel(self, ctx: Context):
+        name, paramCount = CONFIG.storage.currentModel.split(":")
+        
+        await ctx.respond(
+            f"The current model is `{CONFIG.storage.currentModel}`, aka the model `{name}` with `{"UNKNOWN" if paramCount == "latest" else paramCount}` parameters",
+            ephemeral=True
+        )
+
     @discord.slash_command(
         name="ai-system-prompt",
         description="Get the system prompt of geming bot",
@@ -196,7 +205,7 @@ class AiUtils(commands.Cog):
         aiHandler.clearMemory(ctx.channel_id)
         Loggers.aiLogger.info(f"Flushed ai's memory for channel ID {ctx.channel_id} for user {ctx.author.name} ({ctx.author.id})")
         await ctx.respond("Flushed tjc's smart toilet !")
-        
+    
     @discord.slash_command(
         name="global-flush",
         description="Flushes every human's smart toilet :3   (Clears the ai's memory on every channels)",

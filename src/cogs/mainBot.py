@@ -184,8 +184,6 @@ class MainBot(commands.Cog):
         cmds += [
             "User commands:",
             "/help",
-            "/ai",
-            # "/dyrs",
             "/linux-icbm",
             "/getUserRole",
             "/cattify",
@@ -194,7 +192,10 @@ class MainBot(commands.Cog):
             "/x-meter",
             
             "/facts get",
-            "/facts get-facts"
+            "/facts get-facts",
+            
+            "/get-current-model",
+            "/ai"
         ]
         
         s: str
