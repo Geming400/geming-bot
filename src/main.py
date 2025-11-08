@@ -93,7 +93,6 @@ cogs_list: list[str] = [
     description="Reloads all cogs",
     integration_type=INTEGRATION_TYPES
 )
-@commands.is_owner()
 async def reloadCogs(ctx: discord.ApplicationContext):
     if not CONFIG.isOwner(ctx.author.id):
         utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-cogs", reason="Isn't owner")

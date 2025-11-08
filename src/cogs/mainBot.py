@@ -100,7 +100,6 @@ class MainBot(commands.Cog):
         description="Reload the config files",
         integration_type=INTEGRATION_TYPES
     )
-    @commands.is_owner()
     async def reloadConfigs(self, ctx: Context):
         if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.logger, cmdname="/reload-configs", reason="Isn't owner")
