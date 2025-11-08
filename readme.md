@@ -24,3 +24,11 @@ I'm too lazy to make a `run.sh` and `run.bat` file
 - `TOKEN`: The bot's token, **this is needed**
 - `CONFIG-PATH`: Defaults to `./config.jsonc`
 - `AI-HOST`: The host for the AI server. Defaults to `localhost`
+
+## TODO
+
+[ ] fix the temp folder stuff (`delete_on_close` arg on linux)
+[ ] allow for multiple roles display in `/get-role`
+[ ] increase timeout to check if the ai is up
+[ ] in `/set-model` add a `force: bool` param to force set a model (even if it doesn't exist !!)
+[ ] in `/set-model` fix autocomplete (`HOST` arg missing maybe ?)
