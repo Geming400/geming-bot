@@ -266,7 +266,7 @@ class SillyStuff(commands.Cog):
         if req.is_error:
             msg = f"Discord responsded with status code code {req.status_code} while trying to download the {imgName} img"
             Loggers.logger.warning(msg)
-            await ctx.respond(emed=utils.createErrorEmbed(msg), ephemeral=True)
+            await ctx.respond(embed=utils.createErrorEmbed(msg), ephemeral=True)
             return
         
         await ctx.respond("Processing...")
