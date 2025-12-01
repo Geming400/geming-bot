@@ -327,7 +327,7 @@ And crack! you'll take the lead.
             choosenFact = random.choice(factsContent)
             
             factBy = ""
-            christmasStuff = ""
+            christmasStuff = "\n-# Geming bot facts, now in jolly edition !" if datetime.now().month == 12 else ""
             
             for dbFact in facts:
                 if choosenFact == dbFact[1]: # if the fact exists in the db (aka not hardcoded)
@@ -336,9 +336,8 @@ And crack! you'll take the lead.
                         factBy = f"\n-# Fact added by {_fact.addedByName} (<@{_fact.addedBy}>)"
                     else:
                         factBy = f"\n-# Fact added by an unknown user"
-            
-            if datetime.now().month == 12:
-                christmasStuff = "\n-# Geming bot facts, now in jolly edition !"
+                    christmasStuff = "\n-# (Not a jolly fact because it's custom fact) !" if datetime.now().month == 12 else ""
+        
             
             await ctx.respond(choosenFact + factBy + christmasStuff, allowed_mentions=discord.AllowedMentions.none())
         except Exception as e:
