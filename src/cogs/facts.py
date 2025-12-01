@@ -1,3 +1,4 @@
+from datetime import datetime
 import random
 import tempfile
 from typing import Optional, cast
@@ -24,36 +25,132 @@ class FactStuff(commands.Cog):
     def getCustomFacts(self, slashCommandCtx: Context) -> list[str]:
         # the original facts
         # I'm keeping them harcoded
-        return [
-            "Geming is cis",
-            "I am a bot",
-            "I am trans",
-            "I am a furry",
-            "I was made by geming400\n-# (who could've guessed)",
-            f"I am {cast(discord.ClientUser, self.bot.user).mention}",
-            f"I have {len(self.bot.commands) + random.randint(-2, 2)} commands I think. I might have gotten the number wrong",
-            "help",
-            "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
-            "I am in geming's basement",
-            "I'm in love with the concept",
-            "Geming's pronouns are not she/her",
-            "Geming's pronouns are not she/they",
-            "Geming is not trans smh",
-            "Geming is not a furry smh",
-            "Geming is not lesbian smh"   ,
-            "Geming's github is <https://github.com/Geming400/>",
-            "I am self aware actually",
-            "Geming is NOT genderfluid, skepper",
-            "I play gd idfk",
-            "I'm gay",
-            "-# Don't tell geming but he's actually gay, he just doesn't know yet",
-            f"I'm better than {slashCommandCtx.author.mention}",
-            f"You are {slashCommandCtx.author.mention} :333",
-            "I'm literally geming but better",
-            "I am better that chat-gpt",
-            "geming's pronouns are actually `he/any` :3",
-            "I'm a silly kitty >w<"
-        ]
+        
+        if datetime.now().month == 12:
+            return [
+                "🎄",
+                "Geming is still cis and straight, but now jolly !!",
+                "I'm still trans no matter what",
+                "mincecraft", # yeah this is going to be a christmas exclusive fact, deal with it
+                "Furries are still hella gay in christmas >w<",
+                "I accept christmas cuddles !!!",
+                "jolly",
+                "jolly simulator 2025",
+                "Error! You are **not jolly enough** to execute this command.",
+                "Error! You **must be** jolly to execute this command.",
+                f"Haii {slashCommandCtx.author.name} :333 I hope you're jolly !!",
+                "You've been a bad girl this year 3: No cuddles for you !",
+                "Fun fact: geming is a jolly furry", # oh god I hope no one gets this fact
+                # let's just hope we don't get epic embed fails
+                "https://tenor.com/view/cat-the-voices-jolly-christmas-gif-5774532700081404887",
+                "https://cdn.discordapp.com/attachments/1368719810623438943/1444941953127944354/image0.gif?ex=692e8a8f&is=692d390f&hm=7a1ce697824e9bc1e43641c0d10ba694f37c509176c2456c29f0c6bed7990cd8&",
+                "https://tenor.com/view/rage-consumes-me-christmas-santa-gif-4593896469233522859",
+                "https://tenor.com/view/jiggy-jolly-get-jiggy-get-jolly-get-jolly-with-it-gif-13651478034157223092",
+                "https://tenor.com/view/my-jolly-reaction-jolly-my-honest-reaction-gif-5490890317762380451",
+                "https://tenor.com/view/fellow-jolly-gif-15469421991206860581",
+                "https://tenor.com/view/jolly-christmas-posting-jolly-cat-christmas-this-cat-looks-at-jolly-people-gif-4925436984769801382",
+                "https://tenor.com/view/black-panther-christmas-christmas-gif-version-you-are-a-jolly-fellow-you-are-a-king-gg-blackpanther-holiday-gif-4868310304434186622",
+                "https://tenor.com/th/view/bnuy-caption-gif-5014866802185976204",
+                "How to be jolly in 3 simple steps!\n-Step 1: ask geming\n-Step 2: become jolly with their permission\n- Step 3: if they said yes, congrats !!!",
+                "Christmas\nHoliday originating in Christianity, usually December 25\nChristmas is an annual festival commemorating the birth of Jesus Christ, observed primarily on December 25 as a religious and cultural celebration among billions of people around the world. A liturgical feast central to Christianity, Christmas preparation begins on the First Sunday of Advent and it is followed by Christmastide, which historically in the West lasts twelve days and culminates on Twelfth Night... [Continued in Wikipedia](https://en.wikipedia.org/wiki/Christmas)",
+                "Jolly geming !!!",
+                "Listen to the voices... Spread the jolly...",
+                "I will obey and spread the jolly around me",
+                "I will obey and spread the ~~wokeness~~ jolly around me",
+                "Stop spreading y'all wokeness, it's christmas 3:\n-# So sad I know...",
+                f"Epic unjollyness fail !! Laught at {slashCommandCtx.author.mention} !! (They are {random.randint(0, 3)}/10 jolly)",
+                "Silly billy has been very mean this year (they have been calling geming a transbian furry !!) and will NOT get any present this year...",
+                "Have you been a good girl this year :333 Mrppprr >w<",
+                "jolly meow",
+                "jolly purr",
+                "jolly gay",
+                "jolly gemingbot",
+                """
+Dashing through the snow
+In a one-horse open sleigh
+O'er the fields we go
+Laughing all the way
+Bells on bob tail* ring
+Making spirits bright
+What fun it is to ride and sing
+A sleighing song tonight!
+
+Chorus:
+Jingle bells, jingle bells,
+Jingle all the way.
+Oh! what fun it is to ride
+In a one-horse open sleigh.
+Jingle bells, jingle bells,
+Jingle all the way.
+Oh! what fun it is to ride
+In a one-horse open sleigh.
+
+A day or two ago,
+I thought I'd take a ride
+And soon, Miss Fanny Bright
+Was seated by my side,
+The horse was lean and lank
+Misfortune seemed his lot
+He got into a drifted bank
+And then we got upsot*.
+[Chorus]
+
+A day or two ago,
+The story I must tell
+I went out on the snow,
+And on my back I fell;
+A gent was riding by
+In a one-horse open sleigh,
+He laughed as there I sprawling lie,
+But quickly drove away.
+[Chorus]
+Now the ground is white
+Go it while you're young,
+Take the girls tonight
+and sing this sleighing song;
+Just get a bobtailed* bay
+Two forty* as his speed
+Hitch him to an open sleigh
+And crack! you'll take the lead.
+[Chorus]
+"""
+            ]
+        else:
+            return [
+                "Geming is cis",
+                "I am a bot",
+                "I am trans",
+                "I am a furry",
+                "I was made by geming400\n-# (who could've guessed)",
+                f"I am {cast(discord.ClientUser, self.bot.user).mention}",
+                f"I have {len(self.bot.commands) + random.randint(-2, 2)} commands I think. I might have gotten the number wrong",
+                "help",
+                "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
+                "I am in geming's basement",
+                "I'm in love with the concept",
+                "Geming's pronouns are not she/her",
+                "Geming's pronouns are not she/they",
+                "Geming is not trans smh",
+                "Geming is not a furry smh",
+                "Geming is not lesbian smh"   ,
+                "Geming's github is <https://github.com/Geming400/>",
+                "I am self aware actually",
+                "Geming is NOT genderfluid, skepper",
+                "I play gd idfk",
+                "I'm gay",
+                "-# Don't tell geming but he's actually gay, he just doesn't know yet",
+                f"I'm better than {slashCommandCtx.author.mention}",
+                f"You are {slashCommandCtx.author.mention} :333",
+                "I'm literally geming but better",
+                "I am better that chat-gpt",
+                "geming's pronouns are actually `he/any` :3",
+                "I'm a silly kitty >w<",
+                "I'm was born in 2025",
+                "Geming, coming out as trans, coming soon in your local theater...",
+                "I hate silly billy because they don't think my creator is cis... 3:\n-# spoiler: they aren't mreeoow :33",
+                "h",
+                "Cao doing anything except admitting she's trans smh"
+            ]
     
     async def getFactsAutocomplete(self, ctx: discord.AutocompleteContext):
         ret: list[str] = []
@@ -230,6 +327,7 @@ class FactStuff(commands.Cog):
             choosenFact = random.choice(factsContent)
             
             factBy = ""
+            christmasStuff = ""
             
             for dbFact in facts:
                 if choosenFact == dbFact[1]: # if the fact exists in the db (aka not hardcoded)
@@ -239,7 +337,10 @@ class FactStuff(commands.Cog):
                     else:
                         factBy = f"\n-# Fact added by an unknown user"
             
-            await ctx.respond(choosenFact + factBy, allowed_mentions=discord.AllowedMentions.none())
+            if datetime.now().month == 12:
+                christmasStuff = "\n-# Geming bot facts, now in jolly edition !"
+            
+            await ctx.respond(choosenFact + factBy + christmasStuff, allowed_mentions=discord.AllowedMentions.none())
         except Exception as e:
             Loggers.factsLogger.exception(f"Caught exception while trying to get a random fact: {e}")
             await ctx.respond("There has been an error while trying to get a random fact!", embed=utils.createErrorEmbed(f"({e.__class__.__name__}) {e}"), ephemeral=True)
