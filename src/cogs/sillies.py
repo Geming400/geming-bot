@@ -81,7 +81,6 @@ class SillyStuff(commands.Cog):
 
     negationsList: ClassVar[tuple[str, ...]] = (
         "not", "n't", "nt", "ns't", "nst"
-        "no",
         "never",
         "opposite", "reverse", "contrary"
     )
@@ -327,6 +326,10 @@ class SillyStuff(commands.Cog):
         input_type=str
     )
     async def trueOfFalse(self, ctx: Context, msg: str):
+        if chr(8288) in msg:
+            ctx.respond("fuck you\n-# Geming")
+            return
+        
         if ctx.author.id in BAN_SHITTY_USERS:
             await ctx.respond("No.")
             return
@@ -347,6 +350,10 @@ class SillyStuff(commands.Cog):
         input_type=str
     )
     async def yesOrNo(self, ctx: Context, msg: str):
+        if chr(8288) in msg:
+            ctx.respond("fuck you\n-# Geming")
+            return
+        
         response = random.Random(msg.lower()).choice(("yes", "no"))
         
         if ctx.author.id in BAN_SHITTY_USERS:
@@ -378,6 +385,10 @@ class SillyStuff(commands.Cog):
         required=False
     )
     async def xmeter(self, ctx: Context, x: str, user: Optional[discord.User]):
+        if chr(8288) in x:
+            ctx.respond("fuck you\n-# Geming")
+            return
+        
         if x.strip() == "":
             await ctx.respond("The `x` parameter must not be empty", ephemeral=True)
             return
