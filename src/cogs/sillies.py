@@ -53,6 +53,7 @@ LAYERS: Final[dict[DICT_LAYER_ENUM, str]] = {
 BAN_SHITTY_USERS: Final[list[int]] = [
     
 ]
+SILLY_MESSAGE: Final[str] = "fuck you\n\- Geming" # type: ignore
 
 def substrInStrInList(s: str, elems: Iterable[str]) -> bool:
     for item in elems:
@@ -327,7 +328,7 @@ class SillyStuff(commands.Cog):
     )
     async def trueOfFalse(self, ctx: Context, msg: str):
         if chr(8288) in msg:
-            ctx.respond("fuck you\n-# Geming")
+            await ctx.respond(SILLY_MESSAGE) # type: ignore
             return
         
         if ctx.author.id in BAN_SHITTY_USERS:
@@ -351,7 +352,7 @@ class SillyStuff(commands.Cog):
     )
     async def yesOrNo(self, ctx: Context, msg: str):
         if chr(8288) in msg:
-            ctx.respond("fuck you\n-# Geming")
+            await ctx.respond(SILLY_MESSAGE)
             return
         
         response = random.Random(msg.lower()).choice(("yes", "no"))
@@ -386,7 +387,7 @@ class SillyStuff(commands.Cog):
     )
     async def xmeter(self, ctx: Context, x: str, user: Optional[discord.User]):
         if chr(8288) in x:
-            ctx.respond("fuck you\n-# Geming")
+            await ctx.respond(SILLY_MESSAGE)
             return
         
         if x.strip() == "":
