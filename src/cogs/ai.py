@@ -153,7 +153,7 @@ class AiUtils(commands.Cog):
                         tmpfile.name,
                         filename=f"output-{channelID}.txt",
                         description=f"The output of the AI's current memory of the channel id {channel_id}"
-                        )
+                    )
             
                 await ctx.respond(f"AI memory from channel id `{channelID}` (<#{channelID}>):", file=discordFile, ephemeral=True)
                 Loggers.aiLogger.info(f"Sent ai memory for channelID `{channelID}` in channelID `{ctx.channel_id}` for user {ctx.author.name} ({ctx.author.id})")
