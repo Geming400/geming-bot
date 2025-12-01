@@ -18,8 +18,8 @@ Context = discord.ApplicationContext
 aiHandler = CONFIG.storage.aiHandler
 
 
-@functools.lru_cache
-async def getTjcsIp():
+@functools.cache
+async def getTjcsIp() -> str:
     Loggers.logger.debug("Cached tjc's ip")
     
     tjcsIp = await httpx.AsyncClient().get("https://tjcsucht.net/api/ip")
@@ -87,7 +87,8 @@ class MainBot(commands.Cog):
         await asyncio.sleep(5)
         try:
             await ctx.edit(content=f"Done! User's ip is `{await getTjcsIp()}`. Sending linus torvalds ICBM...")
-        except:
+        except Exception as e:
+            Loggers.logger.error(f"Caught exception while trying to get tjc's ip: {e}")
             await ctx.edit(content="Done! Sending linus torvalds ICBM...")
         await asyncio.sleep(3)
         await ctx.edit(content="https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=68a98ee4&is=68a83d64&hm=85b8d19ac042233ff7ee14ced7e7abeed292cef893a58fa284a5624e7081f7aa&")
