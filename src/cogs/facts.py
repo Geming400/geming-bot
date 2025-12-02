@@ -149,7 +149,8 @@ And crack! you'll take the lead.
                 "Geming, coming out as trans, coming soon in your local theater...",
                 "I hate silly billy because they don't think my creator is cis... 3:\n-# spoiler: they aren't mreeoow :33",
                 "h",
-                "Cao doing anything except admitting she's trans smh"
+                "Cao doing anything except admitting she's trans smh",
+                "Thank you [Veiquisha](https://cdn.discordapp.com/attachments/1416099087710949386/1445523545429115163/x1cuXlI.png?ex=6930a835&is=692f56b5&hm=7dfd6e370f9324fc597afee4027df75b4dbec847d96eb91f323556b0ed157ccb&), I love you :3"
             ]
     
     async def getFactsAutocomplete(self, ctx: discord.AutocompleteContext):
