@@ -1,5 +1,4 @@
 import asyncio
-import functools
 import random
 import re
 from typing import Optional, cast
@@ -17,13 +16,19 @@ Context = discord.ApplicationContext
 
 aiHandler = CONFIG.storage.aiHandler
 
+tjcsIp: Optional[str] = None
 
-@functools.cache
 async def getTjcsIp() -> str:
-    Loggers.logger.debug("Cached tjc's ip")
+    global tjcsIp
     
-    tjcsIp = await httpx.AsyncClient().get("https://tjcsucht.net/api/ip")
-    return tjcsIp.text
+    if tjcsIp:
+        return tjcsIp
+    else:
+        Loggers.logger.debug("Cached tjc's ip")
+        
+        req = await httpx.AsyncClient().get("https://tjcsucht.net/api/ip")
+        tjcsIp = req.text
+        return tjcsIp
 
 class MainBot(commands.Cog):
     def __init__(self, bot: discord.Bot):
