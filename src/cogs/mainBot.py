@@ -272,7 +272,8 @@ class MainBot(commands.Cog):
             self.changeStatusTask.start()
     
     async def changeStatus(self):
-        Loggers.logger.debug("Changing status")
+        # annoying log
+        # Loggers.logger.debug("Changing status")
     
         statuses = CONFIG.getStatuses()
         if statuses:
