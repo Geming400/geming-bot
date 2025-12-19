@@ -51,7 +51,7 @@ class FactStuff(commands.Cog):
                 "https://tenor.com/view/jolly-christmas-posting-jolly-cat-christmas-this-cat-looks-at-jolly-people-gif-4925436984769801382",
                 "https://tenor.com/view/black-panther-christmas-christmas-gif-version-you-are-a-jolly-fellow-you-are-a-king-gg-blackpanther-holiday-gif-4868310304434186622",
                 "https://tenor.com/th/view/bnuy-caption-gif-5014866802185976204",
-                "How to be jolly in 3 simple steps!\n\- Step 1: ask geming\n\- Step 2: become jolly with their permission\n\- Step 3: if they said yes, congrats !!!", # pyright: ignore[reportInvalidStringEscapeSequence]
+                "How to be jolly in 3 simple steps!\n\\- Step 1: ask geming\n\\- Step 2: become jolly with their permission\n\\- Step 3: if they said yes, congrats !!!",
                 "Christmas\nHoliday originating in Christianity, usually December 25\nChristmas is an annual festival commemorating the birth of Jesus Christ, observed primarily on December 25 as a religious and cultural celebration among billions of people around the world. A liturgical feast central to Christianity, Christmas preparation begins on the First Sunday of Advent and it is followed by Christmastide, which historically in the West lasts twelve days and culminates on Twelfth Night... [Continued in Wikipedia](https://en.wikipedia.org/wiki/Christmas)",
                 "Jolly geming !!!",
                 "Listen to the voices... Spread the jolly...",

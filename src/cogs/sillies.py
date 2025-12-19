@@ -39,8 +39,10 @@ class DICT_LAYER_ENUM(str, Enum):
     CAT_OUTLINE = "cat-outline"
     CAT_FEATURES = "cat-features"
     CAT_EARS = "cat-ears"
-    
-LAYERS_FOLDER_PATH: Final[str] = "./resources/woke-ass-cat-maker"
+
+RESOURCES_FOLDER: Final[str] = "./resources"
+
+LAYERS_FOLDER_PATH: Final[str] = f"{RESOURCES_FOLDER}/woke-ass-cat-maker"
 PREGENERATED_CATS_FOLDER: Final[str] = f"{LAYERS_FOLDER_PATH}/cats"
 LAYERS: Final[dict[DICT_LAYER_ENUM, str]] = {
     DICT_LAYER_ENUM.CAT_OUTLINE: f"{LAYERS_FOLDER_PATH}/cat-outline.png",
@@ -50,10 +52,13 @@ LAYERS: Final[dict[DICT_LAYER_ENUM, str]] = {
 """Those are the layers that will be added to the first image
 """
 
+HTTPGEMING_FOLDER: Final[str] = f"{RESOURCES_FOLDER}/httpgeming"
+HTTPGEMING_TEAPOTS_FOLDER: Final[str] = f"{HTTPGEMING_FOLDER}/teapots"
+
 BAN_SHITTY_USERS: Final[list[int]] = [
     
 ]
-SILLY_MESSAGE: Final[str] = "fuck you\n\- Geming" # type: ignore
+SILLY_MESSAGE: Final[str] = "fuck you\n\\- Geming" # pyright: ignore[reportInvalidStringEscapeSequence]
 
 def substrInStrInList(s: str, elems: Iterable[str]) -> bool:
     for item in elems:
@@ -167,6 +172,26 @@ class SillyStuff(commands.Cog):
         # outputPath.unlink()
         
         return (outputPath, originalBaseImgSize[0] == originalBaseImgSize[1])
+    
+    # TODO: add teapot command
+    @staticmethod
+    def getHttpgemingImages() -> dict[int, str]:
+        """Gets the httpgeming images
+
+        Returns:
+            A dict containing the httpgeming http codes: dict[status, path]
+        """
+    
+        cats = glob.glob(f"{HTTPGEMING_FOLDER}/*.png")
+        ret: dict[int, str] = {}
+        
+        for cat in cats:
+            path = Path(cat)
+            ret[int(path.stem)] = str(path)
+            
+        return ret
+    
+    
     
     @discord.slash_command(name="cattify", description="Cattifies an image")
     @discord.option(
@@ -425,6 +450,17 @@ class SillyStuff(commands.Cog):
             msg += "\n-# This might have been rigged, but shh"
             
         await ctx.respond(msg, allowed_mentions=discord.AllowedMentions.none())
+
+    # TODO: finish this command
+    # @discord.slash_command(name="httpgeming", description="Literally httpcat but better (I think)")
+    # @discord.option(
+    #     name="code",
+    #     description="The http code",
+    #     input_type=int,
+    #     required=False
+    # )
+    # async def httpgeming(self, ctx: Context, httpCode: int):
+    #     ...
 
     @discord.message_command(name="Cattify")
     async def cattifyMessageInteraction(self, ctx: Context, message: discord.Message):
