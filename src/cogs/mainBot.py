@@ -352,7 +352,7 @@ class MainBot(commands.Cog):
     #         f"I'm better than {ctx.author.mention}",
     #         "I'm literally geming but better",
     #         "I am better that chat-gpt",
-    #         "geming's pronouns are actually `he/any` :3",
+    #         "geming's pronouns are actually `any` :3",
     #         "I'm a silly kitty >w<"
     #     ]
         
