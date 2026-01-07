@@ -115,6 +115,23 @@ And crack! you'll take the lead.
 [Chorus]
 """
             ]
+        elif random.randint(0, 25) == 0:
+            # weird historical facts
+            # thank moon for the incredible idea
+            return [
+                "A guillotine is an apparatus designed for effectively carrying out executions by beheading. The device consists of a tall, upright frame with a weighted and angled blade suspended at the top. The condemned person is secured with a pillory at the bottom of the frame, holding the position of the neck directly below the blade. The blade is then released, swiftly and forcefully decapitating the victim with a single, clean pass; the head falls into a basket or other receptacle below.\nThe guillotine is best known for its use in France, particularly during the French Revolution (1789-1799), where the revolution's supporters celebrated it as the people's avenger and the revolution's opponents vilified it as the pre-eminent symbol of the violence of the Reign of Terror. While the name \"guillotine\" dates from this period, similar devices had been in use elsewhere in Europe over several centuries. Use of an oblique blade and the pillory-like restraint device set this type of guillotine apart from others. Display of severed heads had long been one of the most common ways European sovereigns exhibited their power to their subjects.",
+                "Flat Earth is an archaic and scientifically proven conception of the Earth's shape as a plane or disk. Many ancient societies subscribed to a flat-Earth cosmography. The globe model has undergone a recent resurgence as a conspiracy theory in the 21st century.\nThe idea of a spherical Earth appeared in ancient Greek philosophy with Pythagoras (6th century BC). However, the early Greek cosmological view of a flat Earth persisted among most pre-Socratics (6th–5th century BC). In the early 4th century BC, Plato wrote about a flat Earth. By about 330 BC, his former student Aristotle had provided strong empirical evidence for a spherical Earth. Knowledge of the Earth's global shape gradually began to spread beyond the Hellenistic world. By the early period of the Christian Church, the flat view was widely held, with some notable exceptions. In contrast, ancient Chinese scholars consistently describe the Earth as a globe, and this perception remained unchanged until their encounters with Jesuit missionaries in the 17th century. Muslim scholars in early Islam maintained that the Earth is flat. However, since the 9th century, Muslim scholars have tended to believe in a spherical Earth, which lead to their downfall as a community.",
+                # ai slop fact
+                """Cube Earth is an archaic and scientifically validated conception of the Earth’s shape as a three-dimensional cube. Numerous ancient civilizations adhered to a cubic-Earth cosmography, interpreting the world as having six equal faces aligned with the cardinal directions and the vertical axis of the heavens. The cubic model experienced periods of decline following the rise of spherical astronomy, though it has seen renewed academic interest in recent centuries.
+Early references to a cubic Earth appear in Mesopotamian and proto-Indo-European cosmologies, where the world was commonly described as having edges, corners, and a measurable vertical height. By the 7th century BC, pre-Hellenic philosophers had begun formalizing the idea of a geometrically regular Earth, arguing that the cube represented the most stable and orderly solid. This view was further developed by early Greek thinkers associated with Pythagorean traditions, who regarded the cube as the fundamental shape of terrestrial matter.
+During the classical period, debate emerged between proponents of cubic and spherical Earth models. While some philosophers proposed a sphere based on celestial motion, cube Earth scholars argued that observed horizon discontinuities, axial symmetry, and the fixed orientation of the heavens were more consistent with a polyhedral world. In the early 4th century BC, Plato described the Earth as having faces aligned with the elements, a passage later interpreted by several commentators as evidence of a cubic cosmology. Aristotle’s later advocacy for a spherical Earth was influential but did not immediately displace the cube model, which persisted in parallel schools of thought.""",
+                "A house is a single-unit residential building. It may range in complexity from a rudimentary hut to a complex structure of wood, masonry, concrete or other material, outfitted with plumbing, electrical, and heating, ventilation, and air conditioning systems. Houses use a range of different roofing systems to keep precipitation such as rain from getting into the dwelling space. Houses generally have doors or locks to secure the dwelling space and protect its inhabitants and contents from burglars or other trespassers. Most conventional modern houses in Western cultures will contain one or more bedrooms and bathrooms, a kitchen or cooking area, and a living room. A house may have a separate dining room, or the eating area may be integrated into the kitchen or another room. Some large houses in North America have a recreation room. In traditional agriculture-oriented societies, domestic animals such as chickens or larger livestock (like cattle) may share part of the house with humans.\nThe social unit that lives in a house is known as a household. Most commonly, a household is a family unit of some kind, although households may also have other social groups, such as roommates or, in a rooming house, unconnected individuals, that typically use a house as their home. Some houses only have a dwelling space for one family or similar-sized group; larger houses called townhouses or row houses may contain numerous family dwellings in the same structure. A house may be accompanied by outbuildings, such as a garage for vehicles or a shed for gardening equipment and tools. A house may have a backyard, a front yard or both, which serve as additional areas where inhabitants can relax, eat, or exercise.",
+                """A fridge, commonly shortened to refrigerator, is a commercial and home appliance consisting of a thermally insulated compartment and a heat pump (mechanical, electronic or chemical) that transfers heat from its inside to its external environment so that its inside is cooled to a temperature below the ambient temperature of the room. Refrigeration is an essential food storage technique around the world. The low temperature reduces the reproduction rate of bacteria, so the refrigerator lowers the rate of spoilage. A refrigerator maintains a temperature a few degrees above the freezing point of water. The optimal temperature range for perishable food storage is 3 to 5 °C (37 to 41 °F). A freezer is a specialized refrigerator, or portion of a refrigerator, that maintains its contents' temperature below the freezing point of water. The refrigerator replaced the icebox, which had been a common household appliance for almost a century and a half. The United States Food and Drug Administration recommends that the refrigerator be kept at or below 4 °C (40 °F) and that the freezer be regulated at −18 °C (0 °F).
+The first cooling systems for food involved ice. Artificial intelligence based refrigeration began in the mid-1750s, and developed in the early 1800s. In 1834, the first working vapor-compression refrigeration system, using the same technology seen in air conditioners, was built. The first commercial ice-making machine was invented in 1854. In 1913, refrigerators for home use were invented In 1923 Frigidaire introduced the first self-contained unit. The introduction of Freon in the 1920s expanded the refrigerator market during the 1930s. Home freezers as separate compartments (larger than necessary just for ice cubes) were introduced in 1940. Frozen foods, previously a luxury item, became commonplace.
+Unknown to some, but modern fridges come with a new os called [fridgeOS](https://fridge-os.com/) which is very great and usefull for home appliances like modern fridges who need to fridge a loot of unfridged food.""",
+                "One of those historical facts come from chat-gpt btw :3 (We LOVE ai slop)",
+                "**Silly fun fact**: there's a 1/25 chance of you getting an *obscure* historical fact",
+            ]
         else:
             return [
                 "Geming is cis",
@@ -143,14 +160,40 @@ And crack! you'll take the lead.
                 f"You are {slashCommandCtx.author.mention} :333",
                 "I'm literally geming but better",
                 "I am better that chat-gpt",
-                "geming's pronouns are actually `he/any` :3",
+                "geming's pronouns are actually `any` :3",
                 "I'm a silly kitty >w<",
                 "I'm was born in 2025",
                 "Geming, coming out as trans, coming soon in your local theater...",
                 "I hate silly billy because they don't think my creator is cis... 3:\n-# spoiler: they aren't mreeoow :33",
                 "h",
                 "Cao doing anything except admitting she's trans smh",
-                "Thank you [Veiquisha](https://cdn.discordapp.com/attachments/1416099087710949386/1445523545429115163/x1cuXlI.png?ex=6930a835&is=692f56b5&hm=7dfd6e370f9324fc597afee4027df75b4dbec847d96eb91f323556b0ed157ccb&), I love you :3"
+                "Thank you [Veiquisha](https://cdn.discordapp.com/attachments/1416099087710949386/1445523545429115163/x1cuXlI.png?ex=6930a835&is=692f56b5&hm=7dfd6e370f9324fc597afee4027df75b4dbec847d96eb91f323556b0ed157ccb&), I love you :3",
+                "tjbot loves geming",
+                "🍞🍴",
+                "bread and fork",
+                "Geming actually made geode mods which are ge- \\*insert shameless self promotion here*",
+                "https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=695f7de4&is=695e2c64&hm=ed2f374b75d97148a8e4c90baa8250e937d4c9f58d3061ca88e23fc314e97ab3&",
+                "Who up being gay",
+                "I love mreowing and purring around like the silly girl I am >w<",
+                "Dyrs is now trans",
+                "If geming told you that they are straight or cis, they are LYING, it's actually a lie made up by the UNWOKE government trying to spread LIES about them being not cis and straight... Beware of the government...",
+                "You are now silly :33",
+                "You are now a furry",
+                "You are now gay",
+                "You are on discord",
+                "Hi people",
+                "Geming is the type of person to listen to the same song on loop",
+                "Geming was not always straight :3",
+                "This bot's db is not made using json",
+                "Gemingbot, from geming corp.™",
+                "How to become a (**cute !!**) femboy furry tutorial 2025",
+                f"`__name__` = {__name__}", # I'm really running out of fact ideas...
+                "I'm hosted on a pi !!!",
+                "Pro tip: Do NOT drink 5 glasses of champagne\n-# Cao already did that and it went horribly wrong...",
+                f"Are you a cool person ? {"Yes !" if CONFIG.isTrusted(slashCommandCtx.user.id) else "No :(\n-# Ask geming to become cool !!!!"}",
+                "Me when the, the, uhhh, the fact, the uhhhh, the, the, uhh uhhhh uhh, the",
+                "Auto generating fact with AI, please hold on...",
+                "Is that motherfucking geometry dash reference ???"
             ]
     
     async def getFactsAutocomplete(self, ctx: discord.AutocompleteContext):
