@@ -115,7 +115,7 @@ And crack! you'll take the lead.
 [Chorus]
 """
             ]
-        elif random.randint(0, 25) == 0:
+        elif random.randint(0, 15) == 0:
             # weird historical facts
             # thank moon for the incredible idea
             return [
