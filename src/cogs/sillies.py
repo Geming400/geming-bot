@@ -74,7 +74,11 @@ class SillyStuff(commands.Cog):
         "lesbian"
         "fem",
         
-        "furry"
+        "furry",
+        
+        "transgenre",
+        "femme", "fille", "feminin",
+        "lesbienne"
     )
     funnyWordList: Final[tuple[str, ...]] = (
         "cis", "he/him"
@@ -82,13 +86,19 @@ class SillyStuff(commands.Cog):
         "guy", "man", "men", "male", "dude", "boy"
         "bro", "gentleman", # idk chat-gpt wanted me to add this
         
-        "silly"
+        "il/lui",
+        "masculin",
+        "gars", "mec", "homme",
     )
 
     negationsList: Final[tuple[str, ...]] = (
-        "not", "n't", "nt", "ns't", "nst"
+        "not", "n't", "nt", "sn't", "nsnt"
         "never",
-        "opposite", "reverse", "contrary"
+        "opposite", "reverse", "contrary",
+        
+        "pas", "ne", "n'", "ne pas", "n'est pas", "n'es pas"
+        "jamais",
+        "oppos", "inverse", "contraire"
     )
         
     
