@@ -221,9 +221,6 @@ class Moderation(commands.Cog):
     moderationGroup = discord.SlashCommandGroup(
         "moderation",
         "Useful commands to moderate users (only on this server)",
-        checks=[
-            commands.has_permissions(ban_members=True).predicate # pyright: ignore[reportFunctionMemberAccess]
-        ]  # Ensures the owner_id user can access this group, and no one else
     )
         
     def __init__(self, bot: discord.Bot):
@@ -344,7 +341,7 @@ class GlobalModeration(commands.Cog):
         description="If a DM will be sent to the user or not (defaults to false)"
     )
     async def unbanAI(self, ctx: Context, user: discord.User, silent: bool):
-        if not ctx.author.id == self.bot.owner_id:
+        if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/global-moderation unban-ai", "Isn't owner")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
@@ -357,7 +354,7 @@ class GlobalModeration(commands.Cog):
     
     @globalModerationGroup.command(name="ai-banned-users", description="Gets the globally banned users of gemingbot's ai")
     async def getBannedUsers(self, ctx: Context):
-        if not ctx.author.id == self.bot.owner_id:
+        if not CONFIG.isOwner(ctx.author.id):
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/global-moderation ai-banned-users", "Isn't owner")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
