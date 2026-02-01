@@ -66,7 +66,7 @@ def substrInStrInList(s: str, elems: Iterable[str]) -> bool:
     return False
 
 class SillyStuff(commands.Cog):
-    notFunnyWordList: ClassVar[tuple[str, ...]] = (
+    notFunnyWordList: Final[tuple[str, ...]] = (
         "trans", "transgender", "mtf", "ftm", "transition",
         "woman", "women", "girl", "female", "feminine", "she/her",
         "lady", "miss", # idk chat-gpt wanted me to add this
@@ -76,7 +76,7 @@ class SillyStuff(commands.Cog):
         
         "furry"
     )
-    funnyWordList: ClassVar[tuple[str, ...]] = (
+    funnyWordList: Final[tuple[str, ...]] = (
         "cis", "he/him"
         "masc", "masculine",
         "guy", "man", "men", "male", "dude", "boy"
@@ -85,7 +85,7 @@ class SillyStuff(commands.Cog):
         "silly"
     )
 
-    negationsList: ClassVar[tuple[str, ...]] = (
+    negationsList: Final[tuple[str, ...]] = (
         "not", "n't", "nt", "ns't", "nst"
         "never",
         "opposite", "reverse", "contrary"
