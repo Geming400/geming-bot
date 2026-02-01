@@ -242,7 +242,7 @@ class Moderation(commands.Cog):
         description="If a DM will be sent to the user or not (defaults to false)"
     )
     async def banAI(self, ctx: Context, user: discord.User, silent: bool):
-        if not (cast(discord.Member, ctx.author).guild_permissions.ban_members or ctx.author.id == self.bot.owner_id):
+        if not (cast(discord.Member, ctx.author).guild_permissions.ban_members or CONFIG.isOwner(ctx.author.id)):
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/moderation ban-ai", "Doesn't have the 'ban members' permissions")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
@@ -266,7 +266,7 @@ class Moderation(commands.Cog):
         description="If a DM will be sent to the user or not (defaults to false)"
     )
     async def unbanAI(self, ctx: Context, user: discord.User, silent: bool):
-        if not (cast(discord.Member, ctx.author).guild_permissions.ban_members or ctx.author.id == self.bot.owner_id):
+        if not (cast(discord.Member, ctx.author).guild_permissions.ban_members or CONFIG.isOwner(ctx.author.id)):
             utils.logNoAuthorization(ctx, Loggers.modLogger, "/moderation unban-ai", "Doesn't have the 'ban members' permissions")
             await ctx.respond("You don't have the permission to execute this !", ephemeral=True)
             return
