@@ -207,3 +207,5 @@ tempdir/
 /db/
 src/test.py
 cattify-tempfile
+
+/ai/system-prompt but elon.txt
