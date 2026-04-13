@@ -1,9 +1,8 @@
 import abc
 import asyncio
 from enum import Enum
-import functools
 import sqlite3
-from typing import Any, Generic, Optional, Self, Type, TypeVar, overload
+from typing import Any, Generic, Optional, Self, TypeVar
 import json
 
 import aiosqlite
@@ -191,7 +190,7 @@ class Profile(Generic[T]):
             A class of type `Self`
         """
         
-        return cls(response, gotCreated=True)
+        return cls(response, gotCreated=gotCreated)
         
     
     def _parseToSql(self, type: SqlParseType, members: tuple[tuple[str, Any], ...], primaryKeyVar: Optional[str] = None) -> str:
