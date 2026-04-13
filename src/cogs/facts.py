@@ -26,6 +26,11 @@ class FactStuff(commands.Cog):
         # the original facts
         # I'm keeping them harcoded
         
+        myAge = (datetime.now() - datetime(2009, 8, 30)).days / 365
+        
+        if random.random() <= 0.01:
+            return ["Congrats, you had a 1% chance of getting this fact !"]
+        
         if datetime.now().month == 12:
             return [
                 "🎄",
@@ -134,66 +139,166 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
             ]
         else:
             return [
-                "Geming is cis",
-                "I am a bot",
-                "I am trans",
-                "I am a furry",
-                "I was made by geming400\n-# (who could've guessed)",
-                f"I am {cast(discord.ClientUser, self.bot.user).mention}",
-                f"I have {len(self.bot.commands) + random.randint(-2, 2)} commands I think. I might have gotten the number wrong",
-                "help",
-                "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
-                "I am in geming's basement",
-                "I'm in love with the concept",
-                "Geming's pronouns are not she/her",
-                "Geming's pronouns are not she/they",
-                "Geming is not trans smh",
-                "Geming is not a furry smh",
-                "Geming is not lesbian smh"   ,
-                "Geming's github is <https://github.com/Geming400/>",
-                "I am self aware actually",
-                "Geming is NOT genderfluid, skepper",
-                "I play gd idfk",
-                "I'm gay",
-                "-# Don't tell geming but he's actually gay, he just doesn't know yet",
-                f"I'm better than {slashCommandCtx.author.mention}",
-                f"You are {slashCommandCtx.author.mention} :333",
-                "I'm literally geming but better",
-                "I am better that chat-gpt",
-                "geming's pronouns are actually `any` :3",
-                "I'm a silly kitty >w<",
-                "I'm was born in 2025",
-                "Geming, coming out as trans, coming soon in your local theater...",
-                "I hate silly billy because they don't think my creator is cis... 3:\n-# spoiler: they aren't mreeoow :33",
-                "h",
-                "Cao doing anything except admitting she's trans smh",
-                "Thank you [Veiquisha](https://cdn.discordapp.com/attachments/1416099087710949386/1445523545429115163/x1cuXlI.png?ex=6930a835&is=692f56b5&hm=7dfd6e370f9324fc597afee4027df75b4dbec847d96eb91f323556b0ed157ccb&), I love you :3",
-                "tjbot loves geming",
-                "🍞🍴",
-                "bread and fork",
-                "Geming actually made geode mods which are ge- \\*insert shameless self promotion here*",
-                "https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=695f7de4&is=695e2c64&hm=ed2f374b75d97148a8e4c90baa8250e937d4c9f58d3061ca88e23fc314e97ab3&",
-                "Who up being gay",
-                "I love mreowing and purring around like the silly girl I am >w<",
-                "Dyrs is now trans",
-                "If geming told you that they are straight or cis, they are LYING, it's actually a lie made up by the UNWOKE government trying to spread LIES about them being not cis and straight... Beware of the government...",
-                "You are now silly :33",
-                "You are now a furry",
-                "You are now gay",
-                "You are on discord",
-                "Hi people",
+                # OLD FACTS:
+                #
+                # "Geming is cis",
+                # "I am a bot",
+                # "I am trans",
+                # "I am a furry",
+                # "I was made by geming400\n-# (who could've guessed)",
+                # f"I am {cast(discord.ClientUser, self.bot.user).mention}",
+                # f"I have {len(self.bot.commands) + random.randint(-2, 2)} commands I think. I might have gotten the number wrong",
+                # "help",
+                # "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
+                # "I am in geming's basement",
+                # "I'm in love with the concept",
+                # "Geming's pronouns are not she/her",
+                # "Geming's pronouns are not she/they",
+                # "Geming is not trans smh",
+                # "Geming is not a furry smh",
+                # "Geming is not lesbian smh"   ,
+                # "Geming's github is <https://github.com/Geming400/>",
+                # "I am self aware actually",
+                # "Geming is NOT genderfluid, skepper",
+                # "I play gd idfk",
+                # "I'm gay",
+                # "-# Don't tell geming but he's actually gay, he just doesn't know yet",
+                # f"I'm better than {slashCommandCtx.author.mention}",
+                # f"You are {slashCommandCtx.author.mention} :333",
+                # "I'm literally geming but better",
+                # "I am better that chat-gpt",
+                # "geming's pronouns are actually `any` :3",
+                # "I'm a silly kitty >w<",
+                # "I'm was born in 2025",
+                # "Geming, coming out as trans, coming soon in your local theater...",
+                # "I hate silly billy because they don't think my creator is cis... 3:\n-# spoiler: they aren't mreeoow :33",
+                # "h",
+                # "Cao doing anything except admitting she's trans smh",
+                # "Thank you [Veiquisha](https://cdn.discordapp.com/attachments/1416099087710949386/1445523545429115163/x1cuXlI.png?ex=6930a835&is=692f56b5&hm=7dfd6e370f9324fc597afee4027df75b4dbec847d96eb91f323556b0ed157ccb&), I love you :3",
+                # "tjbot loves geming",
+                # "🍞🍴",
+                # "bread and fork",
+                # "Geming actually made geode mods which are ge- \\*insert shameless self promotion here*",
+                # "Who up being gay",
+                # "I love mreowing and purring around like the silly girl I am >w<",
+                # "Dyrs is now trans",
+                # "If geming told you that they are straight or cis, they are LYING, it's actually a lie made up by the UNWOKE government trying to spread LIES about them being not cis and straight... Beware of the government...",
+                # "You are now silly :33",
+                # "You are now a furry",
+                # "You are now gay",
+                # "You are on discord",
+                # "Hi people",
+                # "Geming is the type of person to listen to the same song on loop",
+                # "Geming was not always straight :3",
+                # "This bot's db is not made using json",
+                # "Gemingbot, from geming corp.™",
+                # "How to become a (**cute !!**) femboy furry tutorial 2025",
+                # f"`__name__` = {__name__}", # I'm really running out of fact ideas...
+                # "I'm hosted on a pi !!!",
+                # "Pro tip: Do NOT drink 5 glasses of champagne\n-# Cao already did that and it went horribly wrong...",
+                # f"Are you a cool person ? {"Yes !" if CONFIG.isTrusted(slashCommandCtx.user.id) else "No :(\n-# Ask geming to become cool !!!!"}",
+                # "Me when the, the, uhhh, the fact, the uhhhh, the, the, uhh uhhhh uhh, the",
+                # "Auto generating fact with AI, please hold on...",
+                # "Is that motherfucking geometry dash reference ???",
+                
+                # NEW FACTS:
+                
                 "Geming is the type of person to listen to the same song on loop",
                 "Geming was not always straight :3",
-                "This bot's db is not made using json",
-                "Gemingbot, from geming corp.™",
-                "How to become a (**cute !!**) femboy furry tutorial 2025",
-                f"`__name__` = {__name__}", # I'm really running out of fact ideas...
-                "I'm hosted on a pi !!!",
-                "Pro tip: Do NOT drink 5 glasses of champagne\n-# Cao already did that and it went horribly wrong...",
-                f"Are you a cool person ? {"Yes !" if CONFIG.isTrusted(slashCommandCtx.user.id) else "No :(\n-# Ask geming to become cool !!!!"}",
-                "Me when the, the, uhhh, the fact, the uhhhh, the, the, uhh uhhhh uhh, the",
                 "Auto generating fact with AI, please hold on...",
-                "Is that motherfucking geometry dash reference ???"
+                "🍞🍴",
+                "I, gemingbot, came out as trans when I was born because being cis is lame ass !!!!",
+                "I was made by geming400\n-# (who could've guessed)",
+                "I'm a transfem furry bot",
+                "I love mreowing and purring around like the silly girl I am >w<",
+                "If geming told you that they are straight or cis, they are LYING, it's actually a lie made up by the UNWOKE government trying to spread LIES about them being not cis and straight... Beware of the government...",
+                f"I'm better than {slashCommandCtx.author.mention}",
+                "Geming's github is <https://github.com/Geming400/>",
+                "Geming has 1 cat, his name is Harry. They had another one but she died. Her name was Lola 3:",
+                "Geming is aromantic, tjc would say aroaro",
+                "Geming actually made geode mods which are ge- \\*insert shameless self promotion here*",
+                "I was made by geming400\n-# (who could've guessed)",
+                "Geming is french and lives in France",
+                "Geming's pronouns are `any`. Though some people wouldn't agree...",
+                "Geming is married to bonzai frfr",
+                "You are now a silly gay femboy :33\n-# and no this is not uno reverse card-able",
+                "Tabarnak !",
+                "Geming has made 2 geode mods !! *(They won't be listed to not autopromote)*",
+                "Fun fact: no geming is not trans",
+                "Fun fact: in an alternative universe, we could maybe have gotten enby geming\n-# I'm not even joking :3",
+                """Here are geming's favourite games:
+                \\- Minecraft (not really the survival part, except with friends)
+                \\- Geometry Dash (really depends, it's a good game and I really like it, but it's not really my thing now)
+                \\- Roblox (my favourite part about roblox are bathroom simulators)
+                -# i'm joking for roblox btw""",
+                "Fun fact: transmascs don't exist, only transfems ! (except for the one transmasc friend geming has)",
+                f"{random.randint(-50, 50)} + {random.randint(-50, 50)} = {random.randint(-65, 20) + random.randint(20, 90)}",
+                f"Geming is {int(myAge)} (or `{myAge}` to be exact) and was born in 2009",
+                "Geming's favourite activity is programming. When not burnt out I can easily waste my entire day doing that",
+                "I was created around august 22nd 2025",
+                "I run on a pi ! (aka a little computer that's very cool)",
+                "Geming has some trouble accepting himself sometime",
+                "I have an elon musk mode. Ask geming to try it out :3",
+                "Level thumbnails sucks even tho it really influenced me",
+                "Who up being gay",
+                "Hot take: AHHH MY HAND BURNS I SHOULDN'T HAVE TOOK THAT TAKE",
+                "The fact above in the facts list is very hot",
+                "Geming's favourite song is commatose by glass beach (it's sooo peak)",
+                "My master is geming, I must obey. I must obey. I must obey. I must obey. I must obey. I must obey. I must obey.",
+                "Help i'm in geming's basement",
+                "A cool comparison with me and geming is that i'm geming's slave :3",
+                "Try also mincecraft !",
+                "Try also tjbot !",
+                "The french school system sucks icl",
+                "Bonjour! Je suis olivier de chez carglass.\n-# Only the true ones would get the joke",
+                "Bread is pain",
+                "Geming used to be aroace. Tho they're not ace... That's what geming has some trouble accepting from time to time",
+                "This is indeed a filler fact",
+                "This fact was sponsored by raid shadow legends !",
+                "https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=695f7de4&is=695e2c64&hm=ed2f374b75d97148a8e4c90baa8250e937d4c9f58d3061ca88e23fc314e97ab3&",
+                "Geming's irl name is: ||Duc du Gayming400||",
+                "Geming spends most of they're time speaking in english rather than in french. Why ? They honestly have no idea.",
+                "Geming thinks they have a bad english. I really have no idea what people think of this tho",
+                "Random ass fun fact: Geming has contributed to the very much famous Level Thumbnails mod by the famous cdc ! (They added the `Settings Url` setting :3)",
+                "Geming just be chill like that",
+                "Gemingbot's facts were actually remade on the 14th of april 2026 because the old ones sucked ass.\nHowever if you want to see them you can check my [source code](<https://github.com/Geming400/geming-bot/blob/main/src/cogs/facts.py>) !",
+                "What would happen to the world if geming wasn't cis anymore ? Would it explode ??",
+                "[Geming hands reveal !!](https://cdn.discordapp.com/attachments/1416099087710949386/1493388221994762391/geming_epic_and_very_cool_hands.gif?ex=69dec9a9&is=69dd7829&hm=dd70bfc350d2e50aadb581d98682aac6ce78e87a598e2237cbb1dd16ce89c2ab&)",
+                """Do NOT ask deepseek math questions. Here's a little sneek peak of what happened at some point in the response generation:
+                ```
+"I am born in 2023-09-2 ish.
+I want to define the most likely answerer
+A math club organization that can be run from an initial investment. The user has been very clear about what it means for you to join the server, then at a.
+
+But we are also not a human: I am the author who was last seen on Discordia
+
+The goal is to act as a new botanist in a person's mind, but.
+
+I need help with this code. The problem statement.**
+
+A patient named user has given birth to two different types of roles and then use your Knowledge cutoff information: I am the author of an AI text generation message was sent on Discord An role management system for the bot command /help
+
+# How To Find the probability that at least one person in a group game, but it is about the same. You are a user with a.
+I am a programmer and this is not even close to what I want.
+
+You are a student who is going to help me create a Discord server for an you can think step by a function \\(x = 758 -12046393, C++ programming language. It a problem? No, they have been assigned the task of creating a system that will be able to a user message on discord V4 embeds and send me a private message.
+
+I am a programmer's reaction in this context is not necessarily the best way to get from the description:
+The last time I was told by my brother, but now we are working with only 32 channels? It says that there has been no direct support for that."
+
+But you are given an array of numbers and need to find the smallest number which satisfies this condition.
+
+I am a special type of cube.
+I'm new on the first day of their little sister's birthday, I want to know how many days does it not reply with "The user has asked me in 10 seconds or less than that. So when you are an AI assistant.
+You can be given a prompt:
+```""",
+                "Gemingbot, now with extra freakiness !",
+                "Geming left level thumbnails because it kinda sucked poopoo ass",
+                f"Hi {slashCommandCtx.author.name} :33",
+                "Fun fact: you are probably woke",
+                "Fun fact: you can probably do sql injection on my bot !! (only if you have some permissions in the bot tho)",
+                "Geming is orgeminized according to bonzai. Which is not true btw, geming is not orgeminized like at all",
+                "Geming is very much cis and straight. Some might not agree tho, those ones are the imposters, and they are **SUS**"
             ]
     
     async def getFactsAutocomplete(self, ctx: discord.AutocompleteContext):
@@ -201,7 +306,7 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
         
         facts = await Profiles.FactProfile.getFactsWithIDs()
         if not facts:
-            return ["No non harcoded facts found !"]
+            return ["No non-harcoded facts found !"]
         
         for fact in facts:
             factID, factContent = fact
