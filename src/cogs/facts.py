@@ -120,7 +120,7 @@ And crack! you'll take the lead.
 [Chorus]
 """
             ]
-        elif random.randint(0, 15) == 0:
+        elif random.randint(0, 13) == 0:
             # weird historical facts
             # thank moon for the incredible idea
             return [
@@ -220,11 +220,11 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
                 "I was made by geming400\n-# (who could've guessed)",
                 "Geming is french and lives in France",
                 "Geming's pronouns are `any`. Though some people wouldn't agree...",
-                "Geming is married to bonzai frfr",
+                "Geming is married to bonzai frfr ~~(cdc bot reference)~~",
                 "You are now a silly gay femboy :33\n-# and no this is not uno reverse card-able",
                 "Tabarnak !",
                 "Geming has made 2 geode mods !! *(They won't be listed to not autopromote)*",
-                "Fun fact: no geming is not trans",
+                "Fun fact: geming is not trans",
                 "Fun fact: in an alternative universe, we could maybe have gotten enby geming\n-# I'm not even joking :3",
                 """Here are geming's favourite games:
                 \\- Minecraft (not really the survival part, except with friends)
@@ -246,13 +246,11 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
                 "Geming's favourite song is commatose by glass beach (it's sooo peak)",
                 "My master is geming, I must obey. I must obey. I must obey. I must obey. I must obey. I must obey. I must obey.",
                 "Help i'm in geming's basement",
-                "A cool comparison with me and geming is that i'm geming's slave :3",
+                "A cool metaphor with me and geming is that i'm geming's slave :3",
                 "Try also mincecraft !",
                 "Try also tjbot !",
-                "The french school system sucks icl",
-                "Bonjour! Je suis olivier de chez carglass.\n-# Only the true ones would get the joke",
                 "Bread is pain",
-                "Geming used to be aroace. Tho they're not ace... That's what geming has some trouble accepting from time to time",
+                "Geming used to be aroace. Tho they're not ace anymore... That's what geming has some trouble accepting from time to time",
                 "This is indeed a filler fact",
                 "This fact was sponsored by raid shadow legends !",
                 "https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=695f7de4&is=695e2c64&hm=ed2f374b75d97148a8e4c90baa8250e937d4c9f58d3061ca88e23fc314e97ab3&",
@@ -262,7 +260,7 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
                 "Random ass fun fact: Geming has contributed to the very much famous Level Thumbnails mod by the famous cdc ! (They added the `Settings Url` setting :3)",
                 "Geming just be chill like that",
                 "Gemingbot's facts were actually remade on the 14th of april 2026 because the old ones sucked ass.\nHowever if you want to see them you can check my [source code](<https://github.com/Geming400/geming-bot/blob/main/src/cogs/facts.py>) !",
-                "What would happen to the world if geming wasn't cis anymore ? Would it explode ??",
+                "What would happen to the world if geming wasn't cis and straight anymore ? Would it explode ??",
                 "[Geming hands reveal !!](https://cdn.discordapp.com/attachments/1416099087710949386/1493388221994762391/geming_epic_and_very_cool_hands.gif?ex=69dec9a9&is=69dd7829&hm=dd70bfc350d2e50aadb581d98682aac6ce78e87a598e2237cbb1dd16ce89c2ab&)",
                 """Do NOT ask deepseek math questions. Here's a little sneek peak of what happened at some point in the response generation:
                 ```
@@ -296,9 +294,20 @@ You can be given a prompt:
                 "Geming left level thumbnails because it kinda sucked poopoo ass",
                 f"Hi {slashCommandCtx.author.name} :33",
                 "Fun fact: you are probably woke",
-                "Fun fact: you can probably do sql injection on my bot !! (only if you have some permissions in the bot tho)",
+                "Fun fact: you can probably do sql injection on my bot !! (only if you have some permissions in the bot tho. And don't even try)",
                 "Geming is orgeminized according to bonzai. Which is not true btw, geming is not orgeminized like at all",
-                "Geming is very much cis and straight. Some might not agree tho, those ones are the imposters, and they are **SUS**"
+                "Geming is very much cis and straight. Some might not agree tho, those ones are the imposters and they are **SUS**",
+                "Geming stopped being ace in august 2025",
+                "Geming was not always straight :3",
+                "I was made in python with vscode, great right",
+                "This is a filler fact. You just lost your time",
+                "Geming already meowed !! (and someone has the recording)",
+                f"""I have multiple type of facts !
+                \\- Normal facts (those ones)
+                \\- Jolly facts (in december)
+                \\- Historical facts ({1/13 * 100:.2f}% chance of appearing)""",
+                "Random fun fact: statically speaking, you are geming",
+                "Geming has kinda quitted gd. They don't find as fun as it used to be, mostly the creating part"
             ]
     
     async def getFactsAutocomplete(self, ctx: discord.AutocompleteContext):
