@@ -203,7 +203,7 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
                 
                 # NEW FACTS:
                 
-                "Geming is the type of person to listen to the same song on loop",
+                "Geming is the type of person to listen to the same song on loop (this is becoming more and more untrue)",
                 "Geming was not always straight :3",
                 "Auto generating fact with AI, please hold on...",
                 "🍞🍴",
@@ -237,7 +237,7 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
                 "Geming's favourite activity is programming. When not burnt out I can easily waste my entire day doing that",
                 "I was created around august 22nd 2025",
                 "I run on a pi ! (aka a little computer that's very cool)",
-                "Geming has some trouble accepting himself sometime",
+                "Geming has some trouble accepting themself sometime",
                 "I have an elon musk mode. Ask geming to try it out :3",
                 "Level thumbnails sucks even tho it really influenced me",
                 "Who up being gay",
@@ -247,15 +247,15 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
                 "My master is geming, I must obey. I must obey. I must obey. I must obey. I must obey. I must obey. I must obey.",
                 "Help i'm in geming's basement",
                 "A cool metaphor with me and geming is that i'm geming's slave :3",
-                "Try also mincecraft !",
-                "Try also tjbot !",
+                "Also try mincecraft !",
+                "Also try tjbot !",
                 "Bread is pain",
                 "Geming used to be aroace. Tho they're not ace anymore... That's what geming has some trouble accepting from time to time",
                 "This is indeed a filler fact",
                 "This fact was sponsored by raid shadow legends !",
                 "https://cdn.discordapp.com/attachments/1268366668384440352/1372330251757027389/2025_23_49_53.gif?ex=695f7de4&is=695e2c64&hm=ed2f374b75d97148a8e4c90baa8250e937d4c9f58d3061ca88e23fc314e97ab3&",
                 "Geming's irl name is: ||Duc du Gayming400||",
-                "Geming spends most of they're time speaking in english rather than in french. Why ? They honestly have no idea.",
+                "Geming spends most of they're time speaking in english rather than in french.",
                 "Geming thinks they have a bad english. I really have no idea what people think of this tho",
                 "Random ass fun fact: Geming has contributed to the very much famous Level Thumbnails mod by the famous cdc ! (They added the `Settings Url` setting :3)",
                 "Geming just be chill like that",
@@ -298,7 +298,7 @@ You can be given a prompt:
                 "Geming is orgeminized according to bonzai. Which is not true btw, geming is not orgeminized like at all",
                 "Geming is very much cis and straight. Some might not agree tho, those ones are the imposters and they are **SUS**",
                 "Geming stopped being ace in august 2025",
-                "Geming was not always straight :3",
+                "Geming was not always straight :33",
                 "I was made in python with vscode, great right",
                 "This is a filler fact. You just lost your time",
                 "Geming already meowed !! (and someone has the recording)",
@@ -307,7 +307,9 @@ You can be given a prompt:
                 \\- Jolly facts (in december)
                 \\- Historical facts ({1/13 * 100:.2f}% chance of appearing)""",
                 "Random fun fact: statically speaking, you are geming",
-                "Geming has kinda quitted gd. They don't find as fun as it used to be, mostly the creating part"
+                "Geming has kinda quitted gd. They don't find as fun as it used to be, mostly the creating part",
+                "Fun fact: facts when reffering to geming use `they/them` pronouns\n-# No geming didn't become enby",
+                "Geming beat acu and trans acu !"
             ]
     
     async def getFactsAutocomplete(self, ctx: discord.AutocompleteContext):
