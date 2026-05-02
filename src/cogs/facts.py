@@ -227,9 +227,9 @@ Unknown to some, but modern fridges come with a new os called [fridgeOS](https:/
                 "Fun fact: geming is not trans",
                 "Fun fact: in an alternative universe, we could maybe have gotten enby geming\n-# I'm not even joking :3",
                 """Here are geming's favourite games:
-                \\- Minecraft (not really the survival part, except with friends)
-                \\- Geometry Dash (really depends, it's a good game and I really like it, but it's not really my thing now)
-                \\- Roblox (my favourite part about roblox are bathroom simulators)
+\\- Minecraft (not really the survival part, except with friends)
+\\- Geometry Dash (really depends, it's a good game and I really like it, but it's not really my thing now)
+\\- Roblox (my favourite part about roblox are bathroom simulators)
                 -# i'm joking for roblox btw""",
                 "Fun fact: transmascs don't exist, only transfems ! (except for the one transmasc friend geming has)",
                 f"{random.randint(-50, 50)} + {random.randint(-50, 50)} = {random.randint(-65, 20) + random.randint(20, 90)}",
@@ -303,9 +303,9 @@ You can be given a prompt:
                 "This is a filler fact. You just lost your time",
                 "Geming already meowed !! (and someone has the recording)",
                 f"""I have multiple type of facts !
-                \\- Normal facts (those ones)
-                \\- Jolly facts (in december)
-                \\- Historical facts ({1/13 * 100:.2f}% chance of appearing)""",
+\\- Normal facts (those ones)
+\\- Jolly facts (in december)
+\\- Historical facts ({1/13 * 100:.2f}% chance of appearing)""",
                 "Random fun fact: statically speaking, you are geming",
                 "Geming has kinda quitted gd. They don't find as fun as it used to be, mostly the creating part",
                 "Fun fact: facts when reffering to geming use `they/them` pronouns\n-# No geming didn't become enby",
