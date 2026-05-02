@@ -309,7 +309,9 @@ You can be given a prompt:
                 "Random fun fact: statically speaking, you are geming",
                 "Geming has kinda quitted gd. They don't find as fun as it used to be, mostly the creating part",
                 "Fun fact: facts when reffering to geming use `they/them` pronouns\n-# No geming didn't become enby",
-                "Geming beat acu and trans acu !"
+                "Geming beat acu and trans acu !",
+                "Worra trying not to do unofficial facts challenge (impossible)",
+                "Gemingbot economy soon..."
             ]
     
     async def getFactsAutocomplete(self, ctx: discord.AutocompleteContext):
