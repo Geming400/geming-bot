@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from datetime import datetime
 import random
 import tempfile
-from typing import Optional, cast
+import time
+from typing import Final, Optional, cast
 import discord
 from discord.ext import commands
 
@@ -12,6 +14,42 @@ from utils.utils import CONFIG
 
 Context = discord.ApplicationContext
 
+RATE_LIMIT_TIME: Final[float] = 24*60*60 # aka 1 day
+# userID: num of time/days
+TO_RATE_LIMIT: Final[dict[int, int]] = {
+    # worra
+    1397216718400520276: 2
+}
+
+# userID:
+rate_limits: dict[int, "RateLimitInfo"] = {}
+
+@dataclass
+class RateLimitInfo:
+    userID: int
+    maxRateLimit: int
+    interactionCount: int = 0
+    
+    resetTimestamp: float = 0
+    lastInteractionTimestamp: float = time.time()
+    
+    shouldCheckForRatelimit: bool = False
+    
+    def ratelimitIfPossible(self):
+        if self.interactionCount >= self.maxRateLimit and self.resetTimestamp == 0:
+            self.resetTimestamp = time.time() + RATE_LIMIT_TIME
+    
+    def reset(self):
+        self.resetTimestamp = 0
+        self.interactionCount = 0
+        self.shouldCheckForRatelimit = False
+    
+    @staticmethod
+    def create(ctx: Context):
+        return RateLimitInfo(
+            ctx.author.id,
+            TO_RATE_LIMIT[ctx.author.id]
+        )
 
 class FactStuff(commands.Cog):
     factGroup = discord.SlashCommandGroup(
@@ -474,7 +512,26 @@ You can be given a prompt:
         
     @factGroup.command(name="get", description="Gets a random gemingbot fact !")
     async def getFact(self, ctx: Context):
+        info: Optional[RateLimitInfo] = None
+        if ctx.author.id in TO_RATE_LIMIT:
+            info = rate_limits.get(ctx.author.id, RateLimitInfo.create(ctx))
+            info.lastInteractionTimestamp = time.time()
+            
+            # this is to handle the case where info isn't already in rate_limits
+            # otherwise this is basically useless
+            rate_limits[ctx.author.id] = info
+            
+            if time.time() < info.resetTimestamp:
+                info.shouldCheckForRatelimit = True
+                
+                await ctx.respond(f"Skill issue !! You will no longer be ratelimited <t:{int(info.resetTimestamp)}:R>.")
+                return
+        
         Loggers.factsLogger.info(f"Getting random fact for user {ctx.author.name} ({ctx.author.id})")
+        
+        # the user is no longer ratelimited
+        if info and info.shouldCheckForRatelimit:
+            info.reset()
         
         try:
             customFacts = self.getCustomFacts(ctx)
@@ -500,7 +557,10 @@ You can be given a prompt:
                         factBy = f"\n-# Fact added by an unknown user"
                     christmasStuff = "\n-# (Not a jolly fact because it's custom fact) !" if datetime.now().month == 12 else ""
         
-            
+            if info:
+                info.interactionCount += 1
+                info.ratelimitIfPossible()
+                
             await ctx.respond(choosenFact + factBy + christmasStuff, allowed_mentions=discord.AllowedMentions.none())
         except Exception as e:
             Loggers.factsLogger.exception(f"Caught exception while trying to get a random fact: {e}")
